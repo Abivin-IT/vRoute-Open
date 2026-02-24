@@ -3,8 +3,8 @@
 vRoute-Open/
 ├── 📁 1-Back-Office-Block/       # Ánh xạ Khối Hành chính - Kế toán
 │   ├── 1.1-IT-Department/        # Map Drive: IT Department
-│   ├── 1.2-Finance-Accounting/   # Map Drive: Finance & Accounting
-│   ├── 1.3-Admin-HR/             # Map Drive: Admin & HR
+│   ├── 1.2-Finance-Accounting-Admin/   # Map Drive: Finance & Accounting & Admin
+│   ├── 1.3-HR/                   # Map Drive: HR
 │   └── 1.4-Procurement/          # Map Drive: Procurement
 ├── 📁 2-Production-Block/        # Ánh xạ Khối Sản xuất
 │   ├── 3.1-Product-Design/       # Map Drive: Product Design
