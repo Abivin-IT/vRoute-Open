@@ -190,17 +190,17 @@ up: ## Build + start all services in the background (detached)
 	@echo ""
 	@echo "  make logs  - tail logs     make down  - stop"
 
-# -- Staging (cotest2026): docker-compose with staging overlay --
+# -- Staging: docker-compose with staging overlay --
 COMPOSE_STAGING := docker-compose -f $(DEPLOY_DIR)/docker-compose.yml -f $(DEPLOY_DIR)/docker-compose.staging.yml
 
-up-staging: ## Start platform with staging config (for cotest2026 server)
+up-staging: ## Start platform with staging config (single-server, behind reverse proxy)
 	@echo ""
-	@echo "  Starting vRoute Platform (staging: vroute-5.abivin.com.vn)…"
+	@echo "  Starting vRoute Platform (staging)…"
 	$(COMPOSE_STAGING) up -d --pull always
 	@echo ""
 	@echo "  ┌-------------------------------------------------─┐"
-	@echo "  │  STAGING — vroute-5.abivin.com.vn                 │"
-	@echo "  │  vKernel     ->  127.0.0.1:8080 (behind proxy)   │"
+	@echo "  │  STAGING — loopback-only (configure reverse proxy) │"
+	@echo "  │  vKernel     ->  127.0.0.1:8080                   │"
 	@echo "  │  PostgreSQL  ->  127.0.0.1:5432                   │"
 	@echo "  │  Redis       ->  127.0.0.1:6379                   │"
 	@echo "  └-------------------------------------------------─┘"

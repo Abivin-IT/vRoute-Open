@@ -1,16 +1,16 @@
 # =============================================================
 # vRoute Platform — Helm Values Override: STAGING
-# Server: cotest2026 | Branch: staging
-# Domain: vroute-5.abivin.com.vn
+# Branch: staging
 #
 # Usage:
 #   helm upgrade --install vroute ./80-deploy/helm/vroute \
 #     -f ./80-deploy/helm/vroute/values-staging.yaml \
+#     --set ingress.host="$STAGING_DOMAIN" \
 #     --set postgresql.password="$DB_PASS" \
 #     --set vkernel.env.JWT_SECRET="$JWT_SECRET"
 #
-# IMPORTANT: Do NOT put real secrets here — pass via --set or
-#            external secret manager (Vault, SOPS, sealed-secrets).
+# IMPORTANT: Do NOT put real domains or secrets here.
+#            Pass via --set flags or external secret manager.
 # =============================================================
 
 global:
@@ -41,7 +41,7 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     cert-manager.io/cluster-issuer: letsencrypt-prod
-  host: vroute-5.abivin.com.vn
+  host: staging.example.com      # override: --set ingress.host="$STAGING_DOMAIN"
   tls:
     enabled: true
     secretName: vroute-staging-tls

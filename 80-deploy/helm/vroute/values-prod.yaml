@@ -1,18 +1,17 @@
 # =============================================================
 # vRoute Platform — Helm Values Override: PRODUCTION
-# Servers: 4-node cluster | Branch: main
-# Domains: vroute-5.abivin.com (primary)
-#          vroute-5.abivin.vn  (alias)
-#          vroute-5.abivin.sg  (alias)
+# Branch: main | Nodes: server cluster
 #
 # Usage:
 #   helm upgrade --install vroute ./80-deploy/helm/vroute \
 #     -f ./80-deploy/helm/vroute/values-prod.yaml \
+#     --set ingress.host="$PROD_DOMAIN" \
+#     --set ingress.extraHosts="{$PROD_DOMAIN_2,$PROD_DOMAIN_3}" \
 #     --set postgresql.password="$DB_PASS" \
 #     --set vkernel.env.JWT_SECRET="$JWT_SECRET"
 #
-# IMPORTANT: Do NOT put real secrets here — pass via --set or
-#            external secret manager (Vault, SOPS, sealed-secrets).
+# IMPORTANT: Do NOT put real domains or secrets here.
+#            Pass via --set flags or external secret manager.
 # =============================================================
 
 global:
@@ -66,12 +65,10 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     cert-manager.io/cluster-issuer: letsencrypt-prod
-  # Primary host (used by Helm ingress.yaml template)
-  host: vroute-5.abivin.com
-  # Additional hosts require multi-host ingress (see values below)
-  extraHosts:
-    - vroute-5.abivin.vn
-    - vroute-5.abivin.sg
+  # Primary host — override: --set ingress.host="$PROD_DOMAIN"
+  host: app.example.com
+  # Alias domains — override: --set ingress.extraHosts="{alias1.example.com}"
+  extraHosts: []
   tls:
     enabled: true
     secretName: vroute-prod-tls

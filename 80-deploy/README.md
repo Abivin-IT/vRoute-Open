@@ -2,23 +2,26 @@
 
 ## Environments
 
-| Env | Server | Branch | Domain | Method |
-|-----|--------|--------|--------|--------|
-| **Local** | localhost | any | `localhost:8080` | `make up` |
-| **Staging** | cotest2026 | `staging` | `vroute-5.abivin.com.vn` | `make up-staging` |
-| **Production** | 4-node cluster | `main` | `vroute-5.abivin.com` `.vn` `.sg` | Helm |
+| Env | Branch | Domain | Method |
+|-----|--------|--------|--------|
+| **Local** | any | `localhost:8080` | `make up` |
+| **Staging** | `staging` | `$STAGING_DOMAIN` | `make up-staging` |
+| **Production** | `main` | `$PROD_DOMAIN` (primary) + aliases | Helm |
+
+> Actual domains and server addresses are kept outside this repo.
+> Set them as environment variables or pass via `--set` at deploy time.
 
 ## Architecture
 
 ```
 Internet
   │
-  ├─ vroute-5.abivin.com.vn ──→ Nginx (cotest2026) ──→ 127.0.0.1:8080
-  │                              TLS termination        Docker Compose
+  ├─ $STAGING_DOMAIN ──→ Nginx (staging server) ──→ 127.0.0.1:8080
+  │                    TLS via Let's Encrypt      Docker Compose
   │
-  └─ vroute-5.abivin.com    ──→ K8s Ingress (nginx) ──→ vkernel Service
-     vroute-5.abivin.vn          cert-manager TLS        Helm chart
-     vroute-5.abivin.sg
+  └─ $PROD_DOMAIN    ──→ K8s Ingress (nginx) ──→ vkernel Service
+     $PROD_DOMAIN_2       cert-manager TLS       Helm chart (HA)
+     $PROD_DOMAIN_3
 ```
 
 ## Local Development
@@ -29,22 +32,22 @@ make test        # run all tests
 make down        # stop
 ```
 
-## Staging (cotest2026)
+## Staging
 
 Single-server deployment using Docker Compose with a staging overlay.
 
 ```bash
-# 1. SSH into cotest2026
-ssh cotest2026
+# 1. SSH into staging server
+ssh <staging-server>
 
 # 2. Clone & switch to staging branch
 git clone https://github.com/AbivinOrg/vRoute-Open.git
 cd vRoute-Open
 git checkout staging
 
-# 3. Configure secrets (NEVER commit .env)
+# 3. Configure (NEVER commit .env)
 cp .env.example .env
-# Edit .env:  DB_PASS, JWT_SECRET, OIDC keys
+# Edit .env: DB_PASS, JWT_SECRET, OIDC keys, OIDC_REDIRECT_BASE
 
 # 4. Start
 make up-staging
@@ -55,35 +58,40 @@ make up-staging
 
 ### Reverse Proxy (Nginx)
 
-On cotest2026, configure Nginx to terminate TLS and proxy to Docker:
+Configure Nginx on the staging server to terminate TLS and proxy to Docker:
 
 ```nginx
 server {
     listen 443 ssl http2;
-    server_name vroute-5.abivin.com.vn;
+    server_name staging.example.com;        # replace with $STAGING_DOMAIN
 
-    ssl_certificate     /etc/letsencrypt/live/vroute-5.abivin.com.vn/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/vroute-5.abivin.com.vn/privkey.pem;
+    ssl_certificate     /etc/letsencrypt/live/staging.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/staging.example.com/privkey.pem;
 
     location / {
         proxy_pass http://127.0.0.1:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
         # WebSocket support (for future live events)
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Upgrade    $http_upgrade;
         proxy_set_header Connection "upgrade";
     }
 }
 
 server {
     listen 80;
-    server_name vroute-5.abivin.com.vn;
+    server_name staging.example.com;
     return 301 https://$host$request_uri;
 }
+```
+
+Obtain TLS cert:
+```bash
+certbot --nginx -d <STAGING_DOMAIN>
 ```
 
 ## Production (Kubernetes / Helm)
@@ -94,6 +102,8 @@ server {
 # Install
 helm upgrade --install vroute ./80-deploy/helm/vroute \
   -f ./80-deploy/helm/vroute/values-prod.yaml \
+  --set ingress.host="$PROD_DOMAIN" \
+  --set "ingress.extraHosts={$PROD_DOMAIN_2,$PROD_DOMAIN_3}" \
   --set postgresql.password="$DB_PASS" \
   --set vkernel.env.JWT_SECRET="$JWT_SECRET" \
   -n vroute --create-namespace
@@ -105,6 +115,7 @@ kubectl -n vroute get ingress
 # Upgrade (after new image push)
 helm upgrade vroute ./80-deploy/helm/vroute \
   -f ./80-deploy/helm/vroute/values-prod.yaml \
+  --set ingress.host="$PROD_DOMAIN" \
   --set postgresql.password="$DB_PASS" \
   --set vkernel.env.JWT_SECRET="$JWT_SECRET" \
   -n vroute
@@ -113,34 +124,36 @@ helm upgrade vroute ./80-deploy/helm/vroute \
 ## CI/CD Pipeline
 
 ```
-push to staging  →  CI tests  →  push :staging images  →  deploy to cotest2026
-push to main     →  CI tests  →  push :latest images   →  deploy to prod cluster
+push to staging  →  CI tests  →  push :staging images  →  deploy to staging server
+push to main     →  CI tests  →  push :latest  images  →  deploy to prod cluster
 ```
 
-Image tags:
-- `ghcr.io/abivin/vkernel:staging` — from `staging` branch
-- `ghcr.io/abivin/vkernel:latest` — from `main` branch
-- `ghcr.io/abivin/vkernel:sha-abc1234` — every push (immutable)
+Image tags (GHCR):
+- `:staging`     — from `staging` branch
+- `:latest`      — from `main` branch
+- `:sha-abc1234` — every push (immutable, use for rollback)
 
 ## Secret Management
 
-| Secret | Where | How |
-|--------|-------|-----|
-| `DB_PASS` | .env (staging) / Helm `--set` (prod) | Never in repo |
-| `JWT_SECRET` | .env (staging) / Helm `--set` (prod) | min 32 chars |
-| OIDC keys | .env (staging) / K8s Secret (prod) | Per provider |
-| TLS certs | Let's Encrypt (auto via certbot/cert-manager) | Auto-renewed |
+| Secret | Staging | Production |
+|--------|---------|------------|
+| `DB_PASS` | `.env` file on server | `helm --set` / Vault |
+| `JWT_SECRET` | `.env` file (min 32 chars) | `helm --set` / Vault |
+| OIDC client keys | `.env` file | K8s Secret / SOPS |
+| `OIDC_REDIRECT_BASE` | `.env` file | `helm --set` |
+| TLS certificate | Certbot (auto-renew) | cert-manager (auto) |
+| Domain names | `.env` → `STAGING_DOMAIN` | `--set ingress.host` |
 
-> **IMPORTANT**: This is an open-source repo. Never commit secrets, `.env` files,
-> private keys, or server credentials. Use `--set` flags, env vars, or external
-> secret managers (Vault, SOPS, sealed-secrets).
+> **Rule**: This is an open-source repo. Never commit `.env`, secrets, IP
+> addresses, domain names, or server hostnames. Use `.env` files (gitignored),
+> `--set` flags, or an external secret manager (Vault, SOPS, sealed-secrets).
 
 ## File Layout
 
 ```
 80-deploy/
 ├── docker-compose.yml           # Base (local dev)
-├── docker-compose.staging.yml   # Staging overlay (cotest2026)
+├── docker-compose.staging.yml   # Staging overlay (single-server)
 ├── README.md                    # This file
 └── helm/vroute/
     ├── Chart.yaml

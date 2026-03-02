@@ -220,12 +220,13 @@ make down
 See [80-deploy/README.md](80-deploy/README.md) for full deployment guide (local / staging / production).
 
 ```bash
-# Staging (cotest2026 — vroute-5.abivin.com.vn)
+# Staging (single-server, branch: staging)
 make up-staging
 
-# Production (K8s — vroute-5.abivin.com + .vn + .sg)
+# Production (K8s cluster, branch: main)
 helm upgrade --install vroute ./80-deploy/helm/vroute \
   -f ./80-deploy/helm/vroute/values-prod.yaml \
+  --set ingress.host="$PROD_DOMAIN" \
   --set postgresql.password="$DB_PASS" \
   --set vkernel.env.JWT_SECRET="$JWT_SECRET" \
   -n vroute --create-namespace
