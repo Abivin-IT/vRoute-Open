@@ -110,11 +110,11 @@ vRoute-Open/
 # Start entire platform (PostgreSQL + Redis + vKernel + vStrategy + vFinacc)
 make up
 
-# Open vStrategy dashboard
-# http://localhost:8081
+# Open vStrategy dashboard (proxied via vKernel gateway)
+# http://localhost:8080/vstrategy/
 
-# Open vFinacc dashboard
-# http://localhost:8082
+# Open vFinacc dashboard (proxied via vKernel gateway)
+# http://localhost:8080/vfinacc/
 
 # vKernel APIs
 curl http://localhost:8080/api/v1/apps
@@ -152,17 +152,17 @@ curl http://localhost:8080/actuator/prometheus
 # gRPC (port 9090) — use grpcurl or a gRPC client
 # grpcurl -plaintext localhost:9090 kernel.KernelService/Ping
 
-# vStrategy APIs
-curl http://localhost:8081/api/v1/vstrategy/plans
-curl http://localhost:8081/api/v1/vstrategy/health
+# vStrategy APIs (all through vKernel gateway :8080)
+curl http://localhost:8080/api/v1/vstrategy/plans
+curl http://localhost:8080/api/v1/vstrategy/health
 
-# vFinacc APIs
-curl http://localhost:8082/api/v1/vfinacc/ledger
-curl http://localhost:8082/api/v1/vfinacc/transactions
-curl http://localhost:8082/api/v1/vfinacc/reconciliation
-curl http://localhost:8082/api/v1/vfinacc/cost-centers
-curl http://localhost:8082/api/v1/vfinacc/compliance
-curl http://localhost:8082/api/v1/vfinacc/health
+# vFinacc APIs (all through vKernel gateway :8080)
+curl http://localhost:8080/api/v1/vfinacc/ledger
+curl http://localhost:8080/api/v1/vfinacc/transactions
+curl http://localhost:8080/api/v1/vfinacc/reconciliation
+curl http://localhost:8080/api/v1/vfinacc/cost-centers
+curl http://localhost:8080/api/v1/vfinacc/compliance
+curl http://localhost:8080/api/v1/vfinacc/health
 
 # Run all tests
 make test

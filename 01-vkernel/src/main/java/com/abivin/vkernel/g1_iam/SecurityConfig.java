@@ -60,6 +60,9 @@ public class SecurityConfig {
                 .requestMatchers("/dashboard", "/dashboard/**").permitAll()
                 .requestMatchers("/css/**").permitAll()
                 .requestMatchers("/shell", "/shell/**").permitAll()
+                // Gateway proxy routes — vApps are internal-only; vKernel is the auth boundary
+                .requestMatchers("/api/v1/vstrategy/**", "/vstrategy/**").permitAll()
+                .requestMatchers("/api/v1/vfinacc/**", "/vfinacc/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);

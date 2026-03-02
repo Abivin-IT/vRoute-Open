@@ -59,12 +59,11 @@ services:
     restart: unless-stopped
 
   # --- vStrategy (S2P2R Module — Python/FastAPI) ---
+  # No host port exposed — access via vKernel gateway on :8080
   vstrategy:
     build:
       context: ../02-vstrategy
       dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
@@ -81,12 +80,11 @@ services:
     restart: unless-stopped
 
   # --- vFinacc (R2R Finance Module — Python/FastAPI) ---
+  # No host port exposed — access via vKernel gateway on :8080
   vfinacc:
     build:
       context: ../03-vfinacc
       dockerfile: Dockerfile
-    ports:
-      - "8082:8082"
     environment:
       DB_HOST: postgres
       DB_PORT: 5432

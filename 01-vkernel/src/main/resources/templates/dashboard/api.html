@@ -305,13 +305,25 @@
               <td><span class="badge-s badge-method">ALL</span></td>
               <td><code>/api/v1/vstrategy/**</code></td>
               <td><span class="badge-s badge-public">Proxy</span></td>
-              <td>&rarr; vstrategy:8081 (S2P2R API)</td>
+              <td>&rarr; vstrategy (internal :8081) — S2P2R API</td>
             </tr>
             <tr>
               <td><span class="badge-s badge-method">ALL</span></td>
               <td><code>/vstrategy/**</code></td>
               <td><span class="badge-s badge-public">Proxy</span></td>
-              <td>&rarr; vstrategy:8081 (Frontend)</td>
+              <td>&rarr; vstrategy (internal :8081) — Frontend UI</td>
+            </tr>
+            <tr>
+              <td><span class="badge-s badge-method">ALL</span></td>
+              <td><code>/api/v1/vfinacc/**</code></td>
+              <td><span class="badge-s badge-public">Proxy</span></td>
+              <td>&rarr; vfinacc (internal :8082) — R2R Finance API</td>
+            </tr>
+            <tr>
+              <td><span class="badge-s badge-method">ALL</span></td>
+              <td><code>/vfinacc/**</code></td>
+              <td><span class="badge-s badge-public">Proxy</span></td>
+              <td>&rarr; vfinacc (internal :8082) — Frontend UI</td>
             </tr>
             <tr>
               <td><span class="badge-s badge-method">GET</span></td>

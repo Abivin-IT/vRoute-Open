@@ -39,15 +39,15 @@ Think of it as an operating system for your company:
 | ------------ | ------------------------------------------- | ------------------ |
 | vKernel      | `http://localhost:8080`                     | Core OS dashboard  |
 | App Launcher | `http://localhost:8080/shell`               | Adaptive UI Shell  |
-| vStrategy    | `http://localhost:8081`                     | Strategy dashboard |
-| vFinacc      | `http://localhost:8082`                     | Finance dashboard  |
+| vStrategy    | `http://localhost:8080/vstrategy/`          | Strategy dashboard |
+| vFinacc      | `http://localhost:8080/vfinacc/`            | Finance dashboard  |
 | Prometheus   | `http://localhost:8080/actuator/prometheus` | Metrics endpoint   |
 
 ### Prerequisites
 
 - Docker Desktop (Windows/macOS) or Docker Engine (Linux)
 - At least 4 GB RAM allocated to Docker
-- Ports 8080–8082, 5432, 6379, 9090 free
+- Port 8080, 5432, 6379, 9090 free
 
 ### Start the Platform
 
@@ -149,7 +149,7 @@ curl http://localhost:8080/api/v1/events/log
 
 ### Dashboard
 
-Open `http://localhost:8081` for the visual dashboard showing:
+Open `http://localhost:8080/vstrategy/` for the visual dashboard showing:
 
 - **Balanced Scorecard** — Financial / Customer / Internal / Learning perspectives
 - **Alignment Tree** — VISION → BSC → OKR → INITIATIVE → TASK hierarchy
@@ -176,7 +176,7 @@ Open `http://localhost:8081` for the visual dashboard showing:
 
 ### Dashboard
 
-Open `http://localhost:8082` for the finance dashboard showing:
+Open `http://localhost:8080/vfinacc/` for the finance dashboard showing:
 
 - **Continuous Ledger** — Journal entries with DRAFT/POSTED/FLAGGED/REVERSED states
 - **Reconciliation Engine** — 3-way PO ↔ GRN ↔ Invoice matching with confidence scores
@@ -202,8 +202,8 @@ Open `http://localhost:8082` for the finance dashboard showing:
 ### Workflow Example: Post a Journal Entry
 
 ```bash
-# 1. Create a draft ledger entry
-curl -X POST http://localhost:8082/api/v1/vfinacc/ledger \
+# 1. Create a draft ledger entry (all via gateway :8080)
+curl -X POST http://localhost:8080/api/v1/vfinacc/ledger \
   -H "Content-Type: application/json" \
   -d '{
     "entry_number": "JE-2026-001",
@@ -217,10 +217,10 @@ curl -X POST http://localhost:8082/api/v1/vfinacc/ledger \
 # Returns: { "id": "...", "status": "DRAFT", ... }
 
 # 2. Post the entry (DRAFT → POSTED, irreversible)
-curl -X POST http://localhost:8082/api/v1/vfinacc/ledger/{id}/post
+curl -X POST http://localhost:8080/api/v1/vfinacc/ledger/{id}/post
 
 # 3. Run a compliance check
-curl -X POST http://localhost:8082/api/v1/vfinacc/compliance/check \
+curl -X POST http://localhost:8080/api/v1/vfinacc/compliance/check \
   -H "Content-Type: application/json" \
   -d '{"ledger_entry_id": "{id}", "check_type": "TAX_VAT"}'
 ```
@@ -260,7 +260,7 @@ curl -X DELETE http://localhost:8080/api/v1/apps/com.vcorp.vfinacc
 
 | Problem                             | Solution                                              |
 | ----------------------------------- | ----------------------------------------------------- |
-| Port 8080/8081/8082 already in use  | `make down` first, or change ports in `.env`          |
+| Port 8080 already in use            | `make down` first, or change ports in `.env`          |
 | Database connection refused         | Wait 10s after `make up` for PostgreSQL to be healthy |
 | vApp dashboard shows blank page     | Check `make logs` — may be Alembic migration error    |
 | JWT expired                         | Send refresh token to `/api/v1/auth/refresh`          |

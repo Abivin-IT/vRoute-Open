@@ -80,9 +80,9 @@ cp .env.example .env
 make up
 
 # 4. Verify
-curl http://localhost:8080/api/v1/apps       # should list installed apps
-curl http://localhost:8081/api/v1/vstrategy/health
-curl http://localhost:8082/api/v1/vfinacc/health
+curl http://localhost:8080/api/v1/apps                    # should list installed apps
+curl http://localhost:8080/api/v1/vstrategy/health        # via gateway
+curl http://localhost:8080/api/v1/vfinacc/health          # via gateway
 
 # 5. Run all tests
 make test
