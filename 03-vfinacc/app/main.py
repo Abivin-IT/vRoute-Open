@@ -30,8 +30,8 @@ async def lifespan(app: FastAPI):
     # Graceful shutdown — close gRPC channel
     try:
         kernel_client.close()
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("Kernel gRPC shutdown failed (non-fatal): %s", exc)
 
 
 app = FastAPI(

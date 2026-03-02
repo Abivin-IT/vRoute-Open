@@ -104,8 +104,9 @@ class KernelGrpcClient:
         if self._channel:
             try:
                 self._channel.close()  # type: ignore
-            except Exception:
-                pass
+            except Exception as exc:
+                # Best-effort cleanup: ignore close() errors but log for diagnostics.
+                log.debug("Ignoring exception while closing gRPC channel: %s", exc)
 
 
 # Module-level singleton — created once at import time.

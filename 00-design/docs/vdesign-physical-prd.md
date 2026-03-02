@@ -2,25 +2,27 @@
 
 ## Meta-Data
 
-| Field        | Value                                              |
-| ------------ | -------------------------------------------------- |
-| Document ID  | 0.0.1-C4-SPEC-CPO-vdesign-phys-prd                |
-| Version      | 1.0 (Physical Convergence)                         |
-| Status       | DRAFTING                                           |
-| Owner        | Head of R&D / Lab Manager                          |
-| Tech Stack   | IoT Sensors · RFID/QR Mgmt · Lab Equipment (LIMS) |
-| Policy Ref   | [I2S] Idea-to-Spec (Physical Verification Cycle)   |
+| Field       | Value                                             |
+| ----------- | ------------------------------------------------- |
+| Document ID | 0.0.1-C4-SPEC-CPO-vdesign-phys-prd                |
+| Version     | 1.0 (Physical Convergence)                        |
+| Status      | DRAFTING                                          |
+| Owner       | Head of R&D / Lab Manager                         |
+| Tech Stack  | IoT Sensors · RFID/QR Mgmt · Lab Equipment (LIMS) |
+| Policy Ref  | [I2S] Idea-to-Spec (Physical Verification Cycle)  |
 
 ---
 
 ## Table of Contents
 
-1. [Introduction](#1-introduction)
-2. [System Architecture Overview](#2-system-architecture-overview)
-3. [System Requirements](#3-system-requirements)
-4. [Non-Functional Requirements (NFRs)](#4-non-functional-requirements-nfrs)
-5. [Technical Specifications (Manifest Sample)](#5-technical-specifications-manifest-sample)
-6. [Acceptance Criteria (Gherkin)](#6-acceptance-criteria-gherkin)
+- [Meta-Data](#meta-data)
+- [Table of Contents](#table-of-contents)
+- [1. Introduction](#1-introduction)
+- [2. System Architecture Overview](#2-system-architecture-overview)
+- [3. System Requirements](#3-system-requirements)
+- [4. Non-Functional Requirements (NFRs)](#4-non-functional-requirements-nfrs)
+- [5. Technical Specifications (Manifest Sample)](#5-technical-specifications-manifest-sample)
+- [6. Acceptance Criteria (Gherkin)](#6-acceptance-criteria-gherkin)
 
 ---
 
@@ -37,10 +39,10 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 
 ### 1.3. Definitions
 
-| Term                   | Definition                                                                                                                                     |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Golden Sample**      | Mẫu vật lý hoàn hảo nhất đã được phê duyệt, dùng làm thước đo chuẩn để so sánh với sản phẩm sản xuất hàng loạt.                             |
-| **Physical Convergence** | Trạng thái khi kích thước và tính chất của vật thể thật khớp 100% với bản vẽ số (Digital Twin).                                             |
+| Term                     | Definition                                                                                                      |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| **Golden Sample**        | Mẫu vật lý hoàn hảo nhất đã được phê duyệt, dùng làm thước đo chuẩn để so sánh với sản phẩm sản xuất hàng loạt. |
+| **Physical Convergence** | Trạng thái khi kích thước và tính chất của vật thể thật khớp 100% với bản vẽ số (Digital Twin).                 |
 
 ### 1.4. Problem & Opportunity + User Personas & Key Journeys
 
@@ -59,11 +61,11 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 
 #### 1.4.2. User Personas (Role-based)
 
-| Persona                       | Vai trò                                                                        | Nỗi đau                                                                              |
-| ----------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
-| **Lab Manager / Material Eng** | Tiếp nhận vật liệu thô, vận hành máy kiểm thử, phê duyệt kết quả đo đạc      | Tốn thời gian tìm kiếm mẫu vật trong kho và nhập liệu thủ công kết quả đo vào Excel |
-| **Chief Architect**           | Người duy nhất có quyền phê duyệt và niêm phong "Golden Sample"                | Lo sợ mẫu chuẩn bị đánh tráo, biến dạng hoặc thất lạc                                |
-| **R&D Logistics Officer**     | Đóng gói (Handover Kit) và vận chuyển công cụ, khuôn mẫu sang nhà máy (vBuild) | Gửi thiếu đồ gá (Jig) hoặc gửi nhầm phiên bản khuôn cũ cho nhà máy                  |
+| Persona                        | Vai trò                                                                        | Nỗi đau                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| **Lab Manager / Material Eng** | Tiếp nhận vật liệu thô, vận hành máy kiểm thử, phê duyệt kết quả đo đạc        | Tốn thời gian tìm kiếm mẫu vật trong kho và nhập liệu thủ công kết quả đo vào Excel |
+| **Chief Architect**            | Người duy nhất có quyền phê duyệt và niêm phong "Golden Sample"                | Lo sợ mẫu chuẩn bị đánh tráo, biến dạng hoặc thất lạc                               |
+| **R&D Logistics Officer**      | Đóng gói (Handover Kit) và vận chuyển công cụ, khuôn mẫu sang nhà máy (vBuild) | Gửi thiếu đồ gá (Jig) hoặc gửi nhầm phiên bản khuôn cũ cho nhà máy                  |
 
 #### 1.4.3. Key User Journeys
 
@@ -117,13 +119,13 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 
 ### 3.1. Requirements Traceability Matrix
 
-| Req ID      | Feature Name        | Physical Objective                      | Verification Method     |
-| ----------- | ------------------- | --------------------------------------- | ----------------------- |
-| SyR-PHY-00  | Spec Master (DF)    | Lưu trữ mẫu chuẩn (Golden Sample)      | Metrology Scan (CMM)    |
-| SyR-PHY-01  | Idea Inbox          | Nhập kho mẫu vật liệu thô              | Visual Inspection       |
-| SyR-PHY-02  | Version Control     | Quản lý các đời Mock-up                 | RFID Tracking           |
-| SyR-PHY-03  | Feasibility Checker | Kiểm tra độ bền vật lý                  | Stress/Drop Testing     |
-| SyR-PHY-04  | Handover Kit        | Bàn giao khuôn/đồ gá                   | Physical Inventory Check |
+| Req ID     | Feature Name        | Physical Objective                | Verification Method      |
+| ---------- | ------------------- | --------------------------------- | ------------------------ |
+| SyR-PHY-00 | Spec Master (DF)    | Lưu trữ mẫu chuẩn (Golden Sample) | Metrology Scan (CMM)     |
+| SyR-PHY-01 | Idea Inbox          | Nhập kho mẫu vật liệu thô         | Visual Inspection        |
+| SyR-PHY-02 | Version Control     | Quản lý các đời Mock-up           | RFID Tracking            |
+| SyR-PHY-03 | Feasibility Checker | Kiểm tra độ bền vật lý            | Stress/Drop Testing      |
+| SyR-PHY-04 | Handover Kit        | Bàn giao khuôn/đồ gá              | Physical Inventory Check |
 
 ### 3.2. [DF] SyR-PHY-00 | Spec Master: Kho lưu trữ "Single Source of Truth" vật lý
 
@@ -304,10 +306,10 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 
 ### 4.3. NFR-PHY-02 | Performance (L-T-C & USE)
 
-| Metric     | Target                                                                                    |
-| ---------- | ----------------------------------------------------------------------------------------- |
-| Latency    | 3D vs CAD Overlay phản hồi < 2s. Đồng bộ cảm biến < 5s.                                 |
-| Throughput | Xử lý cùng lúc dữ liệu từ 50 cảm biến IoT + 5 luồng quét mẫu song song.               |
+| Metric     | Target                                                                                 |
+| ---------- | -------------------------------------------------------------------------------------- |
+| Latency    | 3D vs CAD Overlay phản hồi < 2s. Đồng bộ cảm biến < 5s.                                |
+| Throughput | Xử lý cùng lúc dữ liệu từ 50 cảm biến IoT + 5 luồng quét mẫu song song.                |
 | Capacity   | Lưu trữ lịch sử 100,000 thực thể vật lý (mẫu thử, khuôn, jig) mà không giảm hiệu năng. |
 
 ### 4.4. NFR-PHY-03 | Interaction Capability (E-E-S)
@@ -331,14 +333,20 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
     "name": "vDesign Physical Layer",
     "version": "1.0.0"
   },
-  "dependencies": [
-    "com.vcorp.vkernel:^1.0.0",
-    "com.vcorp.vdesign.digi:^1.0.0"
-  ],
+  "dependencies": ["com.vcorp.vkernel:^1.0.0", "com.vcorp.vdesign.digi:^1.0.0"],
   "permissions": [
-    { "code": "phys.spec.seal", "default_roles": ["CHIEF_ARCHITECT", "LAB_ADMIN"] },
-    { "code": "phys.inventory.audit", "default_roles": ["LAB_MGR", "LOGISTICS_OFFICER"] },
-    { "code": "phys.lab.execute", "default_roles": ["TEST_ENG", "MATERIAL_ENG"] }
+    {
+      "code": "phys.spec.seal",
+      "default_roles": ["CHIEF_ARCHITECT", "LAB_ADMIN"]
+    },
+    {
+      "code": "phys.inventory.audit",
+      "default_roles": ["LAB_MGR", "LOGISTICS_OFFICER"]
+    },
+    {
+      "code": "phys.lab.execute",
+      "default_roles": ["TEST_ENG", "MATERIAL_ENG"]
+    }
   ],
   "events": {
     "published": [
@@ -360,9 +368,9 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 
 ## 6. Acceptance Criteria (Gherkin)
 
-| Req ID      | Scenario                        | Gherkin Steps                                                                                                                                         |
-| ----------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SyR-PHY-00  | Xác nhận độ hội tụ vật lý       | **Given** mẫu thử CNC vừa được quét CMM. **When** hệ thống so sánh với Digital Twin. **Then** Convergence % hiển thị chính xác trong < 2s.           |
-| SyR-PHY-04  | Bàn giao Handover Kit           | **Given** 12 hạng mục đã niêm phong + QR. **When** bấm DISPATCH và xe tải rời kho. **Then** Event `TOOLING_DISPATCHED` gửi sang vBuild ngay lập tức. |
-| NFR-PHY-01  | Cảnh báo sai lệch Spec          | **Given** PROTO-V2.1-A đang duyệt. **When** trọng lượng lệch > 5% so với CAD. **Then** tự động phát `SPEC_DRIFT_DETECTED` tới Team Design.           |
-| NFR-PHY-00  | Bảo vệ niêm phong số            | **Given** Golden Sample đã SEALED. **When** user không có quyền truy cập Metrology Report. **Then** chặn + ghi nhật ký vi phạm an ninh.              |
+| Req ID     | Scenario                  | Gherkin Steps                                                                                                                                        |
+| ---------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SyR-PHY-00 | Xác nhận độ hội tụ vật lý | **Given** mẫu thử CNC vừa được quét CMM. **When** hệ thống so sánh với Digital Twin. **Then** Convergence % hiển thị chính xác trong < 2s.           |
+| SyR-PHY-04 | Bàn giao Handover Kit     | **Given** 12 hạng mục đã niêm phong + QR. **When** bấm DISPATCH và xe tải rời kho. **Then** Event `TOOLING_DISPATCHED` gửi sang vBuild ngay lập tức. |
+| NFR-PHY-01 | Cảnh báo sai lệch Spec    | **Given** PROTO-V2.1-A đang duyệt. **When** trọng lượng lệch > 5% so với CAD. **Then** tự động phát `SPEC_DRIFT_DETECTED` tới Team Design.           |
+| NFR-PHY-00 | Bảo vệ niêm phong số      | **Given** Golden Sample đã SEALED. **When** user không có quyền truy cập Metrology Report. **Then** chặn + ghi nhật ký vi phạm an ninh.              |

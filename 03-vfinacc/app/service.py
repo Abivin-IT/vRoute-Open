@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from decimal import Decimal, ROUND_HALF_UP
 
 from fastapi import HTTPException
-from sqlalchemy import select, update, func
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import LedgerEntry, Transaction, ReconciliationMatch, CostAllocation, ComplianceCheck
@@ -289,7 +289,6 @@ async def run_compliance_check(db: AsyncSession, data: ComplianceCheckRequest) -
     """Run a compliance check on a ledger entry."""
     entry = await get_ledger_entry(db, data.ledger_entry_id)
 
-    amount = float(entry.amount)
     check_type = data.check_type
 
     # Compliance rules
