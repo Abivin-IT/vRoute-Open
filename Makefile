@@ -53,16 +53,21 @@ define mvn
 	}
 endef
 
-# -- Python / pytest: prefer local -> Docker ----------------─
+# -- Python / pytest: prefer .venv -> local -> Docker -------
+# Priority: project .venv (has all deps) > Docker fallback.
+# System Python is skipped -- it may lack aiosqlite/asyncpg.
+VENV_PY_WIN  := $(ROOT)/.venv/Scripts/python
+VENV_PY_UNIX := $(ROOT)/.venv/bin/python3
+
 define pytest
 	@{ \
 	  cd $(VSTRATEGY_DIR); \
-	  if python3 -c "import pytest" 2>/dev/null; then \
-	    echo "  [pytest] local Python 3"; \
-	    python3 -m pytest tests/ -v --tb=short -q; \
-	  elif python -c "import pytest" 2>/dev/null; then \
-	    echo "  [pytest] local Python"; \
-	    python -m pytest tests/ -v --tb=short -q; \
+	  if [ -f "$(VENV_PY_WIN)" ]; then \
+	    echo "  [pytest] .venv (Windows)"; \
+	    "$(VENV_PY_WIN)" -m pytest tests/ -v --tb=short -q; \
+	  elif [ -f "$(VENV_PY_UNIX)" ]; then \
+	    echo "  [pytest] .venv (Unix)"; \
+	    "$(VENV_PY_UNIX)" -m pytest tests/ -v --tb=short -q; \
 	  else \
 	    echo "  [pytest] Docker (cached pip)"; \
 	    MSYS_NO_PATHCONV=1 docker run --rm \
