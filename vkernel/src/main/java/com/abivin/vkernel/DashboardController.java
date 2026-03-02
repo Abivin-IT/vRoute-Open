@@ -58,6 +58,15 @@ public class DashboardController {
     """;
 
     /**
+     * Root redirect — GET / → /dashboard
+     */
+    @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
+    public String root() {
+        return "<html><head><meta http-equiv=\"refresh\" content=\"0;url=/dashboard\"><title>vKernel</title></head>"
+             + "<body style='background:#0c0e14;color:#e4e4e7;font-family:sans-serif;padding:40px'>Redirecting to dashboard&hellip;</body></html>";
+    }
+
+    /**
      * Main dashboard — overview of vKernel system status.
      * GET /dashboard
      */
