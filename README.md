@@ -7,7 +7,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  TIER 1: Business Apps (vApps)                              │
-│  ♟️ vStrategy (Python) │ vFinance │ vSales │ vHR │ ...      │
+│  ♟️ vStrategy │ 💰 vFinacc │ vSales │ vHR │ ...             │
 ├─────────────────────────────────────────────────────────────┤
 │  TIER 2: vKernel Core OS (Java 21 / Spring Boot 3.3)       │
 │  ┌──────────┐ ┌─────────┐ ┌───────────┐ ┌──────────────┐   │
@@ -29,7 +29,7 @@
 | Layer    | Technology                                              | Status   |
 | -------- | ------------------------------------------------------- | -------- |
 | Core OS  | Java 21, Spring Boot 3.3, Spring Cloud GW               | **v1.3** |
-| vApps    | Python 3.12 / FastAPI (vStrategy), TS frontend          | **v1.3** |
+| vApps    | Python 3.12 / FastAPI (vStrategy, vFinacc), TS frontend  | **v1.4** |
 | Database | PostgreSQL 16, Flyway (kernel) + Alembic (vApps)        | **v1.3** |
 | Events   | Pub/Sub (Spring + DB), Redis (infra ready)              | **v1.3** |
 | IPC      | gRPC / protobuf3 (vKernel port 9090)                    | **v1.3** |
@@ -38,7 +38,7 @@
 | UI       | Adaptive Shell (micro-frontend host, iframe isolation)  | **v1.3** |
 | Metrics  | Micrometer + Prometheus (actuator endpoint)             | **v1.3** |
 | CI/CD    | GitHub Actions (test → docker-build → GHCR push)        | **v1.3** |
-| Tests    | JUnit 5 + MockMvc (vKernel), pytest-asyncio (vStrategy) | **v1.3** |
+| Tests    | JUnit 5 + MockMvc (vKernel), pytest-asyncio (vStrategy, vFinacc) | **v1.4** |
 | Deploy   | Docker Compose (dev), Helm chart (prod K8s)             | **v1.3** |
 
 ## Project Structure
@@ -46,7 +46,7 @@
 ```
 vRoute-Open/
 ├── Makefile                          # make {help|dev|up|down|test|clean}
-├── docker-compose.yml                # PostgreSQL + Redis + vKernel + vStrategy
+├── docker-compose.yml                # PostgreSQL + Redis + vKernel + vStrategy + vFinacc
 ├── .env                              # Dev environment vars
 ├── helm/                             # Kubernetes Helm chart
 │   └── vroute/
@@ -55,6 +55,7 @@ vRoute-Open/
 │       └── templates/                # deployment, service, secret, ingress, servicemonitor
 ├── docs/prd/
 │   ├── vstrategy-prd.md              # vStrategy PRD (synced from Google Docs)
+│   ├── vfinacc-prd.md                # vFinacc PRD (SyR-FIN-00 through SyR-FIN-04)
 │   └── vkernel-prd.md                # vKernel PRD (SyR-PLAT-00 through SyR-PLAT-05)
 ├── vkernel/                          # Core OS (Java 21 / Spring Boot 3.3.7)
 │   ├── pom.xml
@@ -126,6 +127,27 @@ vRoute-Open/
 │   ├── static/index.html             # Dashboard (dark theme)
 │   └── tests/
 │       └── test_strategy_api.py      # 19 integration tests (pytest-asyncio)
+├── vfinacc/                          # vApp: vFinance R2R Module (Python 3.12 / FastAPI)
+│   ├── requirements.txt              # Python dependencies
+│   ├── pyproject.toml                # Project config + pytest settings
+│   ├── Dockerfile                    # Multi-stage: Node (TS build) + Python runtime
+│   ├── manifest.json                 # vApp manifest (for App Engine)
+│   ├── alembic.ini                   # Alembic migration config
+│   ├── alembic/                      # Database migrations
+│   │   └── versions/
+│   │       └── 0001_vfinacc_init.py      # Schema + seed data (5 tables)
+│   ├── app/                          # FastAPI application
+│   │   ├── config.py                     # Pydantic Settings
+│   │   ├── database.py                   # Async SQLAlchemy engine
+│   │   ├── models.py                     # ORM: LedgerEntry, Transaction, ReconciliationMatch, CostAllocation, ComplianceCheck
+│   │   ├── schemas.py                    # Pydantic DTOs
+│   │   ├── service.py                    # Business logic (5 SyR-FIN requirements)
+│   │   ├── routes.py                     # REST API endpoints (/api/v1/vfinacc)
+│   │   ├── grpc_client.py                # KernelGrpcClient (IPC)
+│   │   └── main.py                       # FastAPI app entry
+│   ├── static/index.html             # Dashboard (dark theme)
+│   └── tests/
+│       └── test_finance_api.py       # 25 integration tests (pytest-asyncio)
 ├── CHANGELOG.md
 └── TODO.md
 ```
@@ -146,11 +168,14 @@ vRoute-Open/
 ## Quick Start
 
 ```bash
-# Start entire platform (PostgreSQL + Redis + vKernel + vStrategy)
+# Start entire platform (PostgreSQL + Redis + vKernel + vStrategy + vFinacc)
 make up
 
 # Open vStrategy dashboard
 # http://localhost:8081
+
+# Open vFinacc dashboard
+# http://localhost:8082
 
 # vKernel APIs
 curl http://localhost:8080/api/v1/apps
@@ -191,6 +216,14 @@ curl http://localhost:8080/actuator/prometheus
 # vStrategy APIs
 curl http://localhost:8081/api/v1/vstrategy/plans
 curl http://localhost:8081/api/v1/vstrategy/health
+
+# vFinacc APIs
+curl http://localhost:8082/api/v1/vfinacc/ledger
+curl http://localhost:8082/api/v1/vfinacc/transactions
+curl http://localhost:8082/api/v1/vfinacc/reconciliation
+curl http://localhost:8082/api/v1/vfinacc/cost-centers
+curl http://localhost:8082/api/v1/vfinacc/compliance
+curl http://localhost:8082/api/v1/vfinacc/health
 
 # Run all tests
 make test

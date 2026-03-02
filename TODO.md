@@ -76,3 +76,19 @@
 - [x] Helm chart cho K8s deployment — `helm/vroute/` (Chart.yaml, values.yaml, deployment/service/secret/ingress/servicemonitor templates)
 - [x] CI/CD pipeline (GitHub Actions) — `.github/workflows/ci.yml`: test-vkernel → test-vstrategy → docker-build → push GHCR
 - [x] Test optimization — `make test` uses local Maven/Python when available (< 1s/test), Docker fallback with volume cache
+
+## Step 8: Second vApp — vFinacc (SyR-FIN-00 through SyR-FIN-04) ✅ DONE
+
+- [x] PRD & design sheets: `docs/prd/vfinacc-prd.md`, `sheets/vfinacc/{api-contract,acceptance-criteria,data-model}.md`
+- [x] Scaffold `vfinacc/` — Python 3.12 / FastAPI (port 8082, shared PostgreSQL DB)
+- [x] 5 ORM models: `LedgerEntry` (DRAFT/POSTED), `Transaction` (RAW/MATCHED/RECONCILED), `ReconciliationMatch` (3-way), `CostAllocation` (GROW/RUN/TRANSFORM/GIVE), `ComplianceCheck` (VAT/CIT/THRESHOLD)
+- [x] Business logic service.py (~290 lines): Continuous Ledger, Transaction Ingestor, 3-way Reconciliation Engine, Cost Center 68/27/5/0.1 allocation, Tax & Compliance Guard
+- [x] Full REST API: 16 endpoints at `/api/v1/vfinacc` (Ledger, Transactions, Reconciliation, Cost Centers, Compliance, Health)
+- [x] `manifest.json` — 4 permissions (finance.*), 4 published events, 2 subscribed events, depends on vstrategy
+- [x] Alembic migration `0001_vfinacc_init.py` — 5 tables + indexes + seed data
+- [x] vKernel `V8__register_vfinacc.sql` — Auto-register in app registry + inject 4 permissions
+- [x] Gateway routes: `/api/v1/vfinacc/**` + `/vfinacc/**` → vfinacc:8082
+- [x] Dark-themed HTML dashboard (`static/index.html`) — Ledger, Reconciliation, Cost Centers, Compliance cards
+- [x] 25 integration tests (pytest-asyncio + httpx + aiosqlite) — all domains covered
+- [x] `Dockerfile` — 2-stage: Node 20-alpine + Python 3.12-slim, port 8082
+- [x] Added to `docker-compose.yml`, `Makefile` (`test-finacc` target), `README.md`

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vFinacc — R2R Finance Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #c9d1d9; }
+        .header { background: #161b22; padding: 16px 24px; border-bottom: 1px solid #30363d; display: flex; align-items: center; gap: 12px; }
+        .header h1 { font-size: 20px; color: #58a6ff; }
+        .header .badge { background: #238636; color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; padding: 24px; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; }
+        .card h2 { font-size: 14px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+        .card h3 { font-size: 16px; color: #58a6ff; margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 8px; color: #8b949e; border-bottom: 1px solid #30363d; }
+        td { padding: 8px; border-bottom: 1px solid #21262d; }
+        .status-posted { color: #3fb950; } .status-draft { color: #d29922; } .status-flagged { color: #f85149; }
+        .status-pass { color: #3fb950; } .status-flag { color: #d29922; } .status-fail { color: #f85149; }
+        .bar-container { background: #21262d; border-radius: 4px; height: 20px; margin: 4px 0; }
+        .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+        .bar-grow { background: #3fb950; } .bar-run { background: #58a6ff; }
+        .bar-transform { background: #bc8cff; } .bar-give { background: #d29922; }
+        .metric { display: inline-block; text-align: center; padding: 8px 16px; }
+        .metric .value { font-size: 28px; font-weight: bold; color: #f0f6fc; }
+        .metric .label { font-size: 11px; color: #8b949e; text-transform: uppercase; }
+        #loading { text-align: center; padding: 40px; color: #8b949e; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span style="font-size: 24px;">💰</span>
+        <h1>vFinacc — R2R Finance</h1>
+        <span class="badge">v1.0.0</span>
+    </div>
+    <div id="loading">Loading dashboard…</div>
+    <div class="grid" id="dashboard" style="display: none;">
+        <!-- Ledger Summary -->
+        <div class="card" id="card-ledger">
+            <h2>📒 Continuous Ledger (SyR-FIN-00)</h2>
+            <div id="ledger-metrics"></div>
+            <table id="ledger-table"><thead><tr><th>Entry #</th><th>Description</th><th>Amount</th><th>Status</th></tr></thead><tbody></tbody></table>
+        </div>
+        <!-- Reconciliation -->
+        <div class="card" id="card-recon">
+            <h2>🔗 Reconciliation Engine (SyR-FIN-02)</h2>
+            <div id="recon-metrics"></div>
+            <table id="recon-table"><thead><tr><th>PO</th><th>GRN</th><th>Invoice</th><th>Match</th><th>Confidence</th></tr></thead><tbody></tbody></table>
+        </div>
+        <!-- Cost Centers -->
+        <div class="card" id="card-cost">
+            <h2>📊 Cost Center Allocation (SyR-FIN-03)</h2>
+            <div id="cost-bars"></div>
+        </div>
+        <!-- Compliance -->
+        <div class="card" id="card-compliance">
+            <h2>🛡️ Tax & Compliance (SyR-FIN-04)</h2>
+            <div id="compliance-metrics"></div>
+            <table id="compliance-table"><thead><tr><th>Type</th><th>Result</th><th>Tax Rate</th><th>Notes</th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+    <script>
+        const API = '/api/v1/vfinacc';
+        async function load() {
+            try {
+                const [ledgerR, reconR, reconSumR, costSumR, complR, complSumR] = await Promise.all([
+                    fetch(`${API}/ledger`).then(r => r.json()),
+                    fetch(`${API}/reconciliation`).then(r => r.json()),
+                    fetch(`${API}/reconciliation/summary`).then(r => r.json()),
+                    fetch(`${API}/cost-centers/summary`).then(r => r.json()),
+                    fetch(`${API}/compliance`).then(r => r.json()),
+                    fetch(`${API}/compliance/summary`).then(r => r.json()),
+                ]);
+                // Ledger
+                const posted = ledgerR.entries.filter(e => e.status === 'POSTED').length;
+                const draft = ledgerR.entries.filter(e => e.status === 'DRAFT').length;
+                document.getElementById('ledger-metrics').innerHTML = `
+                    <div class="metric"><div class="value">${ledgerR.count}</div><div class="label">Total Entries</div></div>
+                    <div class="metric"><div class="value status-posted">${posted}</div><div class="label">Posted</div></div>
+                    <div class="metric"><div class="value status-draft">${draft}</div><div class="label">Draft</div></div>`;
+                const ltb = document.querySelector('#ledger-table tbody');
+                ledgerR.entries.slice(0, 10).forEach(e => {
+                    ltb.innerHTML += `<tr><td>${e.entry_number}</td><td>${e.description}</td><td>${Number(e.amount).toLocaleString()} ${e.currency}</td><td class="status-${e.status.toLowerCase()}">${e.status}</td></tr>`;
+                });
+                // Reconciliation
+                document.getElementById('recon-metrics').innerHTML = `
+                    <div class="metric"><div class="value">${reconSumR.total_matches}</div><div class="label">Total</div></div>
+                    <div class="metric"><div class="value status-posted">${reconSumR.full_matches}</div><div class="label">Full Match</div></div>
+                    <div class="metric"><div class="value status-draft">${reconSumR.partial_matches}</div><div class="label">Partial</div></div>
+                    <div class="metric"><div class="value">${reconSumR.auto_match_rate_pct}%</div><div class="label">Auto Rate</div></div>`;
+                const rtb = document.querySelector('#recon-table tbody');
+                reconR.matches.forEach(m => {
+                    rtb.innerHTML += `<tr><td>${m.po_reference || '-'}</td><td>${m.grn_reference || '-'}</td><td>${m.invoice_reference || '-'}</td><td>${m.match_type}</td><td>${m.confidence_pct}%</td></tr>`;
+                });
+                // Cost Centers
+                const cb = document.getElementById('cost-bars');
+                let costHtml = `<div style="margin-bottom:8px"><span class="metric"><div class="value">${costSumR.valid ? '✅' : '⚠️'}</div><div class="label">${costSumR.valid ? 'On Track' : 'Violation'}</div></span>
+                    <span class="metric"><div class="value">$${(costSumR.total_budget/1000).toFixed(0)}K</div><div class="label">Total Budget</div></span></div>`;
+                costSumR.breakdown.forEach(b => {
+                    const cls = b.category.toLowerCase();
+                    costHtml += `<div style="margin:8px 0"><strong>${b.category}</strong> — Target: ${b.target_pct}% | Actual: ${b.actual_pct}% <span class="status-${b.status === 'ON_TRACK' ? 'pass' : 'flag'}">[${b.status}]</span>
+                        <div class="bar-container"><div class="bar-fill bar-${cls}" style="width:${Math.min(b.actual_pct, 100)}%"></div></div></div>`;
+                });
+                cb.innerHTML = costHtml;
+                // Compliance
+                document.getElementById('compliance-metrics').innerHTML = `
+                    <div class="metric"><div class="value">${complSumR.total_checks}</div><div class="label">Total</div></div>
+                    <div class="metric"><div class="value status-pass">${complSumR.passed}</div><div class="label">Passed</div></div>
+                    <div class="metric"><div class="value status-flag">${complSumR.flagged}</div><div class="label">Flagged</div></div>
+                    <div class="metric"><div class="value status-fail">${complSumR.failed}</div><div class="label">Failed</div></div>
+                    <div class="metric"><div class="value">${complSumR.pass_rate_pct}%</div><div class="label">Pass Rate</div></div>`;
+                const ctb = document.querySelector('#compliance-table tbody');
+                complR.checks.slice(0, 10).forEach(c => {
+                    ctb.innerHTML += `<tr><td>${c.check_type}</td><td class="status-${c.result.toLowerCase()}">${c.result}</td><td>${c.tax_rate_pct ? c.tax_rate_pct + '%' : '-'}</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis">${c.notes || ''}</td></tr>`;
+                });
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'grid';
+            } catch (err) {
+                document.getElementById('loading').innerHTML = `<p style="color:#f85149">Failed to load: ${err.message}</p><p style="margin-top:8px">Ensure vFinacc API is running on port 8082.</p>`;
+            }
+        }
+        load();
+    </script>
+</body>
+</html>

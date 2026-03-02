@@ -80,5 +80,27 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # --- vFinacc (R2R Finance Module — Python/FastAPI) ---
+  vfinacc:
+    build:
+      context: ./vfinacc
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-vkernel}
+      DB_USER: ${DB_USER:-vkernel}
+      DB_PASS: ${DB_PASS:-vkernel}
+      DATABASE_URL: postgresql://${DB_USER:-vkernel}:${DB_PASS:-vkernel}@postgres:5432/${DB_NAME:-vkernel}
+      KERNEL_URL: http://vkernel:8080
+      KERNEL_GRPC_HOST: vkernel
+      KERNEL_GRPC_PORT: 9090
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   pgdata:

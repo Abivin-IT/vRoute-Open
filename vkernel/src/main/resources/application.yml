@@ -49,6 +49,15 @@ spring:
             uri: ${VSTRATEGY_URL:http://vstrategy:8081}
             predicates:
               - Path=/vstrategy/**
+          # --- vFinacc routes ---
+          - id: vfinacc-route
+            uri: ${VFINACC_URL:http://vfinacc:8082}
+            predicates:
+              - Path=/api/v1/vfinacc/**
+          - id: vfinacc-ui
+            uri: ${VFINACC_URL:http://vfinacc:8082}
+            predicates:
+              - Path=/vfinacc/**
           # Template: duplicate for each additional vApp
           # - id: vfinance
           #   uri: http://vfinance:9001

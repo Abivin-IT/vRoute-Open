@@ -9,9 +9,10 @@
 #   make up             -> Start platform in background
 #   make down           -> Stop platform
 #   make logs           -> Tail service logs
-#   make test           -> Run all tests (vKernel + vStrategy)
+#   make test           -> Run all tests (vKernel + vStrategy + vFinacc)
 #   make test-kernel    -> Run only vKernel tests (JUnit 5)
 #   make test-strategy  -> Run only vStrategy tests (pytest)
+#   make test-finacc    -> Run only vFinacc tests (pytest)
 #   make clean          -> Delete build artifacts
 #   make clean-docker   -> Wipe Docker volumes & layers
 # ===========================================================
@@ -23,6 +24,7 @@ SHELL        := /bin/bash
 ROOT          := $(CURDIR)
 VKERNEL_DIR   := $(ROOT)/vkernel
 VSTRATEGY_DIR := $(ROOT)/vstrategy
+VFINACC_DIR   := $(ROOT)/vfinacc
 PROTO_SRC     := $(VKERNEL_DIR)/src/main/proto
 PROTO_DST     := $(VSTRATEGY_DIR)/protos
 
@@ -61,7 +63,7 @@ VENV_PY_UNIX := $(ROOT)/.venv/bin/python3
 
 define pytest
 	@{ \
-	  cd $(VSTRATEGY_DIR); \
+	  cd $(1); \
 	  if [ -f "$(VENV_PY_WIN)" ]; then \
 	    echo "  [pytest] .venv (Windows)"; \
 	    "$(VENV_PY_WIN)" -m pytest tests/ -v --tb=short -q; \
@@ -71,7 +73,7 @@ define pytest
 	  else \
 	    echo "  [pytest] Docker (cached pip)"; \
 	    MSYS_NO_PATHCONV=1 docker run --rm \
-	      -v "$(call docker_vol,$(VSTRATEGY_DIR)):/app" \
+	      -v "$(call docker_vol,$(1)):/app" \
 	      -v vroute-pip-cache:/root/.cache/pip \
 	      -w /app \
 	      python:3.12-slim \
@@ -85,7 +87,7 @@ endef
 # .PHONY - all targets are abstract (no output files)
 # ===========================================================
 .PHONY: help proto build dev up down logs ps \
-        test test-kernel test-strategy test-platform \
+        test test-kernel test-strategy test-finacc test-platform \
         clean clean-docker
 
 # ===========================================================
@@ -189,7 +191,7 @@ ps: ## Show status of all running containers
 # Maven cache: Docker volume vroute-maven-cache
 # Pip cache:   Docker volume vroute-pip-cache
 # ===========================================================
-test: test-kernel test-strategy ## Run ALL tests (vKernel + vStrategy)
+test: test-kernel test-strategy test-finacc ## Run ALL tests (vKernel + vStrategy + vFinacc)
 	@echo ""
 	@echo "  OK All tests passed"
 
@@ -202,8 +204,14 @@ test-kernel: ## Run vKernel tests only (JUnit 5 / Spring Boot / MockMvc)
 test-strategy: ## Run vStrategy tests only (pytest)
 	@echo ""
 	@echo "==== Testing vStrategy =============================="
-	$(call pytest)
+	$(call pytest,$(VSTRATEGY_DIR))
 	@echo "  OK vStrategy: PASSED"
+
+test-finacc: ## Run vFinacc tests only (pytest)
+	@echo ""
+	@echo "==== Testing vFinacc ================================"
+	$(call pytest,$(VFINACC_DIR))
+	@echo "  OK vFinacc: PASSED"
 
 test-platform: ## Test platform core only — vKernel (JUnit 5 / Spring Boot)
 	@echo ""
@@ -256,6 +264,9 @@ clean: ## Remove Maven target/, Python __pycache__ and generated *_pb2.py
 	@find $(VSTRATEGY_DIR) -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	@find $(VSTRATEGY_DIR) -name "*.pyc"        -delete 2>/dev/null || true
 	@find $(VSTRATEGY_DIR) -name "*_pb2*.py"    -delete 2>/dev/null || true
+	@find $(VFINACC_DIR) -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	@find $(VFINACC_DIR) -name "*.pyc"        -delete 2>/dev/null || true
+	@find $(VFINACC_DIR) -name "*_pb2*.py"    -delete 2>/dev/null || true
 	@echo "  OK Build artifacts removed"
 
 clean-docker: ## Remove containers, volumes (pgdata, caches) and dangling images
