@@ -128,9 +128,9 @@ public class DashboardController {
                 <div class="grid">
                     <div class="card">
                         <h2>Quick Links</h2>
-                        <p style="margin-bottom:8px"><a class="link" href="/actuator/health">Health Check</a> — <code>GET /actuator/health</code></p>
-                        <p style="margin-bottom:8px"><a class="link" href="/actuator/prometheus">Prometheus Metrics</a> — <code>GET /actuator/prometheus</code></p>
-                        <p style="margin-bottom:8px"><a class="link" href="/actuator/info">Info</a> — <code>GET /actuator/info</code></p>
+                        <p style="margin-bottom:8px"><a class="link" href="/dashboard/health">Health Check</a> — <code>GET /actuator/health</code></p>
+                        <p style="margin-bottom:8px"><a class="link" href="/dashboard/prometheus">Prometheus Metrics</a> — <code>GET /actuator/prometheus</code></p>
+                        <p style="margin-bottom:8px"><a class="link" href="/dashboard/info">App Info</a> — <code>GET /actuator/info</code></p>
                         <p style="margin-bottom:8px"><a class="link" href="/dashboard/api">API Explorer</a> — All vKernel endpoints</p>
                     </div>
                     <div class="card">
@@ -337,12 +337,12 @@ public class DashboardController {
                     <div class="card">
                         <h2>Prometheus</h2>
                         <p style="font-size:13px;margin-bottom:12px">Scrape endpoint for Prometheus/Grafana integration.</p>
-                        <p><a class="link" href="/actuator/prometheus" target="_blank">/actuator/prometheus</a></p>
+                        <p><a class="link" href="/dashboard/prometheus">View HTML</a> &nbsp;&middot;&nbsp; <a class="link" href="/actuator/prometheus" target="_blank">Raw</a></p>
                     </div>
                     <div class="card">
                         <h2>Health</h2>
                         <p style="font-size:13px;margin-bottom:12px">Comprehensive health check with component details.</p>
-                        <p><a class="link" href="/actuator/health" target="_blank">/actuator/health</a></p>
+                        <p><a class="link" href="/dashboard/health">View HTML</a> &nbsp;&middot;&nbsp; <a class="link" href="/actuator/health" target="_blank">Raw</a></p>
                     </div>
                     <div class="card">
                         <h2>Micrometer Metrics</h2>
@@ -352,7 +352,7 @@ public class DashboardController {
                     <div class="card">
                         <h2>Application Info</h2>
                         <p style="font-size:13px;margin-bottom:12px">Build info, environment details.</p>
-                        <p><a class="link" href="/actuator/info" target="_blank">/actuator/info</a></p>
+                        <p><a class="link" href="/dashboard/info">View HTML</a> &nbsp;&middot;&nbsp; <a class="link" href="/actuator/info" target="_blank">Raw</a></p>
                     </div>
                 </div>
                 <div class="card full">
@@ -380,6 +380,207 @@ public class DashboardController {
             }
             loadMetrics();
             setInterval(loadMetrics,5000);
+            </script>
+            </body></html>
+            """.formatted(CSS);
+    }
+
+    /**
+     * Health Check viewer — styled HTML wrapper for /actuator/health.
+     * GET /dashboard/health
+     */
+    @GetMapping(value = "/dashboard/health", produces = MediaType.TEXT_HTML_VALUE)
+    public String healthPage() {
+        return """
+            <!doctype html><html lang="en"><head><meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>vKernel &#8212; Health Check</title>
+            <style>%s
+            .status-UP{color:var(--green)}.status-DOWN{color:var(--red)}.status-UNKNOWN{color:var(--yellow)}.status-OUT_OF_SERVICE{color:var(--red)}
+            .comp-card{background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:8px}
+            .comp-name{font-size:13px;font-weight:600;margin-bottom:6px}
+            .comp-detail{font-size:12px;color:var(--dim);font-family:monospace;white-space:pre-wrap;line-height:1.6}
+            </style></head><body>
+            <div class="header">
+                <h1>&#9881; vKernel</h1>
+                <span class="badge">Core OS</span>
+                <nav>
+                    <a href="/dashboard">Dashboard</a>
+                    <a href="/dashboard/api">API Explorer</a>
+                    <a href="/dashboard/events">Event Bus</a>
+                    <a href="/dashboard/metrics">Metrics</a>
+                </nav>
+            </div>
+            <div class="container">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                    <h2 style="font-size:16px;font-weight:600">Health Check</h2>
+                    <span style="font-size:12px;color:var(--dim)">Auto-refreshes every 10s</span>
+                    <a class="link" href="/actuator/health" target="_blank" style="margin-left:auto;font-size:12px">Raw JSON</a>
+                </div>
+                <div id="root"><p style="color:var(--dim)">Loading&hellip;</p></div>
+            </div>
+            <div class="footer">vKernel Core OS &#8212; Corp as Code Platform &copy; Abivin 2025</div>
+            <script>
+            async function load(){
+                try{
+                    const r=await fetch('/actuator/health');
+                    const d=await r.json();
+                    const sc='status-'+(d.status||'UNKNOWN');
+                    let html='<div class="grid" style="margin-bottom:16px">'
+                        +'<div class="card"><h2>Overall Status</h2>'
+                        +'<div class="stat '+sc+'">'+d.status+'</div></div></div>'
+                        +'<div class="card full"><h2>Components</h2>';
+                    const comps=d.components||{};
+                    if(Object.keys(comps).length===0){
+                        html+='<p style="color:var(--dim);padding:8px">No components reported.</p>';
+                    }else{
+                        for(const[k,v]of Object.entries(comps)){
+                            const cs='status-'+(v.status||'UNKNOWN');
+                            html+='<div class="comp-card">'
+                                +'<div class="comp-name"><span class="'+cs+'">&#9679; '+v.status+'</span>  <strong>'+k+'</strong></div>'
+                                +(v.details?'<div class="comp-detail">'+JSON.stringify(v.details,null,2)+'</div>':'')+'</div>';
+                        }
+                    }
+                    html+='</div>';
+                    document.getElementById('root').innerHTML=html;
+                }catch(e){
+                    document.getElementById('root').innerHTML='<div class="card full"><p style="color:var(--red)">Error loading health data: '+e.message+'</p></div>';
+                }
+            }
+            load();setInterval(load,10000);
+            </script>
+            </body></html>
+            """.formatted(CSS);
+    }
+
+    /**
+     * Prometheus metrics viewer — filterable HTML wrapper for /actuator/prometheus.
+     * GET /dashboard/prometheus
+     */
+    @GetMapping(value = "/dashboard/prometheus", produces = MediaType.TEXT_HTML_VALUE)
+    public String prometheusPage() {
+        return """
+            <!doctype html><html lang="en"><head><meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>vKernel &#8212; Prometheus Metrics</title>
+            <style>%s
+            #filter{background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:6px;width:100%%;font-size:13px}
+            #raw{font-family:monospace;font-size:12px;white-space:pre;max-height:70vh;overflow-y:auto;background:rgba(0,0,0,.3);padding:16px;border-radius:8px;line-height:1.7}
+            .comment{color:var(--dim)}.metric{color:var(--blue)}
+            </style></head><body>
+            <div class="header">
+                <h1>&#9881; vKernel</h1>
+                <span class="badge">Core OS</span>
+                <nav>
+                    <a href="/dashboard">Dashboard</a>
+                    <a href="/dashboard/api">API Explorer</a>
+                    <a href="/dashboard/events">Event Bus</a>
+                    <a href="/dashboard/metrics">Metrics</a>
+                </nav>
+            </div>
+            <div class="container">
+                <div class="card full">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+                        <h2 style="font-size:16px;font-weight:600;margin:0">Prometheus Scrape Output</h2>
+                        <span id="count" style="font-size:12px;color:var(--dim)"></span>
+                        <a class="link" href="/actuator/prometheus" target="_blank" style="margin-left:auto;font-size:12px">Raw</a>
+                    </div>
+                    <input id="filter" type="text" placeholder="Filter by metric name..." style="margin-bottom:12px">
+                    <div id="raw">Loading&hellip;</div>
+                </div>
+            </div>
+            <div class="footer">vKernel Core OS &#8212; Corp as Code Platform &copy; Abivin 2025</div>
+            <script>
+            let allLines=[];
+            function render(){
+                const q=document.getElementById('filter').value.toLowerCase();
+                const show=q?allLines.filter(l=>l.startsWith('#')||l.toLowerCase().includes(q)):allLines;
+                document.getElementById('raw').textContent=show.join('\\n');
+                document.getElementById('count').textContent=show.filter(l=>l&&!l.startsWith('#')).length+' series'+(q?' (filtered)':'');
+            }
+            document.getElementById('filter').addEventListener('input',render);
+            async function load(){
+                try{
+                    const r=await fetch('/actuator/prometheus');
+                    const t=await r.text();
+                    allLines=t.split('\\n');
+                    render();
+                }catch(e){
+                    document.getElementById('raw').textContent='Error: '+e.message;
+                }
+            }
+            load();setInterval(load,10000);
+            </script>
+            </body></html>
+            """.formatted(CSS);
+    }
+
+    /**
+     * Application info viewer — HTML wrapper for /actuator/info.
+     * GET /dashboard/info
+     */
+    @GetMapping(value = "/dashboard/info", produces = MediaType.TEXT_HTML_VALUE)
+    public String infoPage() {
+        return """
+            <!doctype html><html lang="en"><head><meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>vKernel &#8212; Application Info</title>
+            <style>%s
+            .info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;gap:24px}
+            .info-key{color:var(--dim);font-weight:500;flex-shrink:0}.info-val{font-family:monospace;color:var(--text);word-break:break-all}
+            </style></head><body>
+            <div class="header">
+                <h1>&#9881; vKernel</h1>
+                <span class="badge">Core OS</span>
+                <nav>
+                    <a href="/dashboard">Dashboard</a>
+                    <a href="/dashboard/api">API Explorer</a>
+                    <a href="/dashboard/events">Event Bus</a>
+                    <a href="/dashboard/metrics">Metrics</a>
+                </nav>
+            </div>
+            <div class="container">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                    <h2 style="font-size:16px;font-weight:600">Application Info</h2>
+                    <a class="link" href="/actuator/info" target="_blank" style="margin-left:auto;font-size:12px">Raw JSON</a>
+                </div>
+                <div id="root"><p style="color:var(--dim)">Loading&hellip;</p></div>
+            </div>
+            <div class="footer">vKernel Core OS &#8212; Corp as Code Platform &copy; Abivin 2025</div>
+            <script>
+            function flatRows(obj,prefix){
+                let html='';
+                for(const[k,v]of Object.entries(obj||{})){
+                    const key=prefix?prefix+'.'+k:k;
+                    if(v&&typeof v==='object'&&!Array.isArray(v)){
+                        html+=flatRows(v,key);
+                    }else{
+                        html+='<div class="info-row"><span class="info-key">'+key+'</span><span class="info-val">'+(Array.isArray(v)?v.join(', '):String(v))+'</span></div>';
+                    }
+                }
+                return html;
+            }
+            async function load(){
+                try{
+                    const r=await fetch('/actuator/info');
+                    const d=await r.json();
+                    const keys=Object.keys(d);
+                    let html='<div class="grid">';
+                    if(keys.length===0){
+                        html+='<div class="card full"><p style="color:var(--dim)">No application info configured.<br>'
+                            +'Add <code>management.info.env.enabled=true</code> and <code>info.*</code> properties in <code>application.yml</code>.</p></div>';
+                    }else{
+                        for(const k of keys){
+                            html+='<div class="card"><h2>'+k+'</h2>'+flatRows(d[k],'')+'</div>';
+                        }
+                    }
+                    html+='</div>';
+                    document.getElementById('root').innerHTML=html;
+                }catch(e){
+                    document.getElementById('root').innerHTML='<div class="card full"><p style="color:var(--red)">Error loading info: '+e.message+'</p></div>';
+                }
+            }
+            load();
             </script>
             </body></html>
             """.formatted(CSS);
