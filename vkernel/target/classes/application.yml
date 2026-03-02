@@ -1,0 +1,105 @@
+# =============================================================
+# vKernel — Core OS Configuration
+# GovernanceID: 0.0.0-CONFIG
+# =============================================================
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: vkernel
+
+  # --- PostgreSQL ---
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:vkernel}
+    username: ${DB_USER:vkernel}
+    password: ${DB_PASS:vkernel}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+
+  jpa:
+    hibernate:
+      ddl-auto: none # Flyway owns the schema — Hibernate must not validate/alter
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+
+  # --- Flyway (schema migrations) ---
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0 # MUST be 0 so V1 runs on fresh DBs (default is 1 which skips V1)
+
+  # --- Spring Cloud Gateway MVC routes ---
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          # --- vApp routes (auto-configured per installed vApp) ---
+          - id: vstrategy-route
+            uri: ${VSTRATEGY_URL:http://vstrategy:8081}
+            predicates:
+              - Path=/api/v1/vstrategy/**
+          - id: vstrategy-ui
+            uri: ${VSTRATEGY_URL:http://vstrategy:8081}
+            predicates:
+              - Path=/vstrategy/**
+          # Template: duplicate for each additional vApp
+          # - id: vfinance
+          #   uri: http://vfinance:9001
+          #   predicates:
+          #     - Path=/api/v1/vfinance/**
+          - id: health-fallback
+            uri: forward:/actuator/health
+            predicates:
+              - Path=/gateway/health
+
+# --- vKernel JWT ---
+vkernel:
+  jwt:
+    secret: ${JWT_SECRET:vkernel-dev-secret-key-change-in-production-min-32-chars!!}
+    expiration-ms: ${JWT_EXPIRATION:86400000}
+
+  # --- OIDC/OAuth2 SSO ---
+  oidc:
+    redirect-base: ${OIDC_REDIRECT_BASE:http://localhost:8080}
+    google:
+      client-id: ${GOOGLE_CLIENT_ID:}
+      client-secret: ${GOOGLE_CLIENT_SECRET:}
+    microsoft:
+      client-id: ${MICROSOFT_CLIENT_ID:}
+      client-secret: ${MICROSOFT_CLIENT_SECRET:}
+    github:
+      client-id: ${GITHUB_CLIENT_ID:}
+      client-secret: ${GITHUB_CLIENT_SECRET:}
+
+# --- gRPC Server (Step 6: IPC) ---
+grpc:
+  server:
+    port: ${GRPC_PORT:9090}
+
+# --- Actuator + Prometheus (Backlog: observability) ---
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      app: vkernel
+
+# --- Logging (structured) ---
+logging:
+  level:
+    com.abivin.vkernel: DEBUG
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{ISO8601} [%thread] %-5level %logger{36} - %msg%n"

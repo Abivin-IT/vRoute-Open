@@ -1,0 +1,89 @@
+{
+    "app": {
+        "id": "com.vcorp.vstrategy",
+        "name": "vStrategy",
+        "version": "1.0.0",
+        "min_kernel_version": "0.4.0"
+    },
+    "dependencies": [
+        {
+            "app_id": "com.vcorp.kernel.settings",
+            "version_range": "^1.0.0",
+            "reason": "Core platform settings required"
+        }
+    ],
+    "permissions": [
+        {
+            "code": "strategy.vision.edit",
+            "name": "Edit Vision",
+            "description": "Create and edit company vision and objectives",
+            "category": "strategy",
+            "default_roles": [
+                "CEO"
+            ]
+        },
+        {
+            "code": "strategy.plan.manage",
+            "name": "Manage Plans",
+            "description": "Create and edit strategic plans and S&OP configurations",
+            "category": "strategy",
+            "default_roles": [
+                "CEO",
+                "CAO"
+            ]
+        },
+        {
+            "code": "strategy.alignment.edit",
+            "name": "Edit Alignment",
+            "description": "Edit OKR and initiative assignments",
+            "category": "strategy",
+            "default_roles": [
+                "CEO",
+                "CAO",
+                "CMO",
+                "CPO"
+            ]
+        },
+        {
+            "code": "strategy.scorecard.view",
+            "name": "View Scorecard",
+            "description": "View balanced scorecard, analytics, and pivot signals",
+            "category": "strategy",
+            "default_roles": [
+                "CEO",
+                "CAO",
+                "CMO",
+                "CPO"
+            ]
+        }
+    ],
+    "ui": {
+        "menu_label": "vStrategy",
+        "menu_icon": "♟️",
+        "menu_order": 1,
+        "entry_url": "/vstrategy/"
+    },
+    "api": {
+        "provided": [
+            "/api/v1/vstrategy/plans",
+            "/api/v1/vstrategy/plans/{id}/tree",
+            "/api/v1/vstrategy/plans/{id}/scorecard",
+            "/api/v1/vstrategy/plans/{id}/sop/validate",
+            "/api/v1/vstrategy/plans/{id}/signals"
+        ],
+        "consumed": [
+            "/api/v1/data/stakeholders",
+            "/api/v1/events/publish"
+        ]
+    },
+    "events": {
+        "published": [
+            "OKR_STATUS_CHANGED",
+            "PIVOT_SIGNAL_RAISED",
+            "SOP_PLAN_APPROVED"
+        ],
+        "subscribed": [
+            "MONTHLY_CLOSE_COMPLETED"
+        ]
+    }
+}

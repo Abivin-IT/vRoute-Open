@@ -1,0 +1,114 @@
+# =============================================================
+# vRoute Platform — Helm Values
+# =============================================================
+
+# --- Global ---
+global:
+  imagePullPolicy: IfNotPresent
+
+# --- PostgreSQL ---
+postgresql:
+  enabled: true
+  image: postgres:16-alpine
+  replicas: 1
+  storage: 10Gi
+  storageClass: ""
+  port: 5432
+  database: vkernel
+  username: vkernel
+  password: vkernel
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+# --- Redis ---
+redis:
+  enabled: true
+  image: redis:7-alpine
+  port: 6379
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+# --- vKernel (Core OS) ---
+vkernel:
+  image: ghcr.io/abivin/vkernel:latest
+  replicas: 2
+  port: 8080
+  grpcPort: 9090
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 2000m
+      memory: 1Gi
+  env:
+    JWT_SECRET: "change-me-in-production-min-32-chars-long!!"
+    JWT_EXPIRATION: "86400000"
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+    initialDelaySeconds: 20
+    periodSeconds: 5
+
+# --- vStrategy (vApp) ---
+vstrategy:
+  enabled: true
+  image: ghcr.io/abivin/vstrategy:latest
+  replicas: 1
+  port: 8081
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+  livenessProbe:
+    httpGet:
+      path: /api/v1/vstrategy/health
+      port: 8081
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /api/v1/vstrategy/health
+      port: 8081
+    initialDelaySeconds: 10
+    periodSeconds: 5
+
+# --- Ingress ---
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  host: vroute.example.com
+  tls:
+    enabled: true
+    secretName: vroute-tls
+
+# --- Monitoring ---
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 15s
+    path: /actuator/prometheus

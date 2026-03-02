@@ -1,0 +1,9 @@
+[project]
+name = "vstrategy"
+version = "1.0.0"
+description = "vStrategy — S2P2R Strategy Execution Module"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

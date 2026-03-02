@@ -1,0 +1,71 @@
+// =============================================================
+// kernel.proto — vKernel gRPC Service Definitions
+// GovernanceID: SyR-PLAT-05 (gRPC IPC)
+// Step 6: Internal communications between vKernel and vApps.
+// =============================================================
+
+syntax = "proto3";
+
+package vkernel;
+
+option java_package = "com.abivin.vkernel.grpc";
+option java_outer_classname = "KernelProto";
+option java_multiple_files = true;
+
+// ---- Service: KernelService —————————————————————————————————
+// Exposed by vKernel on port 9090.
+// vApps (e.g., vStrategy) call these RPCs for IPC.
+
+service KernelService {
+  // Health check: vApps verify kernel is alive on startup.
+  rpc Ping (PingRequest) returns (PingResponse);
+
+  // Publish a domain event to the vKernel event bus (DB-backed).
+  rpc PublishEvent (GrpcEventRequest) returns (GrpcEventResponse);
+
+  // Query the App Registry — installed vApps + statuses.
+  rpc GetInstalledApps (GetAppsRequest) returns (GetAppsResponse);
+}
+
+// ---- Messages ——————————————————————————————————————————————
+
+message PingRequest {
+  // Calling vApp identifier (e.g., "vstrategy")
+  string from = 1;
+}
+
+message PingResponse {
+  string status  = 1;           // "UP"
+  string version = 2;           // kernel semver
+  int64  uptime_ms = 3;         // JVM uptime in ms
+}
+
+message GrpcEventRequest {
+  string source       = 1;      // originating vApp id
+  string event_type   = 2;      // e.g. "PLAN_UPDATED"
+  string event_version = 3;     // "1.0"
+  string payload_json = 4;      // arbitrary JSON body
+  string correlation_id = 5;    // optional trace correlation
+}
+
+message GrpcEventResponse {
+  string event_id = 1;          // UUID of persisted event
+  string status   = 2;          // "DELIVERED" | "QUEUED"
+}
+
+message GetAppsRequest {
+  string tenant_id = 1;         // filter by tenant (empty = all)
+}
+
+message AppInfo {
+  string app_id       = 1;
+  string display_name = 2;
+  string version      = 3;
+  string status       = 4;      // "ACTIVE" | "INACTIVE"
+  string base_url     = 5;
+}
+
+message GetAppsResponse {
+  repeated AppInfo apps = 1;
+  int32 total = 2;
+}

@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>vStrategy — S2P2R Dashboard</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --card: #1a1d27;
+        --border: #2a2d3a;
+        --text: #e4e4e7;
+        --dim: #71717a;
+        --green: #22c55e;
+        --yellow: #eab308;
+        --red: #ef4444;
+        --blue: #3b82f6;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+      }
+      .header {
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .header h1 {
+        font-size: 18px;
+        font-weight: 600;
+      }
+      .header .badge {
+        background: var(--blue);
+        color: #fff;
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 10px;
+      }
+      .header .plan-sel {
+        margin-left: auto;
+        background: var(--border);
+        color: var(--text);
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+      }
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px;
+      }
+      .card h2 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .full {
+        grid-column: 1/-1;
+      }
+      .tree {
+        font-size: 13px;
+      }
+      .tree ul {
+        list-style: none;
+        padding-left: 24px;
+      }
+      .tree > ul {
+        padding-left: 0;
+      }
+      .tree li {
+        position: relative;
+        padding: 6px 0;
+      }
+      .tree li::before {
+        content: "";
+        position: absolute;
+        left: -16px;
+        top: 0;
+        border-left: 1px solid var(--border);
+        height: 100%;
+      }
+      .tree li::after {
+        content: "";
+        position: absolute;
+        left: -16px;
+        top: 16px;
+        border-top: 1px solid var(--border);
+        width: 12px;
+      }
+      .tree > ul > li::before,
+      .tree > ul > li::after {
+        display: none;
+      }
+      .node {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .node:hover {
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .node .icon {
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .node .title {
+        flex: 1;
+        font-weight: 500;
+      }
+      .node .pct {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 2px 10px;
+        border-radius: 12px;
+        min-width: 60px;
+        text-align: center;
+      }
+      .node .owner-tag {
+        font-size: 11px;
+        color: var(--dim);
+      }
+      .GREEN .pct {
+        background: rgba(34, 197, 94, 0.15);
+        color: var(--green);
+      }
+      .YELLOW .pct {
+        background: rgba(234, 179, 8, 0.15);
+        color: var(--yellow);
+      }
+      .RED .pct {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--red);
+      }
+      .alert-tag {
+        font-size: 11px;
+        color: var(--red);
+        margin-left: 32px;
+        display: block;
+      }
+      .bsc-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .bsc-item {
+        text-align: center;
+      }
+      .bsc-item .label {
+        font-size: 11px;
+        color: var(--dim);
+        margin-bottom: 4px;
+      }
+      .bsc-item .bar-track {
+        height: 28px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+      }
+      .bsc-item .bar-fill {
+        height: 100%;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        transition: width 0.6s ease;
+      }
+      .bsc-item .bar-fill.GREEN {
+        background: var(--green);
+      }
+      .bsc-item .bar-fill.YELLOW {
+        background: var(--yellow);
+        color: #000;
+      }
+      .bsc-item .bar-fill.RED {
+        background: var(--red);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid var(--border);
+        color: var(--dim);
+        font-weight: 500;
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+      td {
+        padding: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+      .ok {
+        color: var(--green);
+      }
+      .viol {
+        color: var(--red);
+      }
+      .signal {
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .signal.safe {
+        background: rgba(34, 197, 94, 0.08);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+      }
+      .signal.crit {
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
+      .signal .sig-icon {
+        font-size: 22px;
+      }
+      .signal .sig-body {
+        flex: 1;
+      }
+      .signal .sig-rule {
+        font-weight: 600;
+        font-size: 13px;
+      }
+      .signal .sig-detail {
+        font-size: 12px;
+        color: var(--dim);
+      }
+      .signal .sig-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 10px;
+      }
+      .signal.safe .sig-badge {
+        background: rgba(34, 197, 94, 0.2);
+        color: var(--green);
+      }
+      .signal.crit .sig-badge {
+        background: rgba(239, 68, 68, 0.2);
+        color: var(--red);
+      }
+      .plan-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .plan-info .kv {
+        font-size: 13px;
+      }
+      .plan-info .kv .k {
+        color: var(--dim);
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+      .plan-info .kv .v {
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .mece-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .mece-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 12px;
+      }
+      .mece-card.selected {
+        border-color: var(--blue);
+        background: rgba(59, 130, 246, 0.08);
+      }
+      .mece-card h3 {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+      .mece-card p {
+        color: var(--dim);
+      }
+      .loading {
+        text-align: center;
+        color: var(--dim);
+        padding: 40px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>&#9823; vStrategy</h1>
+      <span class="badge">S2P2R</span>
+      <select class="plan-sel" id="planSelect">
+        <option>Loading...</option>
+      </select>
+    </div>
+    <div class="container" id="app">
+      <div class="loading">Loading dashboard...</div>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

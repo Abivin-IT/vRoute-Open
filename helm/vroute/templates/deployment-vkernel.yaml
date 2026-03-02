@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-vkernel
+  labels:
+    app: vkernel
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  replicas: {{ .Values.vkernel.replicas }}
+  selector:
+    matchLabels:
+      app: vkernel
+  template:
+    metadata:
+      labels:
+        app: vkernel
+    spec:
+      containers:
+        - name: vkernel
+          image: {{ .Values.vkernel.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.vkernel.port }}
+              name: http
+            - containerPort: {{ .Values.vkernel.grpcPort }}
+              name: grpc
+          env:
+            - name: DB_HOST
+              value: {{ .Release.Name }}-postgresql
+            - name: DB_PORT
+              value: "{{ .Values.postgresql.port }}"
+            - name: DB_NAME
+              value: {{ .Values.postgresql.database }}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-db-secret
+                  key: username
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-db-secret
+                  key: password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-app-secret
+                  key: jwt-secret
+            - name: JWT_EXPIRATION
+              value: "{{ .Values.vkernel.env.JWT_EXPIRATION }}"
+            - name: REDIS_HOST
+              value: {{ .Release.Name }}-redis
+            - name: REDIS_PORT
+              value: "{{ .Values.redis.port }}"
+            - name: VSTRATEGY_URL
+              value: http://{{ .Release.Name }}-vstrategy:{{ .Values.vstrategy.port }}
+          {{- with .Values.vkernel.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.vkernel.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.vkernel.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

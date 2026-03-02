@@ -1,0 +1,55 @@
+{{- if .Values.vstrategy.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-vstrategy
+  labels:
+    app: vstrategy
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  replicas: {{ .Values.vstrategy.replicas }}
+  selector:
+    matchLabels:
+      app: vstrategy
+  template:
+    metadata:
+      labels:
+        app: vstrategy
+    spec:
+      containers:
+        - name: vstrategy
+          image: {{ .Values.vstrategy.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.vstrategy.port }}
+              name: http
+          env:
+            - name: DATABASE_URL
+              value: postgresql+asyncpg://$(DB_USER):$(DB_PASS)@{{ .Release.Name }}-postgresql:{{ .Values.postgresql.port }}/{{ .Values.postgresql.database }}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-db-secret
+                  key: username
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-db-secret
+                  key: password
+            - name: KERNEL_GRPC_HOST
+              value: {{ .Release.Name }}-vkernel
+            - name: KERNEL_GRPC_PORT
+              value: "{{ .Values.vkernel.grpcPort }}"
+          {{- with .Values.vstrategy.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.vstrategy.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.vstrategy.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
