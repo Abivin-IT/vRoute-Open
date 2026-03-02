@@ -26,35 +26,133 @@ public class DashboardController {
     @Autowired private EventBusService eventBusService;
 
     private static final String CSS = """
-        :root{--bg:#0c0e14;--card:#151821;--border:#252836;--text:#e4e4e7;--dim:#71717a;
-              --green:#22c55e;--yellow:#eab308;--red:#ef4444;--blue:#3b82f6;--purple:#a855f7}
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-        .header{background:var(--card);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:16px}
-        .header h1{font-size:20px;font-weight:700}
-        .header .badge{background:var(--blue);color:#fff;font-size:11px;padding:2px 10px;border-radius:10px;font-weight:600}
-        .header nav{margin-left:auto;display:flex;gap:12px}
-        .header nav a{color:var(--dim);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:6px;transition:all .15s}
-        .header nav a:hover,.header nav a.active{color:var(--text);background:rgba(255,255,255,.06)}
-        .container{max-width:1400px;margin:0 auto;padding:24px}
-        .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:20px}
-        .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
-        .card h2{font-size:13px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
-        .full{grid-column:1/-1}
-        .stat{font-size:32px;font-weight:700;margin-bottom:4px}
-        .stat-label{font-size:12px;color:var(--dim)}
-        .stat-green{color:var(--green)}.stat-blue{color:var(--blue)}.stat-purple{color:var(--purple)}
-        table{width:100%;border-collapse:collapse;font-size:13px}
-        th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);color:var(--dim);font-size:11px;text-transform:uppercase;font-weight:500}
-        td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
-        .badge-s{font-size:11px;padding:2px 8px;border-radius:8px;font-weight:600}
-        .badge-active{background:rgba(34,197,94,.15);color:var(--green)}
-        .badge-method{background:rgba(59,130,246,.12);color:var(--blue);font-family:monospace}
-        .badge-public{background:rgba(234,179,8,.12);color:var(--yellow)}
-        .badge-auth{background:rgba(168,85,247,.12);color:var(--purple)}
-        a.link{color:var(--blue);text-decoration:none}a.link:hover{text-decoration:underline}
-        code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:4px;font-size:12px}
-        .footer{text-align:center;color:var(--dim);font-size:12px;padding:32px 0;border-top:1px solid var(--border);margin-top:32px}
+        /* ── Design Tokens ────────────────────────────────────────── */
+        :root {
+            --bg:     #0c0e14;
+            --card:   #151821;
+            --border: #252836;
+            --text:   #e4e4e7;
+            --dim:    #71717a;
+            --green:  #22c55e;
+            --yellow: #eab308;
+            --red:    #ef4444;
+            --blue:   #3b82f6;
+            --purple: #a855f7;
+        }
+
+        /* ── Reset ────────────────────────────────────────────────── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ── Base ─────────────────────────────────────────────────── */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ── Top Navigation Bar ───────────────────────────────────── */
+        .header {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header h1   { font-size: 20px; font-weight: 700; }
+        .header .badge {
+            background: var(--blue);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .header nav { margin-left: auto; display: flex; gap: 12px; }
+        .header nav a {
+            color: var(--dim);
+            text-decoration: none;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all .15s;
+        }
+        .header nav a:hover,
+        .header nav a.active {
+            color: var(--text);
+            background: rgba(255,255,255,.06);
+        }
+
+        /* ── Layout ───────────────────────────────────────────────── */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .full { grid-column: 1 / -1; }
+
+        /* ── Cards ────────────────────────────────────────────────── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .card h2 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 12px;
+        }
+
+        /* ── Stat Numbers ─────────────────────────────────────────── */
+        .stat       { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; color: var(--dim); }
+        .stat-green  { color: var(--green);  }
+        .stat-blue   { color: var(--blue);   }
+        .stat-purple { color: var(--purple); }
+
+        /* ── Tables ───────────────────────────────────────────────── */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            color: var(--dim);
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.04); }
+
+        /* ── Badges ───────────────────────────────────────────────── */
+        .badge-s      { font-size: 11px; padding: 2px 8px; border-radius: 8px; font-weight: 600; }
+        .badge-active { background: rgba(34,197,94,.15);  color: var(--green);  }
+        .badge-method { background: rgba(59,130,246,.12); color: var(--blue);   font-family: monospace; }
+        .badge-public { background: rgba(234,179,8,.12);  color: var(--yellow); }
+        .badge-auth   { background: rgba(168,85,247,.12); color: var(--purple); }
+
+        /* ── Misc ─────────────────────────────────────────────────── */
+        a.link              { color: var(--blue); text-decoration: none; }
+        a.link:hover        { text-decoration: underline; }
+        code                { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+        .footer {
+            text-align: center;
+            color: var(--dim);
+            font-size: 12px;
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 32px;
+        }
     """;
 
     /**
@@ -131,6 +229,7 @@ public class DashboardController {
                         <p style="margin-bottom:8px"><a class="link" href="/dashboard/health">Health Check</a> — <code>GET /actuator/health</code></p>
                         <p style="margin-bottom:8px"><a class="link" href="/dashboard/prometheus">Prometheus Metrics</a> — <code>GET /actuator/prometheus</code></p>
                         <p style="margin-bottom:8px"><a class="link" href="/dashboard/info">App Info</a> — <code>GET /actuator/info</code></p>
+                        <p style="margin-bottom:8px"><a class="link" href="/dashboard/metrics">Micrometer Metrics</a> — <code>GET /actuator/metrics</code></p>
                         <p style="margin-bottom:8px"><a class="link" href="/dashboard/api">API Explorer</a> — All vKernel endpoints</p>
                     </div>
                     <div class="card">
@@ -312,16 +411,74 @@ public class DashboardController {
     }
 
     /**
-     * Metrics viewer — embeds Prometheus metrics and links.
+     * Micrometer Metrics viewer — HTML wrapper for /actuator/metrics.
+     * Lists all metric names; click any to drill-down into its measurements and tags.
+     * Auto-refreshes every 15 s.
      * GET /dashboard/metrics
      */
     @GetMapping(value = "/dashboard/metrics", produces = MediaType.TEXT_HTML_VALUE)
     public String metricsDashboard() {
         return """
-            <!doctype html><html lang="en"><head><meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width,initial-scale=1">
-            <title>vKernel — Metrics</title>
-            <style>%s</style></head><body>
+            <!doctype html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <title>vKernel &#8212; Micrometer Metrics</title>
+                <style>
+                    %s
+
+                    /* ── Metrics-page extras ────────────────────────────────────────── */
+                    #search {
+                        background: rgba(255,255,255,.06);
+                        border: 1px solid var(--border);
+                        color: var(--text);
+                        padding: 8px 12px;
+                        border-radius: 6px;
+                        width: 100%%;
+                        font-size: 13px;
+                        margin-bottom: 12px;
+                    }
+                    .metric-list {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                        gap: 8px;
+                        max-height: 60vh;
+                        overflow-y: auto;
+                    }
+                    .metric-item {
+                        background: rgba(0,0,0,.25);
+                        border: 1px solid var(--border);
+                        border-radius: 8px;
+                        padding: 10px 14px;
+                        cursor: pointer;
+                        transition: border-color .15s, background .15s;
+                    }
+                    .metric-item:hover,
+                    .metric-item.selected {
+                        border-color: var(--blue);
+                        background: rgba(59,130,246,.08);
+                    }
+                    .metric-name { font-family: monospace; font-size: 12px; color: var(--blue); word-break: break-all; }
+                    #detail {
+                        background: rgba(0,0,0,.3);
+                        border: 1px solid var(--border);
+                        border-radius: 8px;
+                        padding: 16px;
+                        font-family: monospace;
+                        font-size: 12px;
+                        white-space: pre-wrap;
+                        min-height: 160px;
+                        color: var(--text);
+                        line-height: 1.7;
+                    }
+                    .spin { animation: spin 1s linear infinite; display: inline-block; }
+                    @keyframes spin { to { transform: rotate(360deg); } }
+                </style>
+            </head>
+            <body>
+
+            <!-- ── Navigation bar ──────────────────────────────────────────────────── -->
             <div class="header">
                 <h1>&#9881; vKernel</h1>
                 <span class="badge">Core OS</span>
@@ -332,56 +489,128 @@ public class DashboardController {
                     <a class="active" href="/dashboard/metrics">Metrics</a>
                 </nav>
             </div>
+
+            <!-- ── Page body ───────────────────────────────────────────────────────── -->
             <div class="container">
-                <div class="grid">
-                    <div class="card">
-                        <h2>Prometheus</h2>
-                        <p style="font-size:13px;margin-bottom:12px">Scrape endpoint for Prometheus/Grafana integration.</p>
-                        <p><a class="link" href="/dashboard/prometheus">View HTML</a> &nbsp;&middot;&nbsp; <a class="link" href="/actuator/prometheus" target="_blank">Raw</a></p>
-                    </div>
-                    <div class="card">
-                        <h2>Health</h2>
-                        <p style="font-size:13px;margin-bottom:12px">Comprehensive health check with component details.</p>
-                        <p><a class="link" href="/dashboard/health">View HTML</a> &nbsp;&middot;&nbsp; <a class="link" href="/actuator/health" target="_blank">Raw</a></p>
-                    </div>
-                    <div class="card">
-                        <h2>Micrometer Metrics</h2>
-                        <p style="font-size:13px;margin-bottom:12px">All registered metric names.</p>
-                        <p><a class="link" href="/actuator/metrics" target="_blank">/actuator/metrics</a></p>
-                    </div>
-                    <div class="card">
-                        <h2>Application Info</h2>
-                        <p style="font-size:13px;margin-bottom:12px">Build info, environment details.</p>
-                        <p><a class="link" href="/dashboard/info">View HTML</a> &nbsp;&middot;&nbsp; <a class="link" href="/actuator/info" target="_blank">Raw</a></p>
-                    </div>
+
+                <!-- Title row -->
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px">
+                    <h2 style="font-size:16px; font-weight:600">Micrometer Metrics</h2>
+                    <span id="count" style="font-size:12px; color:var(--dim)"></span>
+                    <span id="spinner" style="font-size:12px; color:var(--dim); margin-left:4px"></span>
+                    <span style="margin-left:auto; font-size:12px; color:var(--dim)">Auto-refreshes every 15 s</span>
+                    <a class="link" href="/actuator/metrics" target="_blank" style="font-size:12px">Raw JSON</a>
                 </div>
-                <div class="card full">
-                    <h2>Live Metrics (auto-refresh every 5s)</h2>
-                    <div id="metricsDisplay" style="font-family:monospace;font-size:12px;white-space:pre-wrap;max-height:500px;overflow-y:auto;background:rgba(0,0,0,.3);padding:16px;border-radius:8px">
-                        Loading metrics...
+
+                <!-- Search box -->
+                <input id="search" type="text" placeholder="Filter metric names (e.g. jvm, http, disk)…">
+
+                <!-- Two-column layout: list | detail -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start">
+
+                    <!-- Left: metric name tiles -->
+                    <div class="card">
+                        <h2>Metric Names <span id="list-count" style="font-weight:400;font-size:11px"></span></h2>
+                        <div id="list" class="metric-list">Loading&#8230;</div>
                     </div>
+
+                    <!-- Right: drill-down detail -->
+                    <div class="card">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px">
+                            <h2 style="margin:0">Detail</h2>
+                            <code id="detail-name" style="font-size:12px; color:var(--blue)">— click a metric —</code>
+                        </div>
+                        <div id="detail">Select a metric name on the left to inspect its measurements and available tags.</div>
+                    </div>
+
                 </div>
             </div>
-            <div class="footer">vKernel Core OS — Corp as Code Platform &copy; Abivin 2025</div>
+
+            <div class="footer">vKernel Core OS &#8212; Corp as Code Platform &copy; Abivin 2025</div>
+
+            <!-- ── Client-side logic ───────────────────────────────────────────────── -->
             <script>
-            async function loadMetrics(){
-                try{
-                    const r=await fetch('/actuator/health');
-                    const h=await r.json();
-                    const m=await fetch('/actuator/metrics');
-                    const metrics=await m.json();
-                    const el=document.getElementById('metricsDisplay');
-                    el.textContent='Health Status: '+h.status+'\\n\\n'
-                        +'Components:\\n'+JSON.stringify(h.components||{},null,2)+'\\n\\n'
-                        +'Available Metrics ('+metrics.names.length+'):\\n'+metrics.names.join('\\n');
-                }catch(e){
-                    document.getElementById('metricsDisplay').textContent='Error loading metrics: '+e.message;
+                let allNames = [];
+                let selected = null;
+
+                /* ── Fetch full metric list from /actuator/metrics ──────────────── */
+                async function loadList() {
+                    document.getElementById('spinner').innerHTML = '<span class="spin">&#8635;</span>';
+                    try {
+                        const res  = await fetch('/actuator/metrics');
+                        const data = await res.json();
+                        allNames   = (data.names || []).sort();
+                        document.getElementById('count').textContent = allNames.length + ' metrics total';
+                        renderList();
+                    } catch (e) {
+                        document.getElementById('list').textContent = 'Error fetching metric list: ' + e.message;
+                    } finally {
+                        document.getElementById('spinner').innerHTML = '';
+                    }
                 }
-            }
-            loadMetrics();
-            setInterval(loadMetrics,5000);
+
+                /* ── Render metric name tiles, filtered by search box ───────────── */
+                function renderList() {
+                    const q    = document.getElementById('search').value.toLowerCase();
+                    const show = q ? allNames.filter(n => n.includes(q)) : allNames;
+                    document.getElementById('list-count').textContent = '(' + show.length + ')';
+
+                    if (show.length === 0) {
+                        document.getElementById('list').innerHTML =
+                            '<p style="color:var(--dim);font-size:13px">No metrics match "' + q + '".</p>';
+                        return;
+                    }
+
+                    document.getElementById('list').innerHTML = show.map(name => `
+                        <div class="metric-item ${name === selected ? 'selected' : ''}"
+                             onclick="loadDetail('${name}')">
+                            <span class="metric-name">${name}</span>
+                        </div>
+                    `).join('');
+                }
+
+                /* ── Fetch /actuator/metrics/{name} when tile is clicked ─────────── */
+                async function loadDetail(name) {
+                    selected = name;
+                    renderList();   // re-render to highlight selected tile
+
+                    document.getElementById('detail-name').textContent = name;
+                    document.getElementById('detail').textContent      = 'Loading\\u2026';
+
+                    try {
+                        const res  = await fetch('/actuator/metrics/' + encodeURIComponent(name));
+                        const data = await res.json();
+
+                        const measures = (data.measurements || [])
+                            .map(m => '  ' + m.statistic.padEnd(14) + m.value)
+                            .join('\\n');
+
+                        const tags = (data.availableTags || [])
+                            .map(t => '  ' + t.tag + ': ' + t.values.join(', '))
+                            .join('\\n');
+
+                        document.getElementById('detail').textContent =
+                            'Name        : ' + data.name                    + '\\n' +
+                            'Description : ' + (data.description || '—')    + '\\n' +
+                            'Base Unit   : ' + (data.baseUnit   || '—')     + '\\n\\n' +
+                            'Measurements:\\n' + (measures || '  (none)')   + '\\n\\n' +
+                            'Available Tags:\\n' + (tags || '  (none)');
+
+                    } catch (e) {
+                        document.getElementById('detail').textContent = 'Error fetching detail: ' + e.message;
+                    }
+                }
+
+                /* ── Wire up search box ─────────────────────────────────────────── */
+                document.getElementById('search').addEventListener('input', renderList);
+
+                /* ── Initial load + auto-refresh every 15 s ────────────────────── */
+                loadList();
+                setInterval(loadList, 15000);
             </script>
-            </body></html>
+
+            </body>
+            </html>
             """.formatted(CSS);
     }
 
