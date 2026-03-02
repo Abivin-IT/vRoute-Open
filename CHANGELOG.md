@@ -2,6 +2,39 @@
 
 Tất cả thay đổi đáng chú ý được ghi nhận tại đây. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.5.0] — 2026-03-02
+
+### Changed — Project Restructure: Numbered Folders + Guides
+
+**Folder Restructure (numbered prefixes: lower = more important)**
+
+- `vkernel/` → `01-vkernel/` — Core OS (highest priority)
+- `vstrategy/` → `02-vstrategy/` — vApp #1
+- `vfinacc/` → `03-vfinacc/` — vApp #2
+- `docs/prd/` → `00-design/docs/` — PRD documents
+- `sheets/` → `00-design/sheets/` — Data tables & contracts
+- `helm/` + `docker-compose.yml` → `80-deploy/` — Deployment infrastructure grouped
+- Created `90-guide/` — User + Developer documentation
+
+**vKernel Awareness of vFinacc**
+
+- `.github/workflows/ci.yml` — Added `test-vfinacc` job (Python 3.12, pytest), vfinacc image push to GHCR, updated all `working-directory` paths
+- `Makefile` — Updated DIR vars (`VKERNEL_DIR`, `VSTRATEGY_DIR`, `VFINACC_DIR`, `DEPLOY_DIR`), `COMPOSE` now uses `-f 80-deploy/docker-compose.yml`, `make up` banner includes vFinacc
+- `80-deploy/docker-compose.yml` — Build contexts updated to parent-relative paths (`../01-vkernel`, `../02-vstrategy`, `../03-vfinacc`)
+- `01-vkernel/src/main/resources/application.yml` — Improved gateway route comments with folder references, added generic vApp route template
+
+**World-Class Documentation**
+
+- `90-guide/user/README.md` — Comprehensive user guide: Authentication (JWT, SSO, Magic Link), Using vKernel/vStrategy/vFinacc, API endpoint tables, Troubleshooting
+- `90-guide/developer/README.md` — Developer guide: Architecture overview, Getting Started, Project Structure, How to Add a New vApp (7-step checklist), Coding Standards, Testing Strategy, Database & Migrations, gRPC IPC, Event Bus, CI/CD Pipeline, Deployment, Contributing
+
+**README.md Rewrite**
+
+- Project structure tree updated with all numbered folders
+- Helm path updated to `./80-deploy/helm/vroute`
+
+---
+
 ## [1.4.0] — 2026-03-12
 
 ### Added — vFinacc: vFinance R2R Module (SyR-FIN-00 through SyR-FIN-04)

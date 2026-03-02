@@ -35,7 +35,7 @@ services:
   # --- vKernel (Core OS) ---
   vkernel:
     build:
-      context: ./vkernel
+      context: ../01-vkernel
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
@@ -61,7 +61,7 @@ services:
   # --- vStrategy (S2P2R Module — Python/FastAPI) ---
   vstrategy:
     build:
-      context: ./vstrategy
+      context: ../02-vstrategy
       dockerfile: Dockerfile
     ports:
       - "8081:8081"
@@ -83,7 +83,7 @@ services:
   # --- vFinacc (R2R Finance Module — Python/FastAPI) ---
   vfinacc:
     build:
-      context: ./vfinacc
+      context: ../03-vfinacc
       dockerfile: Dockerfile
     ports:
       - "8082:8082"

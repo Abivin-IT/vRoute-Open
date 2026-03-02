@@ -22,14 +22,15 @@ SHELL        := /bin/bash
 
 # -- Directories --------------------------------------------
 ROOT          := $(CURDIR)
-VKERNEL_DIR   := $(ROOT)/vkernel
-VSTRATEGY_DIR := $(ROOT)/vstrategy
-VFINACC_DIR   := $(ROOT)/vfinacc
+VKERNEL_DIR   := $(ROOT)/01-vkernel
+VSTRATEGY_DIR := $(ROOT)/02-vstrategy
+VFINACC_DIR   := $(ROOT)/03-vfinacc
+DEPLOY_DIR    := $(ROOT)/80-deploy
 PROTO_SRC     := $(VKERNEL_DIR)/src/main/proto
 PROTO_DST     := $(VSTRATEGY_DIR)/protos
 
 # -- Docker Compose ----------------------------------------─
-COMPOSE := docker-compose
+COMPOSE := docker-compose -f $(DEPLOY_DIR)/docker-compose.yml
 
 # -- Cross-platform volume path helper (Cygwin / MSYS2 / Linux) --
 docker_vol = $(shell command -v cygpath &>/dev/null && cygpath -w "$(1)" || echo "$(1)")
@@ -168,6 +169,7 @@ up: ## Build + start all services in the background (detached)
 	@echo "  │  vKernel       ->  http://localhost:8080     │"
 	@echo "  │  vKernel API   ->  http://localhost:8080/api/v1/ │"
 	@echo "  │  vStrategy     ->  http://localhost:8081     │"
+	@echo "  │  vFinacc       ->  http://localhost:8082     │"
 	@echo "  │  PostgreSQL    ->  localhost:5432            │"
 	@echo "  │  Redis         ->  localhost:6379            │"
 	@echo "  └--------------------------------------------─┘"

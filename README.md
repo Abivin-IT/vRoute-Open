@@ -43,111 +43,50 @@
 
 ## Project Structure
 
+> **Folder numbering:** lower prefix = higher importance. `01-` = core OS, `02-`/`03-` = vApps, `80-` = infra, `90-` = docs.
+
 ```
 vRoute-Open/
-├── Makefile                          # make {help|dev|up|down|test|clean}
-├── docker-compose.yml                # PostgreSQL + Redis + vKernel + vStrategy + vFinacc
-├── .env                              # Dev environment vars
-├── helm/                             # Kubernetes Helm chart
-│   └── vroute/
-│       ├── Chart.yaml
-│       ├── values.yaml
-│       └── templates/                # deployment, service, secret, ingress, servicemonitor
-├── docs/prd/
-│   ├── vstrategy-prd.md              # vStrategy PRD (synced from Google Docs)
-│   ├── vfinacc-prd.md                # vFinacc PRD (SyR-FIN-00 through SyR-FIN-04)
-│   └── vkernel-prd.md                # vKernel PRD (SyR-PLAT-00 through SyR-PLAT-05)
-├── vkernel/                          # Core OS (Java 21 / Spring Boot 3.3.7)
+├── 00-design/                        # Design artifacts
+│   ├── docs/                         #   PRD documents
+│   │   ├── vkernel-prd.md            #     Platform requirements (SyR-PLAT-00→05)
+│   │   ├── vstrategy-prd.md          #     Strategy requirements (SyR-STR-00→04)
+│   │   └── vfinacc-prd.md            #     Finance requirements (SyR-FIN-00→04)
+│   └── sheets/                       #   Data tables & contracts
+│       ├── api-contract-summary.md
+│       ├── acceptance-criteria.md
+│       └── vfinacc/                  #     vFinacc-specific sheets
+├── 01-vkernel/                       # Core OS (Java 21 / Spring Boot 3.3)
 │   ├── pom.xml
 │   ├── Dockerfile
 │   └── src/main/java/com/abivin/vkernel/
-│       ├── VKernelApplication.java       # 0.0.0-BOOT
-│       ├── DashboardController.java      # 0.0.0-DASH — HTML dashboard (4 pages)
-│       ├── AdaptiveShellController.java  # 4.0.0 — Micro-frontend host (SyR-PLAT-04)
-│       ├── g0_engine/                    # SyR-PLAT-00: App Engine
-│       │   ├── AppRegistryController.java    # 0.0.0
-│       │   ├── AppRegistryEntity.java        # 0.1.0
-│       │   ├── AppLifecycleService.java      # 0.3.0
-│       │   ├── ManifestModel.java            # 0.2.0
-│       │   └── PermissionEntity.java         # 1.2.0
-│       ├── g1_iam/                       # SyR-PLAT-01: IAM (JWT + OIDC + Magic Link)
-│       │   ├── SecurityConfig.java           # 1.0.0
-│       │   ├── AuthController.java           # 1.0.1
-│       │   ├── JwtProvider.java              # 1.0.2
-│       │   ├── UserEntity.java               # 1.1.0
-│       │   ├── RefreshTokenEntity.java       # 1.4.0 — Opaque refresh tokens
-│       │   ├── RefreshTokenService.java      # 1.5.0 — Rotation + reuse detection
-│       │   ├── RateLimitFilter.java          # 1.3.0 — Sliding window rate limiter
-│       │   ├── TenantContext.java            # 1.2.1 — Multi-tenant ThreadLocal
-│       │   ├── OidcAccountEntity.java        # 1.6.0 — OIDC linked accounts
-│       │   ├── OidcAuthController.java       # 1.6.1 — Google/Microsoft/GitHub SSO
-│       │   ├── MagicLinkEntity.java          # 1.7.0 — Passwordless auth tokens
-│       │   └── MagicLinkController.java      # 1.7.1 — Magic link send/verify
-│       ├── g2_data/                      # SyR-PLAT-02: Data Backbone
-│       │   ├── TenantEntity.java             # 2.0.0
-│       │   ├── StakeholderEntity.java        # 2.0.1
-│       │   ├── CurrencyEntity.java           # 2.0.2
-│       │   ├── CountryEntity.java            # 2.0.3
-│       │   └── DataExtensionController.java  # 2.1.0
-│       ├── g3_event/                     # SyR-PLAT-03: Event Bus
-│       │   ├── EventLogEntity.java           # 3.0.0
-│       │   ├── SubscriptionEntity.java       # 3.0.1
-│       │   ├── KernelEvent.java              # 3.1.1
-│       │   ├── EventBusService.java          # 3.1.0
-│       │   └── EventBusController.java       # 3.2.0
-│       ├── g4_grpc/                      # SyR-PLAT-04: gRPC IPC
-│       │   └── KernelGrpcService.java        # 4.0.0
-│       └── g5_search/                    # SyR-PLAT-02.02: Universal Search
-│           ├── SearchIndexEntity.java        # 5.0.0 — FTS index (tsvector)
-│           └── SearchController.java         # 5.1.0 — GET /api/v1/search
-├── vstrategy/                        # vApp: S2P2R Strategy Module (Python 3.12 / FastAPI)
-│   ├── requirements.txt              # Python dependencies
-│   ├── pyproject.toml                # Project config + pytest settings
-│   ├── Dockerfile                    # Multi-stage: Node (TS build) + Python runtime
-│   ├── manifest.json                 # vApp manifest (for App Engine)
-│   ├── alembic.ini                   # Alembic migration config
-│   ├── alembic/                      # Database migrations
-│   │   └── versions/
-│   │       └── 0001_vstrategy_init.py    # Schema + seed data
-│   ├── protos/                       # Proto files for gRPC stub generation
-│   │   └── kernel.proto
-│   ├── app/                          # FastAPI application
-│   │   ├── config.py                     # Pydantic Settings
-│   │   ├── database.py                   # Async SQLAlchemy engine
-│   │   ├── models.py                     # ORM: Plan, AlignmentNode, PivotSignal
-│   │   ├── schemas.py                    # Pydantic DTOs
-│   │   ├── service.py                    # Business logic (vstrategy.1.0)
-│   │   ├── routes.py                     # REST API endpoints (vstrategy.2.0)
-│   │   ├── grpc_client.py                # KernelGrpcClient (IPC, step 6)
-│   │   ├── grpc/                         # Auto-generated stubs (Docker build)
-│   │   └── main.py                       # FastAPI app entry
-│   ├── frontend/                     # TypeScript frontend
-│   │   ├── src/                          # TS source (types, api, renderers, main)
-│   │   └── scripts/bundle.js             # TS→IIFE bundler
-│   ├── static/index.html             # Dashboard (dark theme)
-│   └── tests/
-│       └── test_strategy_api.py      # 19 integration tests (pytest-asyncio)
-├── vfinacc/                          # vApp: vFinance R2R Module (Python 3.12 / FastAPI)
-│   ├── requirements.txt              # Python dependencies
-│   ├── pyproject.toml                # Project config + pytest settings
-│   ├── Dockerfile                    # Multi-stage: Node (TS build) + Python runtime
-│   ├── manifest.json                 # vApp manifest (for App Engine)
-│   ├── alembic.ini                   # Alembic migration config
-│   ├── alembic/                      # Database migrations
-│   │   └── versions/
-│   │       └── 0001_vfinacc_init.py      # Schema + seed data (5 tables)
-│   ├── app/                          # FastAPI application
-│   │   ├── config.py                     # Pydantic Settings
-│   │   ├── database.py                   # Async SQLAlchemy engine
-│   │   ├── models.py                     # ORM: LedgerEntry, Transaction, ReconciliationMatch, CostAllocation, ComplianceCheck
-│   │   ├── schemas.py                    # Pydantic DTOs
-│   │   ├── service.py                    # Business logic (5 SyR-FIN requirements)
-│   │   ├── routes.py                     # REST API endpoints (/api/v1/vfinacc)
-│   │   ├── grpc_client.py                # KernelGrpcClient (IPC)
-│   │   └── main.py                       # FastAPI app entry
-│   ├── static/index.html             # Dashboard (dark theme)
-│   └── tests/
-│       └── test_finance_api.py       # 25 integration tests (pytest-asyncio)
+│       ├── g0_engine/                #   SyR-PLAT-00: App Engine
+│       ├── g1_iam/                   #   SyR-PLAT-01: IAM (JWT + OIDC + Magic Link)
+│       ├── g2_data/                  #   SyR-PLAT-02: Data Backbone + JSONB
+│       ├── g3_event/                 #   SyR-PLAT-03: Event Bus & Pub/Sub
+│       ├── g4_grpc/                  #   SyR-PLAT-04: gRPC IPC (port 9090)
+│       └── g5_search/               #   SyR-PLAT-02.02: Universal Search (FTS)
+├── 02-vstrategy/                     # vApp: S2P2R Strategy (Python 3.12 / FastAPI)
+│   ├── app/                          #   FastAPI application
+│   ├── frontend/                     #   TypeScript frontend
+│   ├── tests/                        #   19 integration tests (pytest-asyncio)
+│   ├── alembic/                      #   Database migrations
+│   ├── manifest.json                 #   vApp manifest
+│   └── Dockerfile
+├── 03-vfinacc/                       # vApp: Finance R2R (Python 3.12 / FastAPI)
+│   ├── app/                          #   FastAPI application
+│   ├── tests/                        #   25 integration tests (pytest-asyncio)
+│   ├── alembic/                      #   Database migrations
+│   ├── manifest.json                 #   vApp manifest
+│   └── Dockerfile
+├── 80-deploy/                        # Deployment infrastructure
+│   ├── docker-compose.yml            #   Dev environment (all services)
+│   └── helm/vroute/                  #   Kubernetes Helm chart
+├── 90-guide/                         # Documentation
+│   ├── user/README.md                #   End-user guide
+│   └── developer/README.md           #   Developer / contributor guide
+├── .github/workflows/ci.yml         # CI/CD pipeline
+├── Makefile                          # make {help|dev|up|down|test|clean}
 ├── CHANGELOG.md
 └── TODO.md
 ```
@@ -236,12 +175,12 @@ make down
 
 ```bash
 # Install with Helm
-helm install vroute ./helm/vroute \
+helm install vroute ./80-deploy/helm/vroute \
   --set vkernel.env.JWT_SECRET="your-production-secret-32-chars" \
   --set postgresql.password="strong-db-password"
 
 # Upgrade
-helm upgrade vroute ./helm/vroute
+helm upgrade vroute ./80-deploy/helm/vroute
 
 # Uninstall
 helm uninstall vroute
