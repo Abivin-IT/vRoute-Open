@@ -1,0 +1,9 @@
+[project]
+name = "vmarketing-org"
+version = "0.5.0"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]
+testpaths = ["tests"]

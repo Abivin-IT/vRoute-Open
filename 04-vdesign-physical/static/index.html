@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vDesign Physical — I2S Physical Layer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: #0d1117;
+        color: #c9d1d9;
+      }
+      .header {
+        background: #161b22;
+        padding: 16px 24px;
+        border-bottom: 1px solid #30363d;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .header h1 {
+        font-size: 20px;
+        color: #58a6ff;
+      }
+      .header .badge {
+        background: #238636;
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 16px;
+        padding: 24px;
+      }
+      .card {
+        background: #161b22;
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        padding: 20px;
+      }
+      .card h2 {
+        font-size: 14px;
+        color: #8b949e;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th {
+        text-align: left;
+        padding: 8px;
+        color: #8b949e;
+        border-bottom: 1px solid #30363d;
+      }
+      td {
+        padding: 8px;
+        border-bottom: 1px solid #21262d;
+      }
+      .status-sealed {
+        color: #58a6ff;
+      }
+      .status-active {
+        color: #3fb950;
+      }
+      .status-compromised {
+        color: #f85149;
+      }
+      .status-passed {
+        color: #3fb950;
+      }
+      .status-failed {
+        color: #f85149;
+      }
+      .status-running {
+        color: #d29922;
+      }
+      .metric {
+        display: inline-block;
+        text-align: center;
+        padding: 8px 16px;
+      }
+      .metric .value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #f0f6fc;
+      }
+      .metric .label {
+        font-size: 11px;
+        color: #8b949e;
+        text-transform: uppercase;
+      }
+      #loading {
+        text-align: center;
+        padding: 40px;
+        color: #8b949e;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <span style="font-size: 24px">🔬</span>
+      <h1>vDesign Physical — I2S Physical Layer</h1>
+      <span class="badge">v1.0.0</span>
+    </div>
+    <div id="loading">Loading dashboard…</div>
+    <div class="grid" id="dashboard" style="display: none">
+      <!-- Golden Samples -->
+      <div class="card">
+        <h2>🏆 Golden Samples (SyR-PHY-00)</h2>
+        <table id="samples-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Product</th>
+              <th>Material</th>
+              <th>Convergence</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <!-- Material Inbox -->
+      <div class="card">
+        <h2>📥 Material Inbox (SyR-PHY-01)</h2>
+        <table id="materials-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Source</th>
+              <th>Description</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <!-- Prototypes -->
+      <div class="card">
+        <h2>🧪 Prototypes (SyR-PHY-02)</h2>
+        <table id="proto-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Product</th>
+              <th>Version</th>
+              <th>Method</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <!-- Lab Tests -->
+      <div class="card">
+        <h2>🔬 Lab Tests (SyR-PHY-03)</h2>
+        <div id="lab-metrics"></div>
+        <table id="lab-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Type</th>
+              <th>Measured</th>
+              <th>Threshold</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <!-- Handover Kits -->
+      <div class="card">
+        <h2>📦 Handover Kits (SyR-PHY-04)</h2>
+        <table id="kits-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Product</th>
+              <th>Contents</th>
+              <th>Destination</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <script>
+      const API = "/api/v1/vdesign-physical";
+      async function load() {
+        try {
+          const [samplesR, matsR, protosR, labsR, labSumR, kitsR] =
+            await Promise.all([
+              fetch(`${API}/golden-samples`),
+              fetch(`${API}/materials`),
+              fetch(`${API}/prototypes`),
+              fetch(`${API}/lab-tests`),
+              fetch(`${API}/lab-tests/summary`),
+              fetch(`${API}/handover-kits`),
+            ]);
+          const samples = await samplesR.json();
+          const mats = await matsR.json();
+          const protos = await protosR.json();
+          const labs = await labsR.json();
+          const labSum = await labSumR.json();
+          const kits = await kitsR.json();
+
+          // Golden Samples
+          const st = document.querySelector("#samples-table tbody");
+          (samples.samples || []).forEach((s) => {
+            st.innerHTML += `<tr><td>${s.sample_code}</td><td>${s.product_name}</td><td>${s.material || "-"}</td><td>${s.convergence_pct}%</td><td class="status-${s.status.toLowerCase()}">${s.status}</td></tr>`;
+          });
+
+          // Materials
+          const mt = document.querySelector("#materials-table tbody");
+          (mats.materials || []).forEach((m) => {
+            mt.innerHTML += `<tr><td>${m.item_code}</td><td>${m.source_type}</td><td>${m.description}</td><td>${m.status}</td></tr>`;
+          });
+
+          // Prototypes
+          const pt = document.querySelector("#proto-table tbody");
+          (protos.prototypes || []).forEach((p) => {
+            pt.innerHTML += `<tr><td>${p.proto_code}</td><td>${p.product_name}</td><td>${p.version_label}</td><td>${p.fabrication_method || "-"}</td><td>${p.status}</td></tr>`;
+          });
+
+          // Lab Tests
+          document.getElementById("lab-metrics").innerHTML =
+            `<div class="metric"><div class="value">${labSum.total_tests}</div><div class="label">Total</div></div>` +
+            `<div class="metric"><div class="value status-passed">${labSum.passed}</div><div class="label">Passed</div></div>` +
+            `<div class="metric"><div class="value status-failed">${labSum.failed}</div><div class="label">Failed</div></div>` +
+            `<div class="metric"><div class="value status-running">${labSum.running}</div><div class="label">Running</div></div>`;
+          const lt = document.querySelector("#lab-table tbody");
+          (labs.tests || []).forEach((t) => {
+            lt.innerHTML += `<tr><td>${t.test_code}</td><td>${t.test_type}</td><td>${t.measured_value || "-"}</td><td>${t.threshold_value || "-"}</td><td class="status-${t.result.toLowerCase()}">${t.result}</td></tr>`;
+          });
+
+          // Handover Kits
+          const kt = document.querySelector("#kits-table tbody");
+          (kits.kits || []).forEach((k) => {
+            kt.innerHTML += `<tr><td>${k.kit_code}</td><td>${k.product_name}</td><td>${k.contents_summary}</td><td>${k.destination || "-"}</td><td>${k.status}</td></tr>`;
+          });
+
+          document.getElementById("loading").style.display = "none";
+          document.getElementById("dashboard").style.display = "grid";
+        } catch (e) {
+          document.getElementById("loading").textContent =
+            "Failed to load: " + e.message;
+        }
+      }
+      load();
+    </script>
+  </body>
+</html>

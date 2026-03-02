@@ -63,6 +63,8 @@ public class SecurityConfig {
                 // Gateway proxy routes — vApps are internal-only; vKernel is the auth boundary
                 .requestMatchers("/api/v1/vstrategy/**", "/vstrategy/**").permitAll()
                 .requestMatchers("/api/v1/vfinacc/**", "/vfinacc/**").permitAll()
+                .requestMatchers("/api/v1/vdesign-physical/**", "/vdesign-physical/**").permitAll()
+                .requestMatchers("/api/v1/vmarketing-org/**", "/vmarketing-org/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);
