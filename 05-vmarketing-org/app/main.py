@@ -6,10 +6,11 @@ from __future__ import annotations
 
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
@@ -46,8 +47,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+static_dir = Path(__file__).parent.parent / "static"
+
 app.include_router(router)
-app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 @app.get("/health")
@@ -55,7 +57,12 @@ async def health():
     return {"app": "vmarketing-org", "status": "ok"}
 
 
-@app.get("/vmarketing-org", response_class=HTMLResponse)
-async def ui_root(request: Request):  # noqa: ARG001
-    with open("static/index.html") as fh:
-        return HTMLResponse(fh.read())
+@app.get("/", include_in_schema=False)
+@app.get("/vmarketing-org", include_in_schema=False)
+@app.get("/vmarketing-org/", include_in_schema=False)
+async def ui_root() -> FileResponse:
+    return FileResponse(str(static_dir / "index.html"))
+
+
+if static_dir.exists():
+    app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")

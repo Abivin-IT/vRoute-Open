@@ -51,6 +51,13 @@ public class AdaptiveShellController {
         .topbar .breadcrumb span{color:var(--text);font-weight:600}
         .topbar .search-box{margin-left:auto;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;padding:6px 14px;color:var(--text);font-size:12px;width:280px;outline:none}
         .topbar .search-box:focus{border-color:var(--blue)}
+        .topbar-actions{display:flex;align-items:center;gap:2px;margin-left:8px}
+        .topbar-btn{position:relative;width:32px;height:32px;background:none;border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:15px;text-decoration:none;transition:background .15s,color .15s}
+        .topbar-btn:hover{background:var(--hover);color:var(--text)}
+        .notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:#ef4444;border:1.5px solid var(--card)}
+        .logo-mark{width:30px;height:30px;background:linear-gradient(135deg,#3b82f6,#06b6d4);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;letter-spacing:-.5px;flex-shrink:0}
+        .logo-name{font-size:13px;font-weight:700;line-height:1.1}
+        .logo-sub{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;line-height:1.1}
         .app-frame{flex:1;border:none;width:100%;height:100%}
         .welcome{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px}
         .welcome h2{font-size:24px;margin-bottom:12px}
@@ -154,8 +161,11 @@ public class AdaptiveShellController {
             <div class="shell">
                 <div class="sidebar">
                     <div class="sidebar-header">
-                        <h1>&#9881; vRoute</h1>
-                        <span class="badge">OS</span>
+                        <div class="logo-mark">Ab</div>
+                        <div>
+                            <div class="logo-name">Abivin</div>
+                            <div class="logo-sub">vRoute OS</div>
+                        </div>
                     </div>
                     <div class="nav-section">Platform</div>
                     <a class="nav-item %s" href="/shell">
@@ -174,7 +184,7 @@ public class AdaptiveShellController {
                     %s
                     <div class="sidebar-footer">
                         vKernel Core OS v1.3.0<br>
-                        &#169; Abivin 2025
+                        &#169; Abivin 2026
                     </div>
                 </div>
                 <div class="main">
@@ -183,6 +193,10 @@ public class AdaptiveShellController {
                         <input class="search-box" type="text" placeholder="&#128269; Search across platform... (Ctrl+K)"
                                onfocus="this.placeholder='Type to search...'"
                                onblur="this.placeholder='&#128269; Search across platform... (Ctrl+K)'" />
+                        <div class="topbar-actions">
+                            <button class="topbar-btn" id="notif-btn" title="Notifications" aria-label="Notifications">&#128276;<span class="notif-dot" id="notif-dot" style="display:none"></span></button>
+                            <a class="topbar-btn" href="/dashboard" title="Platform Settings" aria-label="Settings">&#9881;&#65039;</a>
+                        </div>
                     </div>
                     %s
                 </div>

@@ -35,7 +35,7 @@ class FlexibleJSON(TypeDecorator):
 # ---------- Campaign (Campaign Orchestrator — ABM) ----------
 # @GovernanceID vmarketing-org.0.0
 class Campaign(Base):
-    __tablename__ = "vmkt_campaigns"
+    __tablename__ = "campaigns"
 
     id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     tenant_id = Column(Uuid, nullable=False, default=uuid.UUID("00000000-0000-0000-0000-000000000001"))
@@ -65,7 +65,7 @@ class Campaign(Base):
 # ---------- Tracking Event (Tracking Pixel — Behavioral Data) ----------
 # @GovernanceID vmarketing-org.0.1
 class TrackingEvent(Base):
-    __tablename__ = "vmkt_tracking_events"
+    __tablename__ = "tracking_events"
 
     id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     tenant_id = Column(Uuid, nullable=False, default=uuid.UUID("00000000-0000-0000-0000-000000000001"))
@@ -89,7 +89,7 @@ class TrackingEvent(Base):
 # ---------- Audience Segment (Target Groups) ----------
 # @GovernanceID vmarketing-org.0.2
 class AudienceSegment(Base):
-    __tablename__ = "vmkt_audience_segments"
+    __tablename__ = "audience_segments"
 
     id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     tenant_id = Column(Uuid, nullable=False, default=uuid.UUID("00000000-0000-0000-0000-000000000001"))
@@ -113,7 +113,7 @@ class AudienceSegment(Base):
 # ---------- Content Asset (Media Management) ----------
 # @GovernanceID vmarketing-org.0.3
 class ContentAsset(Base):
-    __tablename__ = "vmkt_content_assets"
+    __tablename__ = "content_assets"
 
     id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     tenant_id = Column(Uuid, nullable=False, default=uuid.UUID("00000000-0000-0000-0000-000000000001"))
@@ -140,7 +140,7 @@ class ContentAsset(Base):
 # ---------- Lead Score (AI Qualification) ----------
 # @GovernanceID vmarketing-org.0.4
 class LeadScore(Base):
-    __tablename__ = "vmkt_lead_scores"
+    __tablename__ = "lead_scores"
 
     id = Column(Uuid, primary_key=True, default=uuid.uuid4)
     tenant_id = Column(Uuid, nullable=False, default=uuid.UUID("00000000-0000-0000-0000-000000000001"))

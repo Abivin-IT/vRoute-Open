@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>vFinacc — R2R Finance Dashboard</title>
+    <link rel="stylesheet" href="/ui/app-layout.css" />
     <style>
       * {
         margin: 0;
@@ -14,25 +15,6 @@
         font-family: "Segoe UI", system-ui, sans-serif;
         background: #0d1117;
         color: #c9d1d9;
-      }
-      .header {
-        background: #161b22;
-        padding: 16px 24px;
-        border-bottom: 1px solid #30363d;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .header h1 {
-        font-size: 20px;
-        color: #58a6ff;
-      }
-      .header .badge {
-        background: #238636;
-        color: #fff;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 12px;
       }
       .grid {
         display: grid;
@@ -137,23 +119,7 @@
     </style>
   </head>
   <body>
-    <div class="header">
-      <a
-        href="/shell"
-        target="_top"
-        style="
-          color: var(--dim);
-          font-size: 13px;
-          text-decoration: none;
-          margin-right: 12px;
-        "
-        title="Back to vRoute Shell"
-        >&#8962; vRoute</a
-      >
-      <span style="font-size: 24px">💰</span>
-      <h1>vFinacc — R2R Finance</h1>
-      <span class="badge">v1.0.0</span>
-    </div>
+    <div id="vr-topbar" data-app-title="vFinacc · R2R Finance"></div>
     <div id="loading">Loading dashboard…</div>
     <div class="grid" id="dashboard" style="display: none">
       <!-- Ledger Summary -->
@@ -279,5 +245,6 @@
       }
       load();
     </script>
+    <script src="/ui/app-layout.js"></script>
   </body>
 </html>

@@ -2,6 +2,27 @@
 
 Tất cả thay đổi đáng chú ý được ghi nhận tại đây. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.7.1] — 2026-03-02
+
+### Fixed — Shared UI Consolidation + vMarketing-Org Stability
+
+**Adaptive Shell & Unified Topbar**
+
+- Created `/ui/app-layout.css` (shared topbar stylesheet with Abivin branding)
+- Created `/ui/app-layout.js` (shared topbar JavaScript with iframe detection)
+- Updated all 4 vApps to use shared `/ui/app-layout.{css,js}` from vKernel
+- Updated `AdaptiveShellController.java` with Abivin rebranding and notification bell
+- Updated `SecurityConfig.java` to permit-all requests to `/ui/**` resources
+
+**vMarketing Org Stability Fixes**
+
+- Fixed critical table name mismatch in models.py: ORM used `vmkt_*` prefix but DB tables didn't (fixed all 5 model tablenames)
+- Fixed app entry point to handle Spring gateway path stripping (GET `/`)
+- Rebuilt dashboard as live data-fetching UI with 5 sections, metric counters, status pills
+- Verified all 5 vmarketing APIs return HTTP 200 with seed data
+
+---
+
 ## [1.7.0] — 2026-03-02
 
 ### Added — vDesign Physical + vMarketing Org Full Implementation

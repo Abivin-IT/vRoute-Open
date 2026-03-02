@@ -4,121 +4,267 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>vMarketing Org ¬∑ M2L ABM Engine</title>
+    <link rel="stylesheet" href="/ui/app-layout.css" />
     <style>
-      :root {
-        --bg: #0f172a;
-        --card: #1e293b;
-        --accent: #06b6d4;
-        --txt: #e2e8f0;
-        --muted: #94a3b8;
-      }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        font-family: Inter, system-ui, sans-serif;
-        background: var(--bg);
-        color: var(--txt);
-        padding: 2rem;
-      }
-      h1 {
-        font-size: 1.8rem;
-        margin-bottom: 0.25rem;
-      }
-      .sub {
-        color: var(--muted);
-        margin-bottom: 2rem;
-      }
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 1.25rem;
-      }
-      .card {
-        background: var(--card);
-        border-radius: 12px;
-        padding: 1.5rem;
-        transition: transform 0.15s;
-      }
-      .card:hover {
-        transform: translateY(-3px);
-      }
-      .card h2 {
-        font-size: 1.1rem;
-        margin-bottom: 0.4rem;
-        color: var(--accent);
-      }
-      .card p {
-        color: var(--muted);
-        font-size: 0.9rem;
-        line-height: 1.5;
-      }
-      .badge {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        background: #06b6d422;
-        color: var(--accent);
-        margin-top: 0.5rem;
-      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: "Segoe UI", system-ui, sans-serif; background: #0d1117; color: #c9d1d9; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; padding: 20px; }
+      .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; }
+      .card.full { grid-column: 1 / -1; }
+      .card h2 { font-size: 13px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+      table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      th { text-align: left; padding: 7px 8px; color: #8b949e; border-bottom: 1px solid #30363d; white-space: nowrap; }
+      td { padding: 7px 8px; border-bottom: 1px solid #21262d; vertical-align: top; }
+      tr:last-child td { border-bottom: none; }
+      .pill { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; white-space:nowrap; }
+      .pill-active    { background:#1a3a1a; color:#3fb950; }
+      .pill-draft     { background:#2d2600; color:#d29922; }
+      .pill-paused    { background:#1a1a3a; color:#79c0ff; }
+      .pill-completed { background:#1a1a2e; color:#a5a5f5; }
+      .pill-published { background:#1a3a1a; color:#3fb950; }
+      .pill-archived  { background:#2a2a2a; color:#6e7681; }
+      .pill-hot       { background:#3a1a1a; color:#f85149; }
+      .pill-warm      { background:#2d2600; color:#d29922; }
+      .pill-cold      { background:#1a1a2e; color:#79c0ff; }
+      .pill-qualified { background:#1a3a1a; color:#3fb950; }
+      .pill-handed    { background:#1a2a3a; color:#58a6ff; }
+      .pill-disqual   { background:#3a1a1a; color:#f85149; }
+      .pill-new       { background:#21262d; color:#8b949e; }
+      .pill-tier1     { background:#3a1a3a; color:#d2a8ff; }
+      .pill-tier2     { background:#1a2a3a; color:#79c0ff; }
+      .pill-tier3     { background:#21262d; color:#8b949e; }
+      .metrics { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px; }
+      .metric { text-align:center; min-width:60px; }
+      .metric .val { font-size:24px; font-weight:700; color:#f0f6fc; }
+      .metric .lbl { font-size:10px; color:#8b949e; text-transform:uppercase; margin-top:2px; }
+      .score-bar-wrap { background:#21262d; border-radius:4px; height:6px; width:80px; display:inline-block; vertical-align:middle; margin-right:4px; }
+      .score-bar { height:100%; border-radius:4px; display:block; }
+      .bar-hot  { background:#f85149; }
+      .bar-warm { background:#d29922; }
+      .bar-cold { background:#58a6ff; }
+      .budget-bar-wrap { background:#21262d; border-radius:4px; height:6px; width:100%; margin-top:4px; }
+      .budget-bar { height:100%; border-radius:4px; background:#58a6ff; }
+      #loading { text-align:center; padding:60px; color:#8b949e; font-size:14px; }
+      .empty-row td { color:#484f58; font-style:italic; text-align:center; padding:16px; }
     </style>
   </head>
   <body>
-    <div style="font-size: 13px; margin-bottom: 8px">
-      <a
-        href="/shell"
-        target="_top"
-        style="color: #64748b; text-decoration: none"
-        title="Back to vRoute Shell"
-        >&#8962; vRoute</a
-      >
+    <div id="vr-topbar" data-app-title="vMarketing Org ¬∑ M2L ABM Engine"></div>
+    <div id="loading">Loading dashboard‚Ä¶</div>
+    <div class="grid" id="dashboard" style="display:none">
+
+      <!-- SyR-MKT-00  ABM Campaigns -->
+      <div class="card full">
+        <h2>ÌæØ ABM Campaigns (SyR-MKT-00)</h2>
+        <div class="metrics" id="camp-metrics"></div>
+        <table id="camp-table">
+          <thead><tr>
+            <th>Code</th><th>Name</th><th>Stage</th><th>Channel</th>
+            <th>Budget</th><th>Spent</th><th>Target Accts</th><th>Engaged</th><th>MQLs</th><th>Status</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- SyR-MKT-02  Audience Segments -->
+      <div class="card">
+        <h2>Ì±• Audience Segments (SyR-MKT-02)</h2>
+        <div class="metrics" id="seg-metrics"></div>
+        <table id="seg-table">
+          <thead><tr>
+            <th>Code</th><th>Name</th><th>Tier</th><th>Accounts</th><th>Status</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- SyR-MKT-03  Content Assets -->
+      <div class="card">
+        <h2>Ì≥Ñ Content Assets (SyR-MKT-03)</h2>
+        <div class="metrics" id="asset-metrics"></div>
+        <table id="asset-table">
+          <thead><tr>
+            <th>Code</th><th>Title</th><th>Type</th><th>Stage</th><th>‚Üì DL</th><th>Ì±Å Views</th><th>Status</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- SyR-MKT-04  Lead Scoring -->
+      <div class="card full">
+        <h2>ÌøÜ Lead Scoring (SyR-MKT-04)</h2>
+        <div class="metrics" id="lead-metrics"></div>
+        <table id="lead-table">
+          <thead><tr>
+            <th>Organization</th><th>Contact</th><th>Title</th>
+            <th>Score</th><th>Grade</th><th>Status</th><th>Handed Off To</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- SyR-MKT-01  Tracking Events -->
+      <div class="card full">
+        <h2>Ì≥° Tracking Pixels ¬∑ Recent Events (SyR-MKT-01)</h2>
+        <div class="metrics" id="evt-metrics"></div>
+        <table id="evt-table">
+          <thead><tr>
+            <th>Code</th><th>Organization</th><th>Action</th>
+            <th>Page / Resource</th><th>Dwell (s)</th><th>Intent Score</th><th>Timestamp</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
     </div>
-    <h1>üì¢ vMarketing Org</h1>
-    <p class="sub">M2L ABM Engine ¬∑ Market-to-Lead Account-Based Marketing</p>
-    <div class="grid">
-      <div class="card">
-        <h2>üéØ ABM Campaigns</h2>
-        <p>
-          Plan, launch, pause &amp; complete multi-stage Account-Based Marketing
-          campaigns with budget tracking.
-        </p>
-        <span class="badge">SyR-MKT-00</span>
-      </div>
-      <div class="card">
-        <h2>üì° Tracking Pixels</h2>
-        <p>
-          Ingest anonymous page-view, download, video-watch and exit-intent
-          events with dwell-time &amp; intent scoring.
-        </p>
-        <span class="badge">SyR-MKT-01</span>
-      </div>
-      <div class="card">
-        <h2>üë• Audience Segments</h2>
-        <p>
-          Define tiered target groups (Tier 1/2/3) with criteria-based
-          segmentation and account counts.
-        </p>
-        <span class="badge">SyR-MKT-02</span>
-      </div>
-      <div class="card">
-        <h2>üìÑ Content Assets</h2>
-        <p>
-          Manage whitepapers, case studies, videos &amp; infographics across
-          stages from draft to published.
-        </p>
-        <span class="badge">SyR-MKT-03</span>
-      </div>
-      <div class="card">
-        <h2>üèÜ Lead Scoring</h2>
-        <p>
-          AI-driven qualification engine ‚Äî score leads (HOT/WARM/COLD), qualify,
-          hand off to sales, or disqualify.
-        </p>
-        <span class="badge">SyR-MKT-04</span>
-      </div>
-    </div>
+    <script>
+      const API = "/api/v1/vmarketing-org";
+
+      function pillCamp(s)  { const m={ACTIVE:"active",DRAFT:"draft",PAUSED:"paused",COMPLETED:"completed"}; return `<span class="pill pill-${m[s]||'draft'}">${s}</span>`; }
+      function pillAsset(s) { const m={PUBLISHED:"published",DRAFT:"draft",ARCHIVED:"archived"}; return `<span class="pill pill-${m[s]||'draft'}">${s}</span>`; }
+      function pillTier(t)  { const m={TIER_1:"tier1",TIER_2:"tier2",TIER_3:"tier3"}; return `<span class="pill pill-${m[t]||'tier3'}">${t.replace("_"," ")}</span>`; }
+      function pillGrade(g) { const m={HOT:"hot",WARM:"warm",COLD:"cold"}; return `<span class="pill pill-${m[g]||'cold'}">${g}</span>`; }
+      function pillLeadSt(s){ const m={QUALIFIED:"qualified",HANDED_OFF:"handed",DISQUALIFIED:"disqual",NEW:"new"}; return `<span class="pill pill-${m[s]||'new'}">${s.replace(/_/g," ")}</span>`; }
+      function segSt(s)     { return `<span class="pill pill-${s==="ACTIVE"?"active":"archived"}">${s}</span>`; }
+      function fmt(n)       { return Number(n||0).toLocaleString("en-US"); }
+      function fmtDate(d)   { return d ? new Date(d).toLocaleString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "-"; }
+      function emptyRow(c)  { return `<tr class="empty-row"><td colspan="${c}">No data</td></tr>`; }
+
+      async function load() {
+        try {
+          const [camps, segs, assets, leads, evts] = await Promise.all([
+            fetch(`${API}/campaigns`).then(r=>r.json()),
+            fetch(`${API}/segments`).then(r=>r.json()),
+            fetch(`${API}/assets`).then(r=>r.json()),
+            fetch(`${API}/leads`).then(r=>r.json()),
+            fetch(`${API}/tracking-events`).then(r=>r.json()),
+          ]);
+          renderCampaigns(camps); renderSegments(segs); renderAssets(assets);
+          renderLeads(leads); renderEvents(evts);
+          document.getElementById("loading").style.display="none";
+          document.getElementById("dashboard").style.display="grid";
+        } catch(err) {
+          document.getElementById("loading").innerHTML=`<p style="color:#f85149">Failed to load: ${err.message}</p>`;
+        }
+      }
+
+      function renderCampaigns(camps) {
+        const active=camps.filter(c=>c.status==="ACTIVE").length, draft=camps.filter(c=>c.status==="DRAFT").length,
+              paused=camps.filter(c=>c.status==="PAUSED").length, done=camps.filter(c=>c.status==="COMPLETED").length,
+              mql=camps.reduce((s,c)=>s+(c.mqls_generated||0),0);
+        document.getElementById("camp-metrics").innerHTML=`
+          <div class="metric"><div class="val">${camps.length}</div><div class="lbl">Total</div></div>
+          <div class="metric"><div class="val" style="color:#3fb950">${active}</div><div class="lbl">Active</div></div>
+          <div class="metric"><div class="val" style="color:#d29922">${draft}</div><div class="lbl">Draft</div></div>
+          <div class="metric"><div class="val" style="color:#79c0ff">${paused}</div><div class="lbl">Paused</div></div>
+          <div class="metric"><div class="val" style="color:#a5a5f5">${done}</div><div class="lbl">Completed</div></div>
+          <div class="metric"><div class="val" style="color:#58a6ff">${mql}</div><div class="lbl">Total MQLs</div></div>`;
+        const tb=document.querySelector("#camp-table tbody");
+        if(!camps.length){tb.innerHTML=emptyRow(10);return;}
+        camps.forEach(c=>{
+          const budget=Number(c.budget_amount)||0, spent=Number(c.spent_amount)||0,
+                pct=budget>0?Math.min(Math.round(spent/budget*100),100):0;
+          tb.innerHTML+=`<tr>
+            <td style="color:#58a6ff;font-family:monospace;white-space:nowrap">${c.campaign_code}</td>
+            <td>${c.name}</td>
+            <td style="font-size:11px;color:#8b949e;white-space:nowrap">${c.stage}</td>
+            <td style="font-size:11px;white-space:nowrap">${c.channel||"-"}</td>
+            <td style="white-space:nowrap">$${fmt(budget)}<div class="budget-bar-wrap"><div class="budget-bar" style="width:${pct}%"></div></div></td>
+            <td style="white-space:nowrap">$${fmt(spent)} <small style="color:#8b949e">(${pct}%)</small></td>
+            <td style="text-align:right">${fmt(c.target_accounts)}</td>
+            <td style="text-align:right;color:#3fb950">${fmt(c.engaged_accounts)}</td>
+            <td style="text-align:right;color:#d2a8ff">${fmt(c.mqls_generated)}</td>
+            <td>${pillCamp(c.status)}</td>
+          </tr>`;
+        });
+      }
+
+      function renderSegments(segs) {
+        const t1=segs.filter(s=>s.tier==="TIER_1").length, t2=segs.filter(s=>s.tier==="TIER_2").length,
+              t3=segs.filter(s=>s.tier==="TIER_3").length, accts=segs.reduce((s,r)=>s+(r.account_count||0),0);
+        document.getElementById("seg-metrics").innerHTML=`
+          <div class="metric"><div class="val">${segs.length}</div><div class="lbl">Segments</div></div>
+          <div class="metric"><div class="val" style="color:#d2a8ff">${t1}</div><div class="lbl">Tier 1</div></div>
+          <div class="metric"><div class="val" style="color:#79c0ff">${t2}</div><div class="lbl">Tier 2</div></div>
+          <div class="metric"><div class="val" style="color:#8b949e">${t3}</div><div class="lbl">Tier 3</div></div>
+          <div class="metric"><div class="val" style="color:#3fb950">${fmt(accts)}</div><div class="lbl">Accounts</div></div>`;
+        const tb=document.querySelector("#seg-table tbody");
+        if(!segs.length){tb.innerHTML=emptyRow(5);return;}
+        segs.forEach(s=>{ tb.innerHTML+=`<tr>
+          <td style="color:#58a6ff;font-family:monospace">${s.segment_code}</td>
+          <td>${s.name}</td><td>${pillTier(s.tier)}</td>
+          <td style="text-align:right">${fmt(s.account_count)}</td>
+          <td>${segSt(s.status)}</td></tr>`; });
+      }
+
+      function renderAssets(assets) {
+        const pub=assets.filter(a=>a.status==="PUBLISHED").length, dr=assets.filter(a=>a.status==="DRAFT").length,
+              dl=assets.reduce((s,a)=>s+(a.downloads||0),0);
+        document.getElementById("asset-metrics").innerHTML=`
+          <div class="metric"><div class="val">${assets.length}</div><div class="lbl">Total</div></div>
+          <div class="metric"><div class="val" style="color:#3fb950">${pub}</div><div class="lbl">Published</div></div>
+          <div class="metric"><div class="val" style="color:#d29922">${dr}</div><div class="lbl">Draft</div></div>
+          <div class="metric"><div class="val" style="color:#58a6ff">${fmt(dl)}</div><div class="lbl">Downloads</div></div>`;
+        const tb=document.querySelector("#asset-table tbody");
+        if(!assets.length){tb.innerHTML=emptyRow(7);return;}
+        assets.forEach(a=>{ tb.innerHTML+=`<tr>
+          <td style="color:#58a6ff;font-family:monospace">${a.asset_code}</td>
+          <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.title}</td>
+          <td style="font-size:11px;color:#8b949e">${a.asset_type}</td>
+          <td style="font-size:11px;color:#8b949e">${a.target_stage||"-"}</td>
+          <td style="text-align:right">${fmt(a.downloads)}</td>
+          <td style="text-align:right">${fmt(a.views)}</td>
+          <td>${pillAsset(a.status)}</td></tr>`; });
+      }
+
+      function renderLeads(leads) {
+        const hot=leads.filter(l=>l.grade==="HOT").length, warm=leads.filter(l=>l.grade==="WARM").length,
+              cold=leads.filter(l=>l.grade==="COLD").length, qual=leads.filter(l=>l.status==="QUALIFIED").length,
+              avg=leads.length?Math.round(leads.reduce((s,l)=>s+l.score,0)/leads.length):0;
+        document.getElementById("lead-metrics").innerHTML=`
+          <div class="metric"><div class="val">${leads.length}</div><div class="lbl">Leads</div></div>
+          <div class="metric"><div class="val" style="color:#f85149">${hot}</div><div class="lbl">HOT</div></div>
+          <div class="metric"><div class="val" style="color:#d29922">${warm}</div><div class="lbl">WARM</div></div>
+          <div class="metric"><div class="val" style="color:#79c0ff">${cold}</div><div class="lbl">COLD</div></div>
+          <div class="metric"><div class="val" style="color:#3fb950">${qual}</div><div class="lbl">Qualified</div></div>
+          <div class="metric"><div class="val">${avg}</div><div class="lbl">Avg Score</div></div>`;
+        const tb=document.querySelector("#lead-table tbody");
+        if(!leads.length){tb.innerHTML=emptyRow(7);return;}
+        leads.forEach(l=>{
+          const bc=l.grade==="HOT"?"bar-hot":l.grade==="WARM"?"bar-warm":"bar-cold";
+          tb.innerHTML+=`<tr>
+            <td style="font-weight:600">${l.organization}</td>
+            <td>${l.contact_name||"-"}</td>
+            <td style="font-size:12px;color:#8b949e">${l.contact_title||"-"}</td>
+            <td><span class="score-bar-wrap"><span class="score-bar ${bc}" style="width:${l.score}%"></span></span><strong>${l.score}</strong></td>
+            <td>${pillGrade(l.grade)}</td><td>${pillLeadSt(l.status)}</td>
+            <td style="font-size:12px;color:#8b949e">${l.handed_off_to||"-"}</td></tr>`;
+        });
+      }
+
+      function renderEvents(evts) {
+        const byType={};
+        evts.forEach(e=>{byType[e.action_type]=(byType[e.action_type]||0)+1;});
+        let mh=`<div class="metric"><div class="val">${evts.length}</div><div class="lbl">Events</div></div>`;
+        Object.entries(byType).forEach(([k,v])=>{ mh+=`<div class="metric"><div class="val">${v}</div><div class="lbl">${k.replace(/_/g," ")}</div></div>`; });
+        document.getElementById("evt-metrics").innerHTML=mh;
+        const tb=document.querySelector("#evt-table tbody");
+        if(!evts.length){tb.innerHTML=emptyRow(7);return;}
+        evts.slice(0,20).forEach(e=>{
+          const ic=e.intent_score>=70?"#f85149":e.intent_score>=40?"#d29922":"#8b949e";
+          tb.innerHTML+=`<tr>
+            <td style="color:#58a6ff;font-family:monospace">${e.event_code}</td>
+            <td>${e.organization}</td>
+            <td style="font-size:11px;color:#8b949e;white-space:nowrap">${e.action_type}</td>
+            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${e.page_resource||"-"}</td>
+            <td style="text-align:right">${e.dwell_seconds}</td>
+            <td style="text-align:right;color:${ic};font-weight:600">${e.intent_score}</td>
+            <td style="font-size:11px;color:#8b949e;white-space:nowrap">${fmtDate(e.created_at)}</td></tr>`;
+        });
+      }
+
+      load();
+    </script>
+    <script src="/ui/app-layout.js"></script>
   </body>
 </html>

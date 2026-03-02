@@ -60,6 +60,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1", "/api/v1/").permitAll()
                 .requestMatchers("/dashboard", "/dashboard/**").permitAll()
                 .requestMatchers("/css/**").permitAll()
+                .requestMatchers("/ui/**").permitAll()
                 .requestMatchers("/shell", "/shell/**").permitAll()
                 // Gateway proxy routes — vApps are internal-only; vKernel is the auth boundary
                 .requestMatchers("/api/v1/vstrategy/**", "/vstrategy/**").permitAll()
