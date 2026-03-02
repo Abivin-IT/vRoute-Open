@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>vKernel — vFlow / Automation</title>
     <link rel="stylesheet" href="/css/vkernel.css" />
+    <link rel="stylesheet" href="/ui/app-layout.css" />
     <style>
       /* ── Tabs ─────────────────────────────────────── */
       .tabs {
@@ -163,20 +164,10 @@
     </style>
   </head>
   <body>
-    <div class="header">
-      <h1>&#9889; vFlow — Workflow Automation</h1>
-      <span class="badge">SyR-PLAT-00.03</span>
-      <nav>
-        <a href="/">&#8962; Shell</a>
-        <a href="/shell">Home</a>
-        <a href="/dashboard/appstore">App Store</a>
-        <a href="/dashboard/settings">Settings</a>
-        <a href="/dashboard/audit">Audit</a>
-        <a href="/dashboard/data">vData</a>
-        <a class="active" href="/dashboard/automation">vFlow</a>
-        <a href="/dashboard/monitor">vMonitor</a>
-      </nav>
-    </div>
+    <div
+      id="vr-topbar"
+      data-app-title="vFlow — Automation · SyR-PLAT-00.03"
+    ></div>
 
     <div class="container">
       <!-- Stats -->
@@ -269,5 +260,6 @@
         });
       });
     </script>
+    <script src="/ui/app-layout.js"></script>
   </body>
 </html>

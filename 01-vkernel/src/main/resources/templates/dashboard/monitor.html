@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>vKernel — vMonitor</title>
     <link rel="stylesheet" href="/css/vkernel.css" />
+    <link rel="stylesheet" href="/ui/app-layout.css" />
     <style>
       /* ── Health Grid ────────────────────────────────── */
       .health-grid {
@@ -178,20 +179,10 @@
     </style>
   </head>
   <body>
-    <div class="header">
-      <h1>&#128200; vMonitor — Health &amp; Metrics</h1>
-      <span class="badge">SyR-PLAT-00.04</span>
-      <nav>
-        <a href="/">&#8962; Shell</a>
-        <a href="/shell">Home</a>
-        <a href="/dashboard/appstore">App Store</a>
-        <a href="/dashboard/settings">Settings</a>
-        <a href="/dashboard/audit">Audit</a>
-        <a href="/dashboard/data">vData</a>
-        <a href="/dashboard/automation">vFlow</a>
-        <a class="active" href="/dashboard/monitor">vMonitor</a>
-      </nav>
-    </div>
+    <div
+      id="vr-topbar"
+      data-app-title="vMonitor — Health &amp; Metrics · SyR-PLAT-00.04"
+    ></div>
 
     <div class="container">
       <!-- System Health Overview -->
@@ -481,5 +472,6 @@
         fetchJvmMetrics();
       }, 30000);
     </script>
+    <script src="/ui/app-layout.js"></script>
   </body>
 </html>

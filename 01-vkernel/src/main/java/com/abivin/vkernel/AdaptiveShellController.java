@@ -131,6 +131,20 @@ public class AdaptiveShellController {
                 "ACTIVE".equals(app.getStatus()) ? "<span class=\"status\"></span>" : ""));
         }
 
+        // If active app is a system utility it won't appear in the installed list above
+        if (iframeUrl == null && activeAppId != null && activeAppId.startsWith("vkernel.")) {
+            iframeUrl = resolveAppUrl(activeAppId);
+            activeAppName = switch (activeAppId) {
+                case "vkernel.appstore"   -> "App Store";
+                case "vkernel.settings"   -> "Settings / IAM";
+                case "vkernel.data"       -> "vData (MDM)";
+                case "vkernel.automation" -> "vFlow";
+                case "vkernel.audit"      -> "vAudit";
+                case "vkernel.monitor"    -> "vMonitor";
+                default -> activeAppId;
+            };
+        }
+
         // Build app cards for PRD App Launcher (with KPI placeholders)
         StringBuilder appCards = new StringBuilder();
         for (var app : apps) {
@@ -176,6 +190,14 @@ public class AdaptiveShellController {
                 """, apps.size(), appCards.toString());
         }
 
+        // System app active states
+        String sysSt  = "vkernel.appstore".equals(activeAppId)   ? "active" : "";
+        String sysSe  = "vkernel.settings".equals(activeAppId)   ? "active" : "";
+        String sysDa  = "vkernel.data".equals(activeAppId)       ? "active" : "";
+        String sysAu  = "vkernel.automation".equals(activeAppId) ? "active" : "";
+        String sysAud = "vkernel.audit".equals(activeAppId)      ? "active" : "";
+        String sysMo  = "vkernel.monitor".equals(activeAppId)    ? "active" : "";
+
         return """
             <!doctype html><html lang="en"><head><meta charset="UTF-8">
             <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -198,22 +220,22 @@ public class AdaptiveShellController {
                     <div class="nav-section">Business Apps (%d)</div>
                     %s
                     <div class="nav-section">System (6)</div>
-                    <a class="nav-item" href="/dashboard/appstore">
+                    <a class="nav-item %s" href="/shell/vkernel.appstore">
                         <span class="icon">&#127978;</span><span>App Store</span>
                     </a>
-                    <a class="nav-item" href="/dashboard/settings">
+                    <a class="nav-item %s" href="/shell/vkernel.settings">
                         <span class="icon">&#9881;</span><span>Settings / IAM</span>
                     </a>
-                    <a class="nav-item" href="/dashboard/data">
+                    <a class="nav-item %s" href="/shell/vkernel.data">
                         <span class="icon">&#128451;</span><span>vData (MDM)</span>
                     </a>
-                    <a class="nav-item" href="/dashboard/automation">
+                    <a class="nav-item %s" href="/shell/vkernel.automation">
                         <span class="icon">&#9889;</span><span>vFlow</span>
                     </a>
-                    <a class="nav-item" href="/dashboard/audit">
+                    <a class="nav-item %s" href="/shell/vkernel.audit">
                         <span class="icon">&#128274;</span><span>vAudit</span>
                     </a>
-                    <a class="nav-item" href="/dashboard/monitor">
+                    <a class="nav-item %s" href="/shell/vkernel.monitor">
                         <span class="icon">&#128200;</span><span>vMonitor</span>
                     </a>
                     </div>
@@ -266,6 +288,7 @@ public class AdaptiveShellController {
                 activeAppName, SHELL_CSS,
                 activeAppId == null ? "active" : "",
                 apps.size(), navItems.toString(),
+                sysSt, sysSe, sysDa, sysAu, sysAud, sysMo,
                 activeAppName,
                 mainContent);
     }
@@ -276,10 +299,20 @@ public class AdaptiveShellController {
      */
     private String resolveAppUrl(String appId) {
         if (appId == null) return "#";
-        // Extract last part: com.vcorp.vstrategy → vstrategy
-        String[] parts = appId.split("\\.");
-        String shortName = parts[parts.length - 1];
-        return "/" + shortName + "/";
+        // System apps map to their dedicated dashboard routes
+        return switch (appId) {
+            case "vkernel.appstore"   -> "/dashboard/appstore";
+            case "vkernel.settings"   -> "/dashboard/settings";
+            case "vkernel.data"       -> "/dashboard/data";
+            case "vkernel.automation" -> "/dashboard/automation";
+            case "vkernel.audit"      -> "/dashboard/audit";
+            case "vkernel.monitor"    -> "/dashboard/monitor";
+            default -> {
+                // Business apps: com.vcorp.vstrategy → /vstrategy/
+                String[] parts = appId.split("\\.");
+                yield "/" + parts[parts.length - 1] + "/";
+            }
+        };
     }
 
     /**
