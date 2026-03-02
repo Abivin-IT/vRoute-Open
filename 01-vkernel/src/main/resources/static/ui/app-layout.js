@@ -75,7 +75,7 @@
     '    <span class="vr-notif-dot" id="vr-notif-dot" style="display:none"></span>' +
     "  </button>" +
     // Settings → vKernel settings
-    '  <a class="vr-btn" href="/dashboard/settings" target="_top" title="Platform Settings" aria-label="Settings">' +
+    '  <a class="vr-btn" href="/shell/vkernel.settings" target="_top" title="Platform Settings" aria-label="Settings">' +
     "    " +
     ICON.gear +
     "  </a>" +

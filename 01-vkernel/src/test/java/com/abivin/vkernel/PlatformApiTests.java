@@ -337,13 +337,13 @@ class PlatformApiTests {
     }
 
     @Test @Order(74)
-    @DisplayName("UI-05 — Topbar settings gear links to /dashboard/settings")
+    @DisplayName("UI-05 — Topbar settings gear links to /shell/vkernel.settings")
     void test_topbar_settings_link() throws Exception {
         String html = mvc.perform(get("/shell"))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
         org.assertj.core.api.Assertions.assertThat(html)
-            .contains("href=\"/dashboard/settings\" title=\"Platform Settings\"");
+            .contains("href=\"/shell/vkernel.settings\" title=\"Platform Settings\"");
     }
 
     @Test @Order(75)

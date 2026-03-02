@@ -161,7 +161,7 @@ public class DashboardController {
 
     /**
      * App Store — browse, install, uninstall vApps. Industry bundles.
-     * GET /dashboard/appstore
+     * GET /dashboard/appstore OR GET /shell/vkernel.appstore
      * @GovernanceID SyR-PLAT-00.01
      */
     @GetMapping(value = "/dashboard/appstore", produces = MediaType.TEXT_HTML_VALUE)
@@ -203,7 +203,7 @@ public class DashboardController {
 
     /**
      * Settings / IAM — permission matrix (CRUDIEA × Roles).
-     * GET /dashboard/settings
+     * GET /dashboard/settings OR GET /shell/vkernel.settings
      * @GovernanceID SyR-PLAT-00.02
      */
     @GetMapping(value = "/dashboard/settings", produces = MediaType.TEXT_HTML_VALUE)
@@ -246,7 +246,7 @@ public class DashboardController {
 
     /**
      * vAudit — immutable event audit log with filters.
-     * GET /dashboard/audit
+     * GET /dashboard/audit OR GET /shell/vkernel.audit
      * @GovernanceID SyR-PLAT-00.04
      */
     @GetMapping(value = "/dashboard/audit", produces = MediaType.TEXT_HTML_VALUE)
@@ -321,7 +321,7 @@ public class DashboardController {
 
     /**
      * vData / MDM — golden records browser (stakeholders, currencies, countries).
-     * GET /dashboard/data
+     * GET /dashboard/data OR GET /shell/vkernel.data
      * @GovernanceID SyR-PLAT-00.03
      */
     @GetMapping(value = "/dashboard/data", produces = MediaType.TEXT_HTML_VALUE)
@@ -379,7 +379,7 @@ public class DashboardController {
 
     /**
      * vFlow / Automation — event subscription wiring and run history.
-     * GET /dashboard/automation
+     * GET /dashboard/automation OR GET /shell/vkernel.automation
      * @GovernanceID SyR-PLAT-00.03
      */
     @GetMapping(value = "/dashboard/automation", produces = MediaType.TEXT_HTML_VALUE)
@@ -457,7 +457,8 @@ public class DashboardController {
 
     /**
      * vMonitor — health dashboard, JVM metrics, Prometheus.
-     * GET /dashboard/monitor
+     * vMonitor — system health + app registry browser.
+     * GET /dashboard/monitor OR GET /shell/vkernel.monitor
      * @GovernanceID SyR-PLAT-00.04
      */
     @GetMapping(value = "/dashboard/monitor", produces = MediaType.TEXT_HTML_VALUE)
