@@ -107,42 +107,44 @@
 - [x] **Cross-reference READMEs** — `01-vkernel/README.md` (gateway routes table, registered vApps), `02-vstrategy/README.md` (deps, API, integration), `03-vfinacc/README.md` (deps, API, integration)
 - [x] **CHANGELOG v1.5.1** — Documented all fixes and additions
 
-## Step 10: Third vApp — vDesign Physical (SyR-PHY-00 through SyR-PHY-04)
+## ~~Step 10: Third vApp — vDesign Physical (SyR-PHY-00 through SyR-PHY-04)~~ ✅ DONE
 
 > PRD: `00-design/docs/vdesign-physical-prd.md` | Policy: [I2S] Idea-to-Spec (Physical Verification Cycle)
 > Tech Stack: Python 3.12 / FastAPI | IoT Sensors · RFID/QR · Lab Equipment (LIMS)
 
-- [ ] Design sheets: `00-design/sheets/vdesign-physical/{api-contract,acceptance-criteria,data-model}.md`
-- [ ] Scaffold `04-vdesign-physical/` — Python 3.12 / FastAPI (port 8083, shared PostgreSQL DB)
-- [ ] 5+ ORM models: `GoldenSample` (SEALED/ACTIVE/COMPROMISED/EXPIRED), `MaterialInbox` (PENDING/TESTED/ARCHIVED/SCRAPPED), `Prototype` (ACTIVE/IN_TRANSIT/OBSOLETE/DESTROYED), `LabTest` (RUNNING/PASSED/FAILED/CONDITIONAL), `HandoverKit` (PACKING/READY/DISPATCHED/RECEIVED)
-- [ ] Business logic `service.py`: Spec Master Vault (convergence % calculation, seal/break-seal workflow), Idea Inbox (material ingestion + sensor data), Version Control (prototype tracking + RFID location), Feasibility Checker (lab test execution + failure analysis), Handover Kit (packing + weight check + dispatch)
-- [ ] Full REST API: ~20 endpoints at `/api/v1/vdesign-physical` (Golden Samples CRUD, Material Inbox, Prototypes, Lab Tests, Handover Kits, Health)
-- [ ] `manifest.json` — 3 permissions (phys.spec.seal, phys.inventory.audit, phys.lab.execute), 4 published events, 3 subscribed events, depends on vkernel + vdesign-digital
-- [ ] Alembic migration `0001_vdesign_physical_init.py` — 5+ tables + indexes + seed data (demo golden samples, materials, prototypes, lab tests, kits)
-- [ ] vKernel Flyway `V9__register_vdesign_physical.sql` — Register in app registry + inject 3 permissions
-- [ ] Gateway routes: `/api/v1/vdesign-physical/**` + `/vdesign-physical/**` → vdesign-physical:8083
-- [ ] Dark-themed HTML dashboard (`static/index.html`) — Spec Master Vault, Idea Inbox, Prototype Tracker, Lab Test, Handover Kit cards
-- [ ] 25+ integration tests (pytest-asyncio + httpx + aiosqlite) — all SyR-PHY requirements covered
-- [ ] `Dockerfile` — 2-stage: Node 20-alpine + Python 3.12-slim, port 8083
-- [ ] Added to `docker-compose.yml`, `Makefile` (`test-design-physical` target), CI/CD, README, guides
-- [ ] `04-vdesign-physical/README.md` — Cross-references to vKernel, vDesign Digital, vBuild
+- [x] Design sheets: `00-design/sheets/vdesign-physical/{api-contract,acceptance-criteria,data-model}.md`
+- [x] Scaffold `04-vdesign-physical/` — Python 3.12 / FastAPI (port 8083, shared PostgreSQL DB)
+- [x] 5+ ORM models: `GoldenSample` (SEALED/ACTIVE/COMPROMISED/EXPIRED), `MaterialInbox` (PENDING/TESTED/ARCHIVED/SCRAPPED), `Prototype` (ACTIVE/IN_TRANSIT/OBSOLETE/DESTROYED), `LabTest` (RUNNING/PASSED/FAILED/CONDITIONAL), `HandoverKit` (PACKING/READY/DISPATCHED/RECEIVED)
+- [x] Business logic `service.py`: Spec Master Vault (convergence % calculation, seal/break-seal workflow), Idea Inbox (material ingestion + sensor data), Version Control (prototype tracking + RFID location), Feasibility Checker (lab test execution + failure analysis), Handover Kit (packing + weight check + dispatch)
+- [x] Full REST API: ~20 endpoints at `/api/v1/vdesign-physical` (Golden Samples CRUD, Material Inbox, Prototypes, Lab Tests, Handover Kits, Health)
+- [x] `manifest.json` — 3 permissions (phys.spec.seal, phys.inventory.audit, phys.lab.execute), 4 published events, 3 subscribed events, depends on vkernel + vdesign-digital
+- [x] Alembic migration `0001_vdesign_physical_init.py` — 5+ tables + indexes + seed data (demo golden samples, materials, prototypes, lab tests, kits)
+- [x] vKernel Flyway `V9__register_vdesign_physical.sql` — Register in app registry + inject 3 permissions
+- [x] Gateway routes: `/api/v1/vdesign-physical/**` + `/vdesign-physical/**` → vdesign-physical:8083
+- [x] Dark-themed HTML dashboard (`static/index.html`) — Spec Master Vault, Idea Inbox, Prototype Tracker, Lab Test, Handover Kit cards
+- [x] 35 integration tests (pytest-asyncio + httpx + aiosqlite) — all SyR-PHY requirements covered
+- [x] TypeScript frontend: `types.ts`, `api.ts`, `renderers.ts`, `main.ts` + IIFE bundler
+- [x] `Dockerfile` — 2-stage: Node 20-alpine + Python 3.12-slim, port 8083
+- [x] Added to `docker-compose.yml`, `Makefile` (`test-design-physical` target), CI/CD, README, guides
+- [x] `04-vdesign-physical/README.md` — Cross-references to vKernel, vDesign Digital, vBuild
 
-## Step 11: Fourth vApp — vMarketing Organization (SyR-MKT-ORG-00 through SyR-MKT-ORG-04)
+## ~~Step 11: Fourth vApp — vMarketing Organization (SyR-MKT-ORG-00 through SyR-MKT-ORG-04)~~ ✅ DONE
 
 > PRD: `00-design/docs/vmarketing-org-prd.md` | Policy: [M2L] Marketing-to-Lead Cycle
 > Tech Stack: Python 3.12 / FastAPI | vKernel AI Agent (Lead Scoring)
 
-- [ ] Design sheets: `00-design/sheets/vmarketing-org/{api-contract,acceptance-criteria,data-model}.md`
-- [ ] Scaffold `05-vmarketing-org/` — Python 3.12 / FastAPI (port 8084, shared PostgreSQL DB)
-- [ ] 5+ ORM models: `Campaign` (DRAFT/LIVE/PAUSED/COMPLETED), `TrackingEvent` (raw intent signals, IP-to-company mapping), `AudienceSegment` (firmographic rules, dynamic account sync), `ContentAsset` (DRAFT/PUBLISHED/GATED/EXPIRED), `LeadScore` (DISCOVERY/ENGAGED/INTENT/MQL/HANDOVER)
-- [ ] Business logic `service.py`: Campaign Orchestrator (ABM multi-channel coordination, pipeline value tracking), Tracking Pixel (IP-to-Company mapping, collective behavior scoring, high-value action detection), Audience Segment (firmographic/technographic rules, tiering, dynamic sync), Content Asset (knowledge hub, gated content, compliance audit), Lead Scorer (account scoring formula: ωf·Firmographics + ωi·ΣIntent, buying committee multiplier, BANT mapping, auto-handover)
-- [ ] Full REST API: ~22 endpoints at `/api/v1/vmarketing-org` (Campaigns CRUD, Tracking Events, Segments, Content Assets, Lead Scores, Health)
-- [ ] `manifest.json` — 3 permissions (mkt.abm.orchestrate, mkt.pixel.configure, mkt.lead.handover), 4 published events, 3 subscribed events, depends on vkernel + vsales-org
-- [ ] Alembic migration `0001_vmarketing_org_init.py` — 5+ tables + indexes + seed data (demo campaigns, tracking events, segments, content assets, lead scores)
-- [ ] vKernel Flyway `V10__register_vmarketing_org.sql` — Register in app registry + inject 3 permissions
-- [ ] Gateway routes: `/api/v1/vmarketing-org/**` + `/vmarketing-org/**` → vmarketing-org:8084
-- [ ] Dark-themed HTML dashboard (`static/index.html`) — ABM Orchestrator, Intent Sensing, Firmographic Segments, Knowledge Hub, Account Scoring cards
-- [ ] 25+ integration tests (pytest-asyncio + httpx + aiosqlite) — all SyR-MKT-ORG requirements covered
-- [ ] `Dockerfile` — 2-stage: Node 20-alpine + Python 3.12-slim, port 8084
-- [ ] Added to `docker-compose.yml`, `Makefile` (`test-marketing-org` target), CI/CD, README, guides
-- [ ] `05-vmarketing-org/README.md` — Cross-references to vKernel, vSales ORG, vStrategy
+- [x] Design sheets: `00-design/sheets/vmarketing-org/{api-contract,acceptance-criteria,data-model}.md`
+- [x] Scaffold `05-vmarketing-org/` — Python 3.12 / FastAPI (port 8084, shared PostgreSQL DB)
+- [x] 5+ ORM models: `Campaign` (DRAFT/LIVE/PAUSED/COMPLETED), `TrackingEvent` (raw intent signals, IP-to-company mapping), `AudienceSegment` (firmographic rules, dynamic account sync), `ContentAsset` (DRAFT/PUBLISHED/GATED/EXPIRED), `LeadScore` (DISCOVERY/ENGAGED/INTENT/MQL/HANDOVER)
+- [x] Business logic `service.py`: Campaign Orchestrator (ABM multi-channel coordination, pipeline value tracking), Tracking Pixel (IP-to-Company mapping, collective behavior scoring, high-value action detection), Audience Segment (firmographic/technographic rules, tiering, dynamic sync), Content Asset (knowledge hub, gated content, compliance audit), Lead Scorer (account scoring formula: ωf·Firmographics + ωi·ΣIntent, buying committee multiplier, BANT mapping, auto-handover)
+- [x] Full REST API: ~22 endpoints at `/api/v1/vmarketing-org` (Campaigns CRUD, Tracking Events, Segments, Content Assets, Lead Scores, Health)
+- [x] `manifest.json` — 3 permissions (mkt.abm.orchestrate, mkt.pixel.configure, mkt.lead.handover), 4 published events, 3 subscribed events, depends on vkernel + vsales-org
+- [x] Alembic migration `0001_vmarketing_org_init.py` — 5+ tables + indexes + seed data (demo campaigns, tracking events, segments, content assets, lead scores)
+- [x] vKernel Flyway `V10__register_vmarketing_org.sql` — Register in app registry + inject 3 permissions
+- [x] Gateway routes: `/api/v1/vmarketing-org/**` + `/vmarketing-org/**` → vmarketing-org:8084
+- [x] Dark-themed HTML dashboard (`static/index.html`) — ABM Orchestrator, Intent Sensing, Firmographic Segments, Knowledge Hub, Account Scoring cards
+- [x] 28 integration tests (pytest-asyncio + httpx + aiosqlite) — all SyR-MKT-ORG requirements covered
+- [x] TypeScript frontend: `types.ts`, `api.ts`, `renderers.ts`, `main.ts` + IIFE bundler
+- [x] `Dockerfile` — 2-stage: Node 20-alpine + Python 3.12-slim, port 8084
+- [x] Added to `docker-compose.yml`, `Makefile` (`test-marketing-org` target), CI/CD, README, guides
+- [x] `05-vmarketing-org/README.md` — Cross-references to vKernel, vSales ORG, vStrategy

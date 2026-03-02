@@ -10,45 +10,45 @@ tracking pixels, audience segments, content assets, AI lead scoring & sales hand
 
 ## Domain Models
 
-| Model | Table | FSM States |
-|-------|-------|------------|
-| Campaign | `campaigns` | DRAFT → ACTIVE → PAUSED → COMPLETED |
-| TrackingEvent | `tracking_events` | (append-only) |
-| AudienceSegment | `audience_segments` | ACTIVE → ARCHIVED |
-| ContentAsset | `content_assets` | DRAFT → PUBLISHED → ARCHIVED |
-| LeadScore | `lead_scores` | NEW → QUALIFIED → HANDED_OFF / DISQUALIFIED |
+| Model           | Table               | FSM States                                  |
+| --------------- | ------------------- | ------------------------------------------- |
+| Campaign        | `campaigns`         | DRAFT → ACTIVE → PAUSED → COMPLETED         |
+| TrackingEvent   | `tracking_events`   | (append-only)                               |
+| AudienceSegment | `audience_segments` | ACTIVE → ARCHIVED                           |
+| ContentAsset    | `content_assets`    | DRAFT → PUBLISHED → ARCHIVED                |
+| LeadScore       | `lead_scores`       | NEW → QUALIFIED → HANDED_OFF / DISQUALIFIED |
 
 ## API Endpoints
 
-| Method | Path | Purpose |
-|--------|------|---------|
-| GET | `/health` | Health check |
-| GET | `/api/v1/vmarketing-org/campaigns` | List campaigns |
-| POST | `/api/v1/vmarketing-org/campaigns` | Create campaign |
-| GET | `/api/v1/vmarketing-org/campaigns/{id}` | Get campaign |
-| PATCH | `/api/v1/vmarketing-org/campaigns/{id}` | Update campaign |
-| POST | `/api/v1/vmarketing-org/campaigns/{id}/launch` | Launch (DRAFT→ACTIVE) |
-| POST | `/api/v1/vmarketing-org/campaigns/{id}/pause` | Pause (ACTIVE→PAUSED) |
-| POST | `/api/v1/vmarketing-org/campaigns/{id}/complete` | Complete campaign |
-| GET | `/api/v1/vmarketing-org/tracking-events` | List events |
-| POST | `/api/v1/vmarketing-org/tracking-events` | Ingest event |
-| GET | `/api/v1/vmarketing-org/tracking-events/{id}` | Get event |
-| GET | `/api/v1/vmarketing-org/tracking-events/intent-summary/{org}` | Intent aggregation |
-| GET | `/api/v1/vmarketing-org/segments` | List segments |
-| POST | `/api/v1/vmarketing-org/segments` | Create segment |
-| GET | `/api/v1/vmarketing-org/segments/{id}` | Get segment |
-| POST | `/api/v1/vmarketing-org/segments/{id}/archive` | Archive segment |
-| GET | `/api/v1/vmarketing-org/assets` | List content assets |
-| POST | `/api/v1/vmarketing-org/assets` | Create asset |
-| GET | `/api/v1/vmarketing-org/assets/{id}` | Get asset |
-| POST | `/api/v1/vmarketing-org/assets/{id}/publish` | Publish (DRAFT→PUBLISHED) |
-| POST | `/api/v1/vmarketing-org/assets/{id}/archive` | Archive asset |
-| GET | `/api/v1/vmarketing-org/leads` | List leads |
-| POST | `/api/v1/vmarketing-org/leads` | Score / upsert lead |
-| GET | `/api/v1/vmarketing-org/leads/{id}` | Get lead |
-| POST | `/api/v1/vmarketing-org/leads/{id}/qualify` | Qualify (NEW→QUALIFIED) |
-| POST | `/api/v1/vmarketing-org/leads/{id}/handoff` | Hand off to sales |
-| POST | `/api/v1/vmarketing-org/leads/{id}/disqualify` | Disqualify lead |
+| Method | Path                                                          | Purpose                   |
+| ------ | ------------------------------------------------------------- | ------------------------- |
+| GET    | `/health`                                                     | Health check              |
+| GET    | `/api/v1/vmarketing-org/campaigns`                            | List campaigns            |
+| POST   | `/api/v1/vmarketing-org/campaigns`                            | Create campaign           |
+| GET    | `/api/v1/vmarketing-org/campaigns/{id}`                       | Get campaign              |
+| PATCH  | `/api/v1/vmarketing-org/campaigns/{id}`                       | Update campaign           |
+| POST   | `/api/v1/vmarketing-org/campaigns/{id}/launch`                | Launch (DRAFT→ACTIVE)     |
+| POST   | `/api/v1/vmarketing-org/campaigns/{id}/pause`                 | Pause (ACTIVE→PAUSED)     |
+| POST   | `/api/v1/vmarketing-org/campaigns/{id}/complete`              | Complete campaign         |
+| GET    | `/api/v1/vmarketing-org/tracking-events`                      | List events               |
+| POST   | `/api/v1/vmarketing-org/tracking-events`                      | Ingest event              |
+| GET    | `/api/v1/vmarketing-org/tracking-events/{id}`                 | Get event                 |
+| GET    | `/api/v1/vmarketing-org/tracking-events/intent-summary/{org}` | Intent aggregation        |
+| GET    | `/api/v1/vmarketing-org/segments`                             | List segments             |
+| POST   | `/api/v1/vmarketing-org/segments`                             | Create segment            |
+| GET    | `/api/v1/vmarketing-org/segments/{id}`                        | Get segment               |
+| POST   | `/api/v1/vmarketing-org/segments/{id}/archive`                | Archive segment           |
+| GET    | `/api/v1/vmarketing-org/assets`                               | List content assets       |
+| POST   | `/api/v1/vmarketing-org/assets`                               | Create asset              |
+| GET    | `/api/v1/vmarketing-org/assets/{id}`                          | Get asset                 |
+| POST   | `/api/v1/vmarketing-org/assets/{id}/publish`                  | Publish (DRAFT→PUBLISHED) |
+| POST   | `/api/v1/vmarketing-org/assets/{id}/archive`                  | Archive asset             |
+| GET    | `/api/v1/vmarketing-org/leads`                                | List leads                |
+| POST   | `/api/v1/vmarketing-org/leads`                                | Score / upsert lead       |
+| GET    | `/api/v1/vmarketing-org/leads/{id}`                           | Get lead                  |
+| POST   | `/api/v1/vmarketing-org/leads/{id}/qualify`                   | Qualify (NEW→QUALIFIED)   |
+| POST   | `/api/v1/vmarketing-org/leads/{id}/handoff`                   | Hand off to sales         |
+| POST   | `/api/v1/vmarketing-org/leads/{id}/disqualify`                | Disqualify lead           |
 
 ## Tech Stack
 

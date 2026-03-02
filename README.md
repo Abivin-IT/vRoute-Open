@@ -7,7 +7,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  TIER 1: Business Apps (vApps)                              │
-│  ♟️ vStrategy │ 💰 vFinacc │ vSales │ vHR │ ...             │
+│  ♟️ vStrategy │ 💰 vFinacc │ 🔬 vDesign │ 📢 vMarketing │ …  │
 ├─────────────────────────────────────────────────────────────┤
 │  TIER 2: vKernel Core OS (Java 21 / Spring Boot 3.3)       │
 │  ┌──────────┐ ┌─────────┐ ┌───────────┐ ┌──────────────┐   │
@@ -29,7 +29,7 @@
 | Layer    | Technology                                                       | Status   |
 | -------- | ---------------------------------------------------------------- | -------- |
 | Core OS  | Java 21, Spring Boot 3.3, Spring Cloud GW                        | **v1.3** |
-| vApps    | Python 3.12 / FastAPI (vStrategy, vFinacc), TS frontend          | **v1.4** |
+| vApps    | Python 3.12 / FastAPI (vStrategy, vFinacc, vDesign Physical, vMarketing Org), TS frontend | **v1.7** |
 | Database | PostgreSQL 16, Flyway (kernel) + Alembic (vApps)                 | **v1.3** |
 | Events   | Pub/Sub (Spring + DB), Redis (infra ready)                       | **v1.3** |
 | IPC      | gRPC / protobuf3 (vKernel port 9090)                             | **v1.3** |
@@ -51,7 +51,9 @@ vRoute-Open/
 │   ├── docs/                         #   PRD documents
 │   │   ├── vkernel-prd.md            #     Platform requirements (SyR-PLAT-00→05)
 │   │   ├── vstrategy-prd.md          #     Strategy requirements (SyR-STR-00→04)
-│   │   └── vfinacc-prd.md            #     Finance requirements (SyR-FIN-00→04)
+│       ├── vfinacc-prd.md            #     Finance requirements (SyR-FIN-00→04)
+│       ├── vdesign-physical-prd.md   #     Physical design requirements (SyR-PHY-00→04)
+│       └── vmarketing-org-prd.md     #     Marketing requirements (SyR-MKT-ORG-00→04)
 │   └── sheets/                       #   Data tables & contracts
 │       ├── api-contract-summary.md
 │       ├── acceptance-criteria.md
@@ -75,7 +77,22 @@ vRoute-Open/
 │   └── Dockerfile
 ├── 03-vfinacc/                       # vApp: Finance R2R (Python 3.12 / FastAPI)
 │   ├── app/                          #   FastAPI application
+│   ├── frontend/                     #   TypeScript frontend
 │   ├── tests/                        #   25 integration tests (pytest-asyncio)
+│   ├── alembic/                      #   Database migrations
+│   ├── manifest.json                 #   vApp manifest
+│   └── Dockerfile
+├── 04-vdesign-physical/              # vApp: Physical Design I2S (Python 3.12 / FastAPI)
+│   ├── app/                          #   FastAPI application
+│   ├── frontend/                     #   TypeScript frontend
+│   ├── tests/                        #   35 integration tests (pytest-asyncio)
+│   ├── alembic/                      #   Database migrations
+│   ├── manifest.json                 #   vApp manifest
+│   └── Dockerfile
+├── 05-vmarketing-org/                # vApp: Marketing M2L ABM Engine (Python 3.12 / FastAPI)
+│   ├── app/                          #   FastAPI application
+│   ├── frontend/                     #   TypeScript frontend
+│   ├── tests/                        #   28 integration tests (pytest-asyncio)
 │   ├── alembic/                      #   Database migrations
 │   ├── manifest.json                 #   vApp manifest
 │   └── Dockerfile
@@ -107,7 +124,7 @@ vRoute-Open/
 ## Quick Start
 
 ```bash
-# Start entire platform (PostgreSQL + Redis + vKernel + vStrategy + vFinacc)
+# Start entire platform (PostgreSQL + Redis + vKernel + vStrategy + vFinacc + vDesign Physical + vMarketing Org)
 make up
 
 # Open vStrategy dashboard (proxied via vKernel gateway)
@@ -115,6 +132,12 @@ make up
 
 # Open vFinacc dashboard (proxied via vKernel gateway)
 # http://localhost:8080/vfinacc/
+
+# Open vDesign Physical dashboard (proxied via vKernel gateway)
+# http://localhost:8080/vdesign-physical/
+
+# Open vMarketing Org dashboard (proxied via vKernel gateway)
+# http://localhost:8080/vmarketing-org/
 
 # vKernel APIs
 curl http://localhost:8080/api/v1/apps
@@ -163,6 +186,23 @@ curl http://localhost:8080/api/v1/vfinacc/reconciliation
 curl http://localhost:8080/api/v1/vfinacc/cost-centers
 curl http://localhost:8080/api/v1/vfinacc/compliance
 curl http://localhost:8080/api/v1/vfinacc/health
+
+# vDesign Physical APIs (all through vKernel gateway :8080)
+curl http://localhost:8080/api/v1/vdesign-physical/golden-samples
+curl http://localhost:8080/api/v1/vdesign-physical/materials
+curl http://localhost:8080/api/v1/vdesign-physical/prototypes
+curl http://localhost:8080/api/v1/vdesign-physical/lab-tests
+curl http://localhost:8080/api/v1/vdesign-physical/lab-tests/summary
+curl http://localhost:8080/api/v1/vdesign-physical/handover-kits
+curl http://localhost:8080/api/v1/vdesign-physical/health
+
+# vMarketing Org APIs (all through vKernel gateway :8080)
+curl http://localhost:8080/api/v1/vmarketing-org/campaigns
+curl http://localhost:8080/api/v1/vmarketing-org/tracking-events
+curl http://localhost:8080/api/v1/vmarketing-org/segments
+curl http://localhost:8080/api/v1/vmarketing-org/assets
+curl http://localhost:8080/api/v1/vmarketing-org/leads
+curl http://localhost:8080/api/v1/vmarketing-org/health
 
 # Run all tests
 make test

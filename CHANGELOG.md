@@ -2,6 +2,46 @@
 
 Tất cả thay đổi đáng chú ý được ghi nhận tại đây. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.7.0] — 2026-03-02
+
+### Added — vDesign Physical + vMarketing Org Full Implementation
+
+**vDesign Physical (`04-vdesign-physical/`, port 8083)**
+
+- 5 ORM models: `GoldenSample` (ACTIVE/SEALED/COMPROMISED/EXPIRED), `MaterialInbox` (PENDING/TESTED/ARCHIVED/SCRAPPED), `Prototype` (ACTIVE/IN_TRANSIT/OBSOLETE/DESTROYED), `LabTest` (RUNNING/PASSED/FAILED/CONDITIONAL), `HandoverKit` (PACKING/READY/DISPATCHED/RECEIVED)
+- Business logic `service.py`: Spec Master Vault (seal/activation/convergence %), Material Ingestion (LIMS + sensor data), Prototype Version Control (RFID location tracking), Lab Feasibility Checker (stress-test execution + failure analysis), Handover Kit workflow (packing + dispatch)
+- 26 REST endpoints at `/api/v1/vdesign-physical` — Golden Samples CRUD, Materials, Prototypes, Lab Tests with summary, Handover Kits, Health
+- Alembic migration `0001_vdesign_physical_init.py` — 5 tables + indexes + seed data (demo golden samples, materials, prototypes, lab tests, handover kits)
+- 35 integration tests (pytest-asyncio + httpx + aiosqlite) — all SyR-PHY-00→04 requirements covered
+- Dark-themed HTML dashboard (`static/index.html`) — all 5 domain cards
+- TypeScript frontend (`frontend/`): `types.ts`, `api.ts`, `renderers.ts`, `main.ts` + IIFE bundler
+- `Dockerfile` — 2-stage: Node 20-alpine (TS build) + Python 3.12-slim (runtime), port 8083
+- `manifest.json` — 3 permissions (`phys.spec.seal`, `phys.inventory.audit`, `phys.lab.execute`), 4 published events, 3 subscribed events
+- `04-vdesign-physical/README.md` — tech stack, API table, cross-references
+
+**vMarketing Org (`05-vmarketing-org/`, port 8084)**
+
+- 5 ORM models: `Campaign` (DRAFT/ACTIVE/PAUSED/COMPLETED), `TrackingEvent` (intent signals + IP-to-company), `AudienceSegment` (firmographic rules, TIER_1/2/3), `ContentAsset` (5 asset types, GATED/PUBLISHED), `LeadScore` (HOT/WARM/COLD + account score formula)
+- Business logic `service.py`: ABM Campaign Orchestrator, Tracking Pixel (collective behavior scoring, high-value action detection), Audience Segment engine (firmographic/technographic tiering), Content Asset Hub (gated content + compliance audit), Lead Scorer (ωf·Firmographics + ωi·ΣIntent, BANT mapping, auto-handover trigger)
+- 27 REST endpoints at `/api/v1/vmarketing-org` — Campaigns CRUD, Tracking Events with intent summary, Segments, Content Assets, Lead Scores, Health
+- Alembic migration `0001_vmarketing_org_init.py` — 5 tables + indexes + seed data (demo campaigns, events, segments, assets, lead scores)
+- 28 integration tests (pytest-asyncio + httpx + aiosqlite) — all SyR-MKT-ORG-00→04 requirements covered
+- Dark-themed HTML dashboard (`static/index.html`) — all 5 domain cards
+- TypeScript frontend (`frontend/`): `types.ts`, `api.ts`, `renderers.ts`, `main.ts` + IIFE bundler
+- `Dockerfile` — 2-stage: Node 20-alpine (TS build) + Python 3.12-slim (runtime), port 8084
+- `manifest.json` — 3 permissions (`mkt.abm.orchestrate`, `mkt.pixel.configure`, `mkt.lead.handover`), 4 published events, 3 subscribed events
+- `05-vmarketing-org/README.md` — tech stack, API table, cross-references
+
+**Infrastructure Updates**
+
+- `03-vfinacc/Dockerfile` — Upgraded to 2-stage build (Node 20-alpine + Python 3.12-slim); TypeScript frontend added
+- `80-deploy/docker-compose.yml` — Added `vdesign-physical` and `vmarketing-org` services (port 8083, 8084)
+- `01-vkernel` — Flyway `V9__register_vdesign_physical.sql` + `V10__register_vmarketing_org.sql` migrations; `SecurityConfig.java` permit-all for new vApp routes; `application.yml` gateway routes added
+- `Makefile` — Added `test-design-physical` and `test-marketing-org` targets; `make test` runs all 5 suites
+- `.github/workflows/ci.yml` — Added `test-vdesign-physical` and `test-vmarketing-org` jobs; vKernel Surefire upload `if: failure()` → `if: always()`; added `dorny/test-reporter@v1` to surface JUnit results as PR check annotations
+
+---
+
 ## [1.6.0] — 2026-03-02
 
 ### Added — PRDs & Build Plan for 2 New vApps

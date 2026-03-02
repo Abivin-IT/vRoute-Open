@@ -1,9 +1,17 @@
 # =============================================================
-# vDesign Physical — Dockerfile (Python 3.12, single-stage)
-# No TypeScript frontend — uses plain static/index.html.
-# gRPC stubs are imported lazily; grpc_client.py degrades gracefully
-# if vKernel stubs are not present.
+# vDesign Physical — Dockerfile (Python 3.12 + TypeScript frontend)
 # =============================================================
+
+# ---- Stage 1: Build frontend (TypeScript -> JS) ----
+FROM node:20-alpine AS frontend-build
+WORKDIR /build
+COPY frontend/package.json frontend/tsconfig.json ./
+RUN npm install --no-audit --no-fund
+COPY frontend/src ./src
+COPY frontend/scripts ./scripts
+RUN npx tsc && node scripts/bundle.js
+
+# ---- Stage 2: Python runtime ----
 FROM python:3.12-slim
 WORKDIR /app
 
@@ -15,6 +23,9 @@ COPY alembic ./alembic
 COPY alembic.ini .
 COPY static ./static
 COPY manifest.json .
+
+# Copy bundled JS from frontend build
+COPY --from=frontend-build /build/out/app.js ./static/app.js
 
 ENV PYTHONPATH=/app
 
