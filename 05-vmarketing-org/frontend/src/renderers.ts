@@ -51,11 +51,11 @@ export function renderCampaigns(campaigns: Campaign[]): void {
     .slice(0, 12)
     .map((c) =>
       card(
-        `${c.campaign_name}`,
-        kv("Type", c.campaign_type) +
-          kv("Owner", c.owner_team) +
-          kv("Budget", c.budget_usd.toLocaleString() + " USD") +
-          kv("Target Org", c.target_organization) +
+        `${c.name}`,
+        kv("Stage", c.stage) +
+          kv("Owner", c.owner ?? "—") +
+          kv("Budget", c.budget_amount.toLocaleString() + " " + c.currency) +
+          kv("Target Segment", c.target_segment ?? "—") +
           kv("Status", statusBadge(c.status)),
       ),
     )
@@ -69,9 +69,8 @@ export function renderTrackingEvents(events: TrackingEvent[]): void {
     .map((e) =>
       card(
         `${e.action_type} — ${e.organization}`,
-        kv("Contact", e.contact_id) +
-          kv("Campaign", e.campaign_id) +
-          kv("Asset", e.asset_id ?? "—") +
+        kv("Page / Resource", e.page_resource ?? "—") +
+          kv("Dwell", e.dwell_seconds + "s") +
           kv("Intent Score", e.intent_score),
       ),
     )
@@ -82,10 +81,9 @@ export function renderTrackingEvents(events: TrackingEvent[]): void {
 export function renderIntentSummary(s: IntentSummary): void {
   const html =
     kv("Organization", s.organization) +
-    kv("Total Interactions", s.total_interactions) +
+    kv("Total Events", s.total_events) +
     kv("Avg Intent Score", s.avg_intent_score.toFixed(2)) +
-    kv("High Interest Events", s.high_interest_events) +
-    kv("Campaigns Touched", s.campaigns_touched);
+    kv("Total Dwell", s.total_dwell_seconds + "s");
   inject("intent-summary", card("Intent Summary", html));
 }
 
@@ -94,12 +92,11 @@ export function renderSegments(segments: AudienceSegment[]): void {
     .slice(0, 12)
     .map((s) =>
       card(
-        `${s.segment_name}`,
-        kv("Organization", s.organization) +
-          kv("Industry", s.industry) +
-          kv("Size", s.company_size) +
-          kv("Score Threshold", s.score_threshold) +
-          kv("Tier", statusBadge(s.tier)),
+        `${s.name}`,
+        kv("Code", s.segment_code) +
+          kv("Accounts", s.account_count) +
+          kv("Tier", statusBadge(s.tier)) +
+          kv("Status", s.status),
       ),
     )
     .join("");
@@ -113,9 +110,9 @@ export function renderAssets(assets: ContentAsset[]): void {
       card(
         `${a.title}`,
         kv("Type", a.asset_type) +
-          kv("Topic", a.topic) +
-          kv("Owner", a.owner_team) +
-          kv("Downloads", a.download_count),
+          kv("Stage", a.target_stage ?? "—") +
+          kv("Created By", a.created_by ?? "—") +
+          kv("Downloads", a.downloads),
       ),
     )
     .join("");
@@ -127,10 +124,10 @@ export function renderLeads(leads: LeadScore[]): void {
     .slice(0, 12)
     .map((l) =>
       card(
-        `${l.contact_name} — ${l.organization}`,
-        kv("Email", l.email) +
-          kv("Role", l.role) +
+        `${l.contact_name ?? "Unknown"} — ${l.organization}`,
+        kv("Title", l.contact_title ?? "—") +
           kv("Score", l.score) +
+          kv("Status", l.status) +
           kv("Grade", statusBadge(l.grade)),
       ),
     )

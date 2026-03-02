@@ -61,9 +61,9 @@ export function renderGoldenSamples(samples: GoldenSample[]): void {
     .map((s) =>
       card(
         `${s.sample_code} — ${s.product_name}`,
-        kv("SKU", s.sku) +
-          kv("Version", s.version) +
-          kv("Sealed By", s.sealed_by) +
+        kv("Version", s.version) +
+          kv("Convergence", s.convergence_pct + "%") +
+          kv("Sealed By", s.sealed_by ?? "—") +
           kv("Status", statusBadge(s.status)),
       ),
     )
@@ -76,10 +76,10 @@ export function renderMaterials(materials: MaterialInbox[]): void {
     .slice(0, 12)
     .map((m) =>
       card(
-        `${m.po_number} — ${m.material_name}`,
-        kv("Supplier", m.supplier_code) +
-          kv("Qty Received", m.qty_received) +
-          kv("Qty Tested", m.qty_tested) +
+        `${m.material_code} — ${m.name}`,
+        kv("Source", m.source_type) +
+          kv("Quantity", m.quantity) +
+          kv("Unit", m.unit) +
           kv("Status", statusBadge(m.status)),
       ),
     )
@@ -92,10 +92,10 @@ export function renderPrototypes(prototypes: Prototype[]): void {
     .slice(0, 12)
     .map((p) =>
       card(
-        `${p.prototype_code} — ${p.description}`,
-        kv("Product Family", p.product_family) +
-          kv("Assigned To", p.assigned_to) +
-          kv("Location", p.current_location) +
+        `${p.proto_code} — ${p.name}`,
+        kv("Version", p.version) +
+          kv("Iteration", p.iteration) +
+          kv("Location", p.location ?? "—") +
           kv("Status", statusBadge(p.status)),
       ),
     )
@@ -118,10 +118,10 @@ export function renderHandoverKits(kits: HandoverKit[]): void {
     .slice(0, 12)
     .map((k) =>
       card(
-        `Kit ${k.kit_code}`,
-        kv("Prototype", k.prototype_id) +
-          kv("Destination", k.destination_team) +
-          kv("Items", k.items_count) +
+        `Kit ${k.kit_code} — ${k.name}`,
+        kv("Destination", k.destination ?? "—") +
+          kv("Items", k.item_count) +
+          kv("Weight", k.total_weight_kg + " kg") +
           kv("Status", statusBadge(k.status)),
       ),
     )

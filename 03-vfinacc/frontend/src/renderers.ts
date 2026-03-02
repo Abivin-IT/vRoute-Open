@@ -54,12 +54,11 @@ export function renderLedger(entries: LedgerEntry[]): void {
     .slice(0, 12)
     .map((e) =>
       card(
-        `${e.account_code} — ${e.account_name}`,
-        kv("Period", e.period) +
-          kv("Debit", e.debit.toLocaleString()) +
-          kv("Credit", e.credit.toLocaleString()) +
-          kv("Balance", e.balance.toLocaleString()) +
+        `${e.account_code} — ${e.description ?? "ledger"}`,
+        kv("Debit", e.debit_amount.toLocaleString()) +
+          kv("Credit", e.credit_amount.toLocaleString()) +
           kv("Currency", e.currency) +
+          kv("Cost Center", e.cost_center ?? "—") +
           kv("Status", statusBadge(e.status)),
       ),
     )
@@ -72,11 +71,11 @@ export function renderTransactions(txns: Transaction[]): void {
     .slice(0, 12)
     .map((t) =>
       card(
-        `TXN ${t.transaction_id.slice(0, 8)}`,
-        kv("Counterparty", t.counterparty) +
+        `TXN ${t.tx_ref.slice(0, 8)}`,
+        kv("Source", t.source) +
           kv("Amount", t.amount.toLocaleString()) +
           kv("Currency", t.currency) +
-          kv("Channel", t.channel) +
+          kv("Direction", t.direction) +
           kv("Status", statusBadge(t.status)),
       ),
     )
@@ -86,11 +85,10 @@ export function renderTransactions(txns: Transaction[]): void {
 
 export function renderReconSummary(s: ReconSummary): void {
   const html =
-    kv("Total Transactions", s.total_transactions) +
-    kv("Matched", s.matched) +
-    kv("Partial", s.partial_match) +
-    kv("Unmatched", s.unmatched) +
-    kv("Match Rate", `${s.match_rate_pct.toFixed(1)}%`);
+    kv("Total", s.total) +
+    kv("Full Match", s.full_match) +
+    kv("Partial Match", s.partial_match) +
+    kv("No Match", s.no_match);
   inject("recon-summary", card("Reconciliation Summary", html));
 }
 
@@ -106,11 +104,10 @@ export function renderCostSummary(s: CostSummary): void {
 
 export function renderComplianceSummary(s: ComplianceSummary): void {
   const html =
-    kv("Total Checks", s.total_checks) +
-    kv("Compliant", s.compliant) +
-    kv("Non-Compliant", s.non_compliant) +
-    kv("Pending", s.pending) +
-    kv("Compliance Rate", `${s.compliance_rate_pct.toFixed(1)}%`);
+    kv("Total Checks", s.total) +
+    kv("Pass", s.pass) +
+    kv("Flagged", s.flag) +
+    kv("Failed", s.fail);
   inject("compliance-summary", card("Compliance Summary", html));
 }
 
