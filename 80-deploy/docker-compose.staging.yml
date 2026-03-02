@@ -1,0 +1,85 @@
+# ===========================================================
+# vRoute Platform — Docker Compose Override: STAGING
+# Server: cotest2026 | Branch: staging
+# Domain: vroute-5.abivin.com.vn (via external reverse proxy)
+#
+# Usage (on cotest2026):
+#   cp .env.example .env     # then edit .env with real secrets
+#   docker-compose \
+#     -f 80-deploy/docker-compose.yml \
+#     -f 80-deploy/docker-compose.staging.yml \
+#     up --build -d
+#
+# This override:
+#   - Uses GHCR images tagged :staging (no local build)
+#   - Binds to 127.0.0.1 (expects Nginx/Caddy reverse proxy)
+#   - Limits resources for single-server deployment
+#   - Adds restart: always for unattended operation
+# ===========================================================
+
+services:
+  vkernel:
+    image: ghcr.io/abivin/vkernel:staging
+    build: !reset null                  # skip local build, use image
+    ports:
+      - "127.0.0.1:8080:8080"          # bind loopback only
+      - "127.0.0.1:9090:9090"
+    environment:
+      SPRING_PROFILES_ACTIVE: staging
+      OIDC_REDIRECT_BASE: https://vroute-5.abivin.com.vn
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+    restart: always
+
+  vstrategy:
+    image: ghcr.io/abivin/vstrategy:staging
+    build: !reset null
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    restart: always
+
+  vfinacc:
+    image: ghcr.io/abivin/vfinacc:staging
+    build: !reset null
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    restart: always
+
+  vdesign-physical:
+    image: ghcr.io/abivin/vdesign-physical:staging
+    build: !reset null
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    restart: always
+
+  vmarketing-org:
+    image: ghcr.io/abivin/vmarketing-org:staging
+    build: !reset null
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    restart: always
+
+  postgres:
+    ports:
+      - "127.0.0.1:5432:5432"          # bind loopback only
+    restart: always
+
+  redis:
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: always

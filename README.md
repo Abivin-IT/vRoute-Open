@@ -217,17 +217,18 @@ make down
 
 ## Kubernetes Deployment (Helm)
 
+See [80-deploy/README.md](80-deploy/README.md) for full deployment guide (local / staging / production).
+
 ```bash
-# Install with Helm
-helm install vroute ./80-deploy/helm/vroute \
-  --set vkernel.env.JWT_SECRET="your-production-secret-32-chars" \
-  --set postgresql.password="strong-db-password"
+# Staging (cotest2026 — vroute-5.abivin.com.vn)
+make up-staging
 
-# Upgrade
-helm upgrade vroute ./80-deploy/helm/vroute
-
-# Uninstall
-helm uninstall vroute
+# Production (K8s — vroute-5.abivin.com + .vn + .sg)
+helm upgrade --install vroute ./80-deploy/helm/vroute \
+  -f ./80-deploy/helm/vroute/values-prod.yaml \
+  --set postgresql.password="$DB_PASS" \
+  --set vkernel.env.JWT_SECRET="$JWT_SECRET" \
+  -n vroute --create-namespace
 ```
 
 ## Organizational Blocks (vApps — planned)

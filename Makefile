@@ -98,6 +98,7 @@ endef
 # .PHONY - all targets are abstract (no output files)
 # ===========================================================
 .PHONY: help proto build dev up down logs ps \
+        up-staging down-staging logs-staging \
         test test-kernel test-strategy test-finacc test-design-physical test-marketing-org test-platform \
         clean clean-docker \
         security audit scan-secrets lint sast dependency-check sbom sonarqube
@@ -188,6 +189,29 @@ up: ## Build + start all services in the background (detached)
 	@echo "  └--------------------------------------------─┘"
 	@echo ""
 	@echo "  make logs  - tail logs     make down  - stop"
+
+# -- Staging (cotest2026): docker-compose with staging overlay --
+COMPOSE_STAGING := docker-compose -f $(DEPLOY_DIR)/docker-compose.yml -f $(DEPLOY_DIR)/docker-compose.staging.yml
+
+up-staging: ## Start platform with staging config (for cotest2026 server)
+	@echo ""
+	@echo "  Starting vRoute Platform (staging: vroute-5.abivin.com.vn)…"
+	$(COMPOSE_STAGING) up -d --pull always
+	@echo ""
+	@echo "  ┌-------------------------------------------------─┐"
+	@echo "  │  STAGING — vroute-5.abivin.com.vn                 │"
+	@echo "  │  vKernel     ->  127.0.0.1:8080 (behind proxy)   │"
+	@echo "  │  PostgreSQL  ->  127.0.0.1:5432                   │"
+	@echo "  │  Redis       ->  127.0.0.1:6379                   │"
+	@echo "  └-------------------------------------------------─┘"
+
+down-staging: ## Stop staging containers
+	@echo "  Stopping vRoute Platform (staging)…"
+	$(COMPOSE_STAGING) down
+	@echo "  OK Staging stopped"
+
+logs-staging: ## Tail staging logs
+	$(COMPOSE_STAGING) logs -f --tail=50
 
 down: ## Stop and remove all running containers
 	@echo "  Stopping vRoute Platform…"

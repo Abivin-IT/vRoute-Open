@@ -11,6 +11,9 @@ spec:
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
+        {{- range .Values.ingress.extraHosts }}
+        - {{ . }}
+        {{- end }}
       secretName: {{ .Values.ingress.tls.secretName }}
   {{- end }}
   rules:
@@ -24,4 +27,16 @@ spec:
                 name: {{ .Release.Name }}-vkernel
                 port:
                   number: {{ .Values.vkernel.port }}
+    {{- range .Values.ingress.extraHosts }}
+    - host: {{ . }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $.Release.Name }}-vkernel
+                port:
+                  number: {{ $.Values.vkernel.port }}
+    {{- end }}
 {{- end }}
