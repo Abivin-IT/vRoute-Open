@@ -85,7 +85,7 @@ endef
 # .PHONY - all targets are abstract (no output files)
 # ===========================================================
 .PHONY: help proto build dev up down logs ps \
-        test test-kernel test-strategy \
+        test test-kernel test-strategy test-platform \
         clean clean-docker
 
 # ===========================================================
@@ -95,7 +95,7 @@ help: ## Show this help message
 	@echo ""
 	@echo "  vRoute Platform - Make targets"
 	@echo ""
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+	@grep -E '^[a-zA-Z_%/-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 	  | sort \
 	  | awk 'BEGIN {FS = ":.*?## "}; \
 	         {printf "  \033[36mmake %-16s\033[0m %s\n", $$1, $$2}'
@@ -201,9 +201,51 @@ test-kernel: ## Run vKernel tests only (JUnit 5 / Spring Boot / MockMvc)
 
 test-strategy: ## Run vStrategy tests only (pytest)
 	@echo ""
-	@echo "==== Testing vStrategy ============================══"
+	@echo "==== Testing vStrategy =============================="
 	$(call pytest)
 	@echo "  OK vStrategy: PASSED"
+
+test-platform: ## Test platform core only — vKernel (JUnit 5 / Spring Boot)
+	@echo ""
+	@echo "==== Testing Platform Core (vKernel) ================"
+	$(call mvn,test)
+	@echo "  OK vKernel: PASSED"
+
+test-app-%: ## Test a specific vApp by name (e.g. make test-app-vstrategy)
+	@APP_DIR="$(ROOT)/$*"; \
+	echo ""; \
+	echo "==== Testing vApp: $* ================================"; \
+	if [ ! -d "$$APP_DIR" ]; then \
+	  echo "  ERROR: directory '$$APP_DIR' not found"; exit 1; \
+	elif [ -f "$$APP_DIR/requirements.txt" ]; then \
+	  echo "  [runner] Python / pytest"; \
+	  if [ -f "$(VENV_PY_WIN)" ]; then \
+	    cd "$$APP_DIR" && "$(VENV_PY_WIN)" -m pytest tests/ -v --tb=short -q; \
+	  elif [ -f "$(VENV_PY_UNIX)" ]; then \
+	    cd "$$APP_DIR" && "$(VENV_PY_UNIX)" -m pytest tests/ -v --tb=short -q; \
+	  else \
+	    MSYS_NO_PATHCONV=1 docker run --rm \
+	      -v "$(call docker_vol,$$APP_DIR):/app" \
+	      -v vroute-pip-cache:/root/.cache/pip \
+	      -w /app python:3.12-slim \
+	      sh -c "pip install -q -r requirements.txt && python -m pytest tests/ -v --tb=short -q"; \
+	  fi; \
+	elif [ -f "$$APP_DIR/pom.xml" ]; then \
+	  echo "  [runner] Java / Maven"; \
+	  if command -v mvn &>/dev/null; then \
+	    cd "$$APP_DIR" && mvn test -T 1C -Dspring.main.banner-mode=off; \
+	  elif [ -f "$$APP_DIR/mvnw" ]; then \
+	    cd "$$APP_DIR" && ./mvnw test -T 1C -Dspring.main.banner-mode=off; \
+	  else \
+	    MSYS_NO_PATHCONV=1 docker run --rm \
+	      -v "$(call docker_vol,$$APP_DIR):/app" \
+	      -v vroute-maven-cache:/root/.m2 \
+	      -w /app maven:3.9-eclipse-temurin-21 mvn test -T 1C; \
+	  fi; \
+	else \
+	  echo "  ERROR: cannot detect runner for '$*' (no requirements.txt or pom.xml)"; exit 1; \
+	fi
+	@echo "  OK $*: PASSED"
 
 # ===========================================================
 # -- FLOW 5: Clean ----------------------------------------
