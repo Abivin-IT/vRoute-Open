@@ -28,10 +28,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * vKernel HTML Dashboard — serves interactive HTML pages for all endpoints.
- * HTML templates live in src/main/resources/templates/dashboard/.
+ * vKernel Content Controller — serves interactive HTML pages for all system
+ * apps and developer utility pages. Content is loaded inside iframes by the
+ * Adaptive Shell ({@link AdaptiveShellController}).
+ *
+ * HTML templates live in src/main/resources/templates/vkernel/.
  * Shared CSS is served as a static file from /css/vkernel.css.
  * Accessible without authentication (same as actuator endpoints).
+ *
+ * Route prefix: /vkernel/*  (e.g. /vkernel/appstore, /vkernel/api)
  *
  * @GovernanceID 0.0.0-DASH
  */
@@ -48,14 +53,14 @@ public class DashboardController {
     @Autowired private TenantEntity.Repository tenantRepo;
 
     // ── Template loader ──────────────────────────────────────────────────────
-    // Reads from src/main/resources/templates/dashboard/<name> at runtime.
+    // Reads from src/main/resources/templates/vkernel/<name> at runtime.
     // Files are on the classpath so they are packaged inside the JAR automatically.
     private String loadTemplate(String name) {
-        var resource = new ClassPathResource("templates/dashboard/" + name);
+        var resource = new ClassPathResource("templates/vkernel/" + name);
         try (var stream = resource.getInputStream()) {
             return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new IllegalStateException("Cannot load dashboard template: " + name, e);
+            throw new IllegalStateException("Cannot load vkernel template: " + name, e);
         }
     }
 
@@ -70,37 +75,37 @@ public class DashboardController {
     }
 
     /**
-     * API root redirect — GET /api/v1 and GET /api/v1/ → /dashboard/api
+     * API root redirect — GET /api/v1 and GET /api/v1/ → /vkernel/api
      * Lets browsers visiting the API prefix see the interactive API Explorer.
      */
     @GetMapping(value = {"/api/v1", "/api/v1/"})
     public RedirectView apiRoot() {
-        return new RedirectView("/dashboard/api");
+        return new RedirectView("/vkernel/api");
     }
 
     /**
-     * Dashboard redirect — GET /dashboard → 302 → /dashboard/monitor.
-     * The old standalone dashboard is now merged into vMonitor's OVERVIEW tab.
+     * Legacy redirect — GET /dashboard → 302 → /vkernel/monitor.
+     * Kept for backward compatibility; canonical routes use /vkernel/* prefix.
      */
     @GetMapping(value = "/dashboard")
     public RedirectView dashboard() {
-        return new RedirectView("/dashboard/monitor");
+        return new RedirectView("/vkernel/monitor");
     }
 
     /**
      * API Explorer — lists all available REST endpoints with docs.
-     * GET /dashboard/api
+     * GET /vkernel/api
      */
-    @GetMapping(value = "/dashboard/api", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/api", produces = MediaType.TEXT_HTML_VALUE)
     public String apiExplorer() {
         return loadTemplate("api.html");
     }
 
     /**
      * Event Bus viewer — shows recent events and subscriptions.
-     * GET /dashboard/events
+     * GET /vkernel/events
      */
-    @GetMapping(value = "/dashboard/events", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/events", produces = MediaType.TEXT_HTML_VALUE)
     public String eventDashboard() {
         var recentEvents = eventBusService.getAuditLog(0, 20);
         StringBuilder eventRows = new StringBuilder();
@@ -121,36 +126,36 @@ public class DashboardController {
 
     /**
      * Micrometer Metrics viewer — HTML wrapper for /actuator/metrics.
-     * GET /dashboard/metrics
+     * GET /vkernel/metrics
      */
-    @GetMapping(value = "/dashboard/metrics", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/metrics", produces = MediaType.TEXT_HTML_VALUE)
     public String metricsDashboard() {
         return loadTemplate("metrics.html");
     }
 
     /**
      * Health dashboard — HTML wrapper for /actuator/health.
-     * GET /dashboard/health
+     * GET /vkernel/health
      */
-    @GetMapping(value = "/dashboard/health", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/health", produces = MediaType.TEXT_HTML_VALUE)
     public String healthPage() {
         return loadTemplate("health.html");
     }
 
     /**
      * Prometheus metrics page — HTML wrapper for /actuator/prometheus.
-     * GET /dashboard/prometheus
+     * GET /vkernel/prometheus
      */
-    @GetMapping(value = "/dashboard/prometheus", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/prometheus", produces = MediaType.TEXT_HTML_VALUE)
     public String prometheusPage() {
         return loadTemplate("prometheus.html");
     }
 
     /**
      * App info page — HTML wrapper for /actuator/info.
-     * GET /dashboard/info
+     * GET /vkernel/info
      */
-    @GetMapping(value = "/dashboard/info", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/info", produces = MediaType.TEXT_HTML_VALUE)
     public String infoPage() {
         return loadTemplate("info.html");
     }
@@ -161,10 +166,10 @@ public class DashboardController {
 
     /**
      * App Store — browse, install, uninstall vApps. Industry bundles.
-     * GET /dashboard/appstore OR GET /shell/vkernel.appstore
+     * GET /vkernel/appstore  (loaded inside shell iframe via /shell/vkernel.appstore)
      * @GovernanceID SyR-PLAT-00.01
      */
-    @GetMapping(value = "/dashboard/appstore", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/appstore", produces = MediaType.TEXT_HTML_VALUE)
     public String appStorePage() {
         List<AppRegistryEntity> apps = appLifecycle.listInstalled();
         Set<String> installedIds = apps.stream().map(AppRegistryEntity::getAppId).collect(Collectors.toSet());
@@ -203,10 +208,10 @@ public class DashboardController {
 
     /**
      * Settings / IAM — permission matrix (CRUDIEA × Roles).
-     * GET /dashboard/settings OR GET /shell/vkernel.settings
+     * GET /vkernel/settings  (loaded inside shell iframe via /shell/vkernel.settings)
      * @GovernanceID SyR-PLAT-00.02
      */
-    @GetMapping(value = "/dashboard/settings", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/settings", produces = MediaType.TEXT_HTML_VALUE)
     public String settingsPage() {
         List<PermissionEntity> perms = permissionRepo.findByActiveTrue();
         List<AppRegistryEntity> apps = appLifecycle.listInstalled();
@@ -246,10 +251,10 @@ public class DashboardController {
 
     /**
      * vAudit — immutable event audit log with filters.
-     * GET /dashboard/audit OR GET /shell/vkernel.audit
+     * GET /vkernel/audit  (loaded inside shell iframe via /shell/vkernel.audit)
      * @GovernanceID SyR-PLAT-00.04
      */
-    @GetMapping(value = "/dashboard/audit", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/audit", produces = MediaType.TEXT_HTML_VALUE)
     public String auditPage() {
         var events = eventBusService.getAuditLog(0, 100);
 
@@ -321,10 +326,10 @@ public class DashboardController {
 
     /**
      * vData / MDM — golden records browser (stakeholders, currencies, countries).
-     * GET /dashboard/data OR GET /shell/vkernel.data
+     * GET /vkernel/data  (loaded inside shell iframe via /shell/vkernel.data)
      * @GovernanceID SyR-PLAT-00.03
      */
-    @GetMapping(value = "/dashboard/data", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/data", produces = MediaType.TEXT_HTML_VALUE)
     public String dataPage() {
         var stakeholders = stakeholderRepo.findAll();
         var currencies   = currencyRepo.findAll();
@@ -379,10 +384,10 @@ public class DashboardController {
 
     /**
      * vFlow / Automation — event subscription wiring and run history.
-     * GET /dashboard/automation OR GET /shell/vkernel.automation
+     * GET /vkernel/automation  (loaded inside shell iframe via /shell/vkernel.automation)
      * @GovernanceID SyR-PLAT-00.03
      */
-    @GetMapping(value = "/dashboard/automation", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/automation", produces = MediaType.TEXT_HTML_VALUE)
     public String automationPage() {
         var allSubs = subscriptionRepo.findAll();
         var recentEvents = eventBusService.getAuditLog(0, 20);
@@ -458,10 +463,10 @@ public class DashboardController {
     /**
      * vMonitor — health dashboard, JVM metrics, Prometheus.
      * vMonitor — system health + app registry browser.
-     * GET /dashboard/monitor OR GET /shell/vkernel.monitor
+     * GET /vkernel/monitor  (loaded inside shell iframe via /shell/vkernel.monitor)
      * @GovernanceID SyR-PLAT-00.04
      */
-    @GetMapping(value = "/dashboard/monitor", produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = "/vkernel/monitor", produces = MediaType.TEXT_HTML_VALUE)
     public String monitorPage() {
         List<AppRegistryEntity> apps = appLifecycle.listInstalled();
 

@@ -11,7 +11,7 @@
  *   - App title (from data-app-title)
  *   - Search box (Ctrl+K to focus)
  *   - Notifications bell with red dot indicator
- *   - Settings gear (links to /dashboard)
+ *   - Settings gear (links to /shell/vkernel.settings)
  *   - Home button (links to /shell)
  *
  * @GovernanceID vkernel.ui.1.0

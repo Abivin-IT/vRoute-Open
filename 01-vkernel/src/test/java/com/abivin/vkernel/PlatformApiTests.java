@@ -226,13 +226,13 @@ class PlatformApiTests {
     }
 
     // ══════════════════════════════════════════════════════════
-    // SyR-PLAT System App Dashboard Pages (HTML)
+    // SyR-PLAT System App Pages (HTML) — served at /vkernel/*
     // ══════════════════════════════════════════════════════════
 
     @Test @Order(60)
     @DisplayName("SyR-PLAT-00.01 — App Store page → 200 + HTML with App Store title")
     void test_dashboard_appstore() throws Exception {
-        mvc.perform(get("/dashboard/appstore"))
+        mvc.perform(get("/vkernel/appstore"))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("App Store")))
             .andExpect(content().string(containsString("EXPLORE")))
@@ -242,7 +242,7 @@ class PlatformApiTests {
     @Test @Order(61)
     @DisplayName("SyR-PLAT-00.02 — Settings/IAM page → 200 + permission matrix")
     void test_dashboard_settings() throws Exception {
-        mvc.perform(get("/dashboard/settings"))
+        mvc.perform(get("/vkernel/settings"))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("Settings")))
             .andExpect(content().string(containsString("PERMISSION MATRIX")))
@@ -252,7 +252,7 @@ class PlatformApiTests {
     @Test @Order(62)
     @DisplayName("SyR-PLAT-00.04 — vAudit page → 200 + audit log table")
     void test_dashboard_audit() throws Exception {
-        mvc.perform(get("/dashboard/audit"))
+        mvc.perform(get("/vkernel/audit"))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("vAudit")))
             .andExpect(content().string(containsString("Total Events")));
@@ -261,7 +261,7 @@ class PlatformApiTests {
     @Test @Order(63)
     @DisplayName("SyR-PLAT-00.03 — vData/MDM page → 200 + golden records browser")
     void test_dashboard_data() throws Exception {
-        mvc.perform(get("/dashboard/data"))
+        mvc.perform(get("/vkernel/data"))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("vData")))
             .andExpect(content().string(containsString("Golden Records")))
@@ -271,7 +271,7 @@ class PlatformApiTests {
     @Test @Order(64)
     @DisplayName("SyR-PLAT-00.03 — vFlow/Automation page → 200 + subscription wiring")
     void test_dashboard_automation() throws Exception {
-        mvc.perform(get("/dashboard/automation"))
+        mvc.perform(get("/vkernel/automation"))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("vFlow")))
             .andExpect(content().string(containsString("FLOW CANVAS")))
@@ -281,7 +281,7 @@ class PlatformApiTests {
     @Test @Order(65)
     @DisplayName("SyR-PLAT-00.04 — vMonitor page → 200 + health dashboard")
     void test_dashboard_monitor() throws Exception {
-        mvc.perform(get("/dashboard/monitor"))
+        mvc.perform(get("/vkernel/monitor"))
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("vMonitor")))
             .andExpect(content().string(containsString("Platform Status")))
@@ -321,11 +321,11 @@ class PlatformApiTests {
     }
 
     @Test @Order(72)
-    @DisplayName("UI-03 — GET /dashboard → 302 redirect to /dashboard/monitor")
+    @DisplayName("UI-03 — GET /dashboard → 302 redirect to /vkernel/monitor (legacy compat)")
     void test_dashboard_redirects_to_monitor() throws Exception {
         mvc.perform(get("/dashboard"))
             .andExpect(status().is3xxRedirection())
-            .andExpect(header().string("Location", "/dashboard/monitor"));
+            .andExpect(header().string("Location", "/vkernel/monitor"));
     }
 
     @Test @Order(73)
@@ -350,7 +350,7 @@ class PlatformApiTests {
     @DisplayName("UI-06 — HTML templates nav links point to /shell (Home), not /dashboard")
     void test_templates_nav_links_updated() throws Exception {
         // Verify at least one template has the updated nav link
-        String html = mvc.perform(get("/dashboard/api"))
+        String html = mvc.perform(get("/vkernel/api"))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
         org.assertj.core.api.Assertions.assertThat(html).contains("href=\"/shell\">Home</a>");

@@ -299,14 +299,14 @@ public class AdaptiveShellController {
      */
     private String resolveAppUrl(String appId) {
         if (appId == null) return "#";
-        // System apps map to their dedicated dashboard routes
+        // System apps map to their dedicated vkernel content routes
         return switch (appId) {
-            case "vkernel.appstore"   -> "/dashboard/appstore";
-            case "vkernel.settings"   -> "/dashboard/settings";
-            case "vkernel.data"       -> "/dashboard/data";
-            case "vkernel.automation" -> "/dashboard/automation";
-            case "vkernel.audit"      -> "/dashboard/audit";
-            case "vkernel.monitor"    -> "/dashboard/monitor";
+            case "vkernel.appstore"   -> "/vkernel/appstore";
+            case "vkernel.settings"   -> "/vkernel/settings";
+            case "vkernel.data"       -> "/vkernel/data";
+            case "vkernel.automation" -> "/vkernel/automation";
+            case "vkernel.audit"      -> "/vkernel/audit";
+            case "vkernel.monitor"    -> "/vkernel/monitor";
             default -> {
                 // Business apps: com.vcorp.vstrategy → /vstrategy/
                 String[] parts = appId.split("\\.");
