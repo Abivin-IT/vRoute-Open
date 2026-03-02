@@ -5,6 +5,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.abivin.vkernel.g0_engine.AppLifecycleService;
 import com.abivin.vkernel.g0_engine.AppRegistryEntity;
@@ -50,6 +51,15 @@ public class DashboardController {
     public String root() {
         return "<html><head><meta http-equiv=\"refresh\" content=\"0;url=/dashboard\"><title>vKernel</title></head>"
              + "<body style='background:#0c0e14;color:#e4e4e7;font-family:sans-serif;padding:40px'>Redirecting to dashboard&hellip;</body></html>";
+    }
+
+    /**
+     * API root redirect — GET /api/v1 and GET /api/v1/ → /dashboard/api
+     * Lets browsers visiting the API prefix see the interactive API Explorer.
+     */
+    @GetMapping(value = {"/api/v1", "/api/v1/"})
+    public RedirectView apiRoot() {
+        return new RedirectView("/dashboard/api");
     }
 
     /**

@@ -56,6 +56,7 @@ public class SecurityConfig {
                                  "/actuator/prometheus",
                                  "/actuator/metrics").permitAll()
                 .requestMatchers("/").permitAll()
+                .requestMatchers("/api/v1", "/api/v1/").permitAll()
                 .requestMatchers("/dashboard", "/dashboard/**").permitAll()
                 .requestMatchers("/css/**").permitAll()
                 .requestMatchers("/shell", "/shell/**").permitAll()
