@@ -182,6 +182,25 @@ public class AdaptiveShellController {
                     </a>
                     <div class="nav-section">Installed Apps (%d)</div>
                     %s
+                    <div class="nav-section">System Utilities (6)</div>
+                    <a class="nav-item" href="/dashboard/appstore">
+                        <span class="icon">&#127978;</span><span>App Store</span>
+                    </a>
+                    <a class="nav-item" href="/dashboard/settings">
+                        <span class="icon">&#9881;</span><span>Settings / IAM</span>
+                    </a>
+                    <a class="nav-item" href="/dashboard/data">
+                        <span class="icon">&#128451;</span><span>vData (MDM)</span>
+                    </a>
+                    <a class="nav-item" href="/dashboard/automation">
+                        <span class="icon">&#9889;</span><span>vFlow</span>
+                    </a>
+                    <a class="nav-item" href="/dashboard/audit">
+                        <span class="icon">&#128274;</span><span>vAudit</span>
+                    </a>
+                    <a class="nav-item" href="/dashboard/monitor">
+                        <span class="icon">&#128200;</span><span>vMonitor</span>
+                    </a>
                     <div class="sidebar-footer">
                         vKernel Core OS v1.3.0<br>
                         &#169; Abivin 2026

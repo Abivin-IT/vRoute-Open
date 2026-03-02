@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel — vMonitor</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+    <style>
+      /* ── Health Grid ────────────────────────────────── */
+      .health-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+      .health-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.15s;
+      }
+      .health-card:hover {
+        border-color: var(--blue);
+      }
+      .health-card h3 {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .health-card p {
+        font-size: 12px;
+        color: var(--dim);
+        line-height: 1.6;
+      }
+      .health-val {
+        font-family: monospace;
+        font-size: 20px;
+        font-weight: 700;
+        margin-top: 8px;
+      }
+      .health-val.up {
+        color: var(--green);
+      }
+      .health-val.down {
+        color: var(--red);
+      }
+      .health-val.warn {
+        color: var(--yellow);
+      }
+
+      /* ── Status Indicator ───────────────────────────── */
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .status-indicator.up {
+        background: rgba(34, 197, 94, 0.12);
+        color: var(--green);
+      }
+      .status-indicator.down {
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--red);
+      }
+
+      /* ── App Health Table ────────────────────────────── */
+      .monitor-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .monitor-table th,
+      .monitor-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .monitor-table th {
+        font-weight: 700;
+        color: var(--dim);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: sticky;
+        top: 0;
+        background: var(--card);
+        z-index: 2;
+      }
+      .monitor-table tr:hover {
+        background: rgba(99, 122, 255, 0.04);
+      }
+      .monitor-table .mono {
+        font-family: monospace;
+        font-size: 11px;
+        color: var(--dim);
+      }
+
+      /* ── Metric Bar ─────────────────────────────────── */
+      .metric-bar {
+        height: 8px;
+        background: var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 8px;
+        max-width: 200px;
+      }
+      .metric-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s;
+      }
+      .metric-bar-fill.green {
+        background: var(--green);
+      }
+      .metric-bar-fill.yellow {
+        background: var(--yellow);
+      }
+      .metric-bar-fill.red {
+        background: var(--red);
+      }
+
+      /* ── Tabs ─────────────────────────────────────── */
+      .tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+      }
+      .tab {
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--dim);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+      }
+      .tab:hover {
+        color: var(--text);
+      }
+      .tab.active {
+        color: var(--blue);
+        border-bottom-color: var(--blue);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* ── Prometheus Metrics ──────────────────────────── */
+      .prom-block {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px;
+        font-family: monospace;
+        font-size: 11px;
+        line-height: 1.6;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        color: var(--text);
+        max-height: 400px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>&#128200; vMonitor — Health &amp; Metrics</h1>
+      <span class="badge">SyR-PLAT-00.04</span>
+      <nav>
+        <a href="/">&#8962; Shell</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/dashboard/appstore">App Store</a>
+        <a href="/dashboard/settings">Settings</a>
+        <a href="/dashboard/audit">Audit</a>
+        <a href="/dashboard/data">vData</a>
+        <a href="/dashboard/automation">vFlow</a>
+        <a class="active" href="/dashboard/monitor">vMonitor</a>
+      </nav>
+    </div>
+
+    <div class="container">
+      <!-- System Health Overview -->
+      <div class="health-grid">
+        <div class="health-card">
+          <h3>&#128994; Platform Status</h3>
+          <p>Overall system health status</p>
+          <div class="health-val up" id="sys-status">Loading…</div>
+        </div>
+        <div class="health-card">
+          <h3>&#128338; Uptime</h3>
+          <p>Time since last restart</p>
+          <div class="health-val up" id="sys-uptime">Loading…</div>
+        </div>
+        <div class="health-card">
+          <h3>&#128451; Database</h3>
+          <p>PostgreSQL connection pool</p>
+          <div class="health-val up" id="sys-db">Loading…</div>
+        </div>
+        <div class="health-card">
+          <h3>&#128190; Disk Space</h3>
+          <p>Available storage</p>
+          <div class="health-val up" id="sys-disk">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="apps">
+          APP HEALTH ({{APP_COUNT}})
+        </button>
+        <button class="tab" data-tab="metrics">JVM METRICS</button>
+        <button class="tab" data-tab="prometheus">PROMETHEUS</button>
+      </div>
+
+      <!-- APP HEALTH Tab -->
+      <div class="tab-panel active" id="tab-apps">
+        <div class="card full" style="overflow-x: auto">
+          <table class="monitor-table">
+            <thead>
+              <tr>
+                <th>Icon</th>
+                <th>App</th>
+                <th>Version</th>
+                <th>Status</th>
+                <th>Health Check</th>
+                <th>Last Seen</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{APP_HEALTH_ROWS}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- JVM METRICS Tab -->
+      <div class="tab-panel" id="tab-metrics">
+        <div class="health-grid">
+          <div class="health-card">
+            <h3>&#128200; JVM Heap Used</h3>
+            <p id="jvm-heap-text">Fetching…</p>
+            <div class="metric-bar">
+              <div
+                class="metric-bar-fill green"
+                id="jvm-heap-bar"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+          <div class="health-card">
+            <h3>&#128200; JVM Non-Heap</h3>
+            <p id="jvm-nonheap-text">Fetching…</p>
+            <div class="metric-bar">
+              <div
+                class="metric-bar-fill green"
+                id="jvm-nonheap-bar"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+          <div class="health-card">
+            <h3>&#128296; Threads</h3>
+            <p id="jvm-threads-text">Fetching…</p>
+          </div>
+          <div class="health-card">
+            <h3>&#9201; GC Pauses</h3>
+            <p id="jvm-gc-text">Fetching…</p>
+          </div>
+          <div class="health-card">
+            <h3>&#128640; HTTP Requests</h3>
+            <p id="http-req-text">Fetching…</p>
+          </div>
+          <div class="health-card">
+            <h3>&#128451; JDBC Connections</h3>
+            <p id="jdbc-text">Fetching…</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROMETHEUS Tab -->
+      <div class="tab-panel" id="tab-prometheus">
+        <div class="card">
+          <h2>Prometheus Endpoint</h2>
+          <p style="font-size: 12px; color: var(--dim); margin-bottom: 12px">
+            Raw metrics from
+            <code style="font-size: 12px">/actuator/prometheus</code>.
+            Scrapeable by Grafana / Prometheus server.
+          </p>
+          <div class="prom-block" id="promMetrics">
+            Loading Prometheus metrics…
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &mdash; vMonitor (SyR-PLAT-00.04) &copy; Abivin 2026
+    </div>
+
+    <script>
+      // Tab switching
+      document.querySelectorAll(".tab").forEach((t) => {
+        t.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((x) => x.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-panel")
+            .forEach((x) => x.classList.remove("active"));
+          t.classList.add("active");
+          document
+            .getElementById("tab-" + t.dataset.tab)
+            .classList.add("active");
+        });
+      });
+
+      // Fetch health data
+      async function fetchHealth() {
+        try {
+          const r = await fetch("/actuator/health");
+          const d = await r.json();
+          const el = document.getElementById("sys-status");
+          el.textContent = d.status || "UP";
+          el.className = "health-val " + (d.status === "UP" ? "up" : "down");
+          // Database
+          if (d.components && d.components.db) {
+            const db = document.getElementById("sys-db");
+            db.textContent = d.components.db.status || "UP";
+            db.className =
+              "health-val " + (d.components.db.status === "UP" ? "up" : "down");
+          }
+          // Disk
+          if (d.components && d.components.diskSpace) {
+            const disk = document.getElementById("sys-disk");
+            const det = d.components.diskSpace.details;
+            if (det) {
+              const freeGB = (det.free / 1073741824).toFixed(1);
+              const totalGB = (det.total / 1073741824).toFixed(1);
+              disk.textContent = freeGB + " / " + totalGB + " GB";
+            } else {
+              disk.textContent = d.components.diskSpace.status;
+            }
+          }
+        } catch (e) {
+          document.getElementById("sys-status").textContent = "Error";
+          document.getElementById("sys-status").className = "health-val down";
+        }
+      }
+
+      // Fetch uptime from /actuator/metrics
+      async function fetchUptime() {
+        try {
+          const r = await fetch("/actuator/metrics/process.uptime");
+          const d = await r.json();
+          const secs = d.measurements?.[0]?.value || 0;
+          const h = Math.floor(secs / 3600);
+          const m = Math.floor((secs % 3600) / 60);
+          document.getElementById("sys-uptime").textContent =
+            h + "h " + m + "m";
+        } catch (e) {
+          document.getElementById("sys-uptime").textContent = "N/A";
+        }
+      }
+
+      // Fetch JVM metrics
+      async function fetchJvmMetrics() {
+        try {
+          // Heap
+          const heap = await (
+            await fetch("/actuator/metrics/jvm.memory.used?tag=area:heap")
+          ).json();
+          const heapMax = await (
+            await fetch("/actuator/metrics/jvm.memory.max?tag=area:heap")
+          ).json();
+          const usedMB = (
+            (heap.measurements?.[0]?.value || 0) / 1048576
+          ).toFixed(0);
+          const maxMB = (
+            (heapMax.measurements?.[0]?.value || 0) / 1048576
+          ).toFixed(0);
+          const pct = maxMB > 0 ? Math.round((usedMB / maxMB) * 100) : 0;
+          document.getElementById("jvm-heap-text").textContent =
+            usedMB + " MB / " + maxMB + " MB (" + pct + "%)";
+          const bar = document.getElementById("jvm-heap-bar");
+          bar.style.width = pct + "%";
+          bar.className =
+            "metric-bar-fill " +
+            (pct > 80 ? "red" : pct > 60 ? "yellow" : "green");
+
+          // Non-Heap
+          const nh = await (
+            await fetch("/actuator/metrics/jvm.memory.used?tag=area:nonheap")
+          ).json();
+          const nhMB = ((nh.measurements?.[0]?.value || 0) / 1048576).toFixed(
+            0,
+          );
+          document.getElementById("jvm-nonheap-text").textContent =
+            nhMB + " MB used";
+          document.getElementById("jvm-nonheap-bar").style.width =
+            Math.min(100, nhMB / 2) + "%";
+
+          // Threads
+          const thr = await (
+            await fetch("/actuator/metrics/jvm.threads.live")
+          ).json();
+          document.getElementById("jvm-threads-text").textContent =
+            (thr.measurements?.[0]?.value || 0) + " live threads";
+
+          // GC
+          const gc = await (
+            await fetch("/actuator/metrics/jvm.gc.pause")
+          ).json();
+          const gcCount =
+            gc.measurements?.find((m) => m.statistic === "COUNT")?.value || 0;
+          const gcTotal =
+            gc.measurements?.find((m) => m.statistic === "TOTAL_TIME")?.value ||
+            0;
+          document.getElementById("jvm-gc-text").textContent =
+            gcCount + " pauses (" + gcTotal.toFixed(3) + "s total)";
+        } catch (e) {
+          // Silently fail for unavailable metrics
+        }
+        try {
+          // HTTP requests
+          const http = await (
+            await fetch("/actuator/metrics/http.server.requests")
+          ).json();
+          const count =
+            http.measurements?.find((m) => m.statistic === "COUNT")?.value || 0;
+          document.getElementById("http-req-text").textContent =
+            count + " total requests";
+        } catch (e) {}
+        try {
+          // JDBC
+          const jdbc = await (
+            await fetch("/actuator/metrics/jdbc.connections.active")
+          ).json();
+          const active = jdbc.measurements?.[0]?.value || 0;
+          document.getElementById("jdbc-text").textContent =
+            active + " active connections";
+        } catch (e) {}
+      }
+
+      // Fetch Prometheus
+      async function fetchPrometheus() {
+        try {
+          const r = await fetch("/actuator/prometheus");
+          const t = await r.text();
+          document.getElementById("promMetrics").textContent =
+            t.substring(0, 8000) + (t.length > 8000 ? "\n\n… (truncated)" : "");
+        } catch (e) {
+          document.getElementById("promMetrics").textContent =
+            "Failed to load Prometheus metrics: " + e.message;
+        }
+      }
+
+      // Init
+      fetchHealth();
+      fetchUptime();
+      fetchJvmMetrics();
+      fetchPrometheus();
+      // Auto-refresh every 30s
+      setInterval(() => {
+        fetchHealth();
+        fetchUptime();
+        fetchJvmMetrics();
+      }, 30000);
+    </script>
+  </body>
+</html>

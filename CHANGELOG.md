@@ -2,6 +2,76 @@
 
 Tất cả thay đổi đáng chú ý được ghi nhận tại đây. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.8.0] — 2026-03-02
+
+### Added — 6 vKernel System App Pages (SyR-PLAT-00.01→00.04)
+
+**App Store (`/dashboard/appstore`) — SyR-PLAT-00.01**
+
+- Tab UI: EXPLORE / INSTALLED / UPDATES
+- 4 industry bundle cards (Logistics, Manufacturing, Retail, Healthcare) with INSTALL BUNDLE buttons
+- Browse all available vApps with install/installed status
+- Installed apps table with Open + Uninstall actions
+- Dependency Resolution Modal overlay for bundle installs
+- Dynamic status badges from `AppRegistryEntity`
+
+**Settings / IAM (`/dashboard/settings`) — SyR-PLAT-00.02**
+
+- CRUDIEA permission matrix: C/R/U/D/L/I/E/A columns × CEO/CAO/FAM/ITM/BDM/HRM role rows
+- Live permissions from `PermissionEntity.Repository.findByActiveTrue()`
+- Search/filter permissions by app or code
+- General Config tab: SSO, tenant, notifications, backup configuration cards
+- Tenant name from `TenantEntity`
+
+**vAudit (`/dashboard/audit`) — SyR-PLAT-00.04**
+
+- Immutable event audit log with stats: Total Events, Published, Failed, Source Apps
+- Filter bar: search by event type, filter by source app, filter by status
+- Expandable detail rows: full correlation ID, event ID, JSONB payload viewer
+- Data from `EventBusService.getAuditLog()` (last 100 events)
+
+**vData / MDM (`/dashboard/data`) — SyR-PLAT-00.03**
+
+- Golden Records browser with stats: Total Records, Stakeholders, Currencies, Countries
+- Tab UI: STAKEHOLDERS / CURRENCIES / COUNTRIES / JSONB EXTENSIONS
+- Search/filter on stakeholder table
+- JSONB extension viewer with example payload documentation
+- Data from `StakeholderEntity`, `CurrencyEntity`, `CountryEntity` repositories
+
+**vFlow / Automation (`/dashboard/automation`) — SyR-PLAT-00.03**
+
+- Stats: Active Subscriptions, Event Types Wired, Subscriber Apps, Events Processed (24h)
+- Flow Canvas: visual trigger→filter→action representation of EventBus subscriptions
+- Subscriptions table with status dots, subscriber app, event type, creation date
+- Run History tab: recent event processing log
+- Data from `SubscriptionEntity.Repository` + `EventBusService`
+
+**vMonitor / Health (`/dashboard/monitor`) — SyR-PLAT-00.04**
+
+- Health grid: Platform Status, Uptime, Database, Disk Space (live from `/actuator/health`)
+- App Health tab: installed apps with health check status
+- JVM Metrics tab: Heap/Non-Heap memory bars, Threads, GC pauses, HTTP requests, JDBC connections (live from `/actuator/metrics/*`)
+- Prometheus tab: raw scrapeable metrics from `/actuator/prometheus`
+- Auto-refresh every 30 seconds
+
+**Backend Changes**
+
+- `DashboardController.java` — 6 new `@GetMapping` routes with server-side data injection
+- Autowired: `PermissionEntity.Repository`, `SubscriptionEntity.Repository`, `StakeholderEntity.Repository`, `CurrencyEntity.Repository`, `CountryEntity.Repository`, `TenantEntity.Repository`
+- `AdaptiveShellController.java` — Added "System Utilities (6)" sidebar section with links to all 6 System Apps
+- `vkernel.css` — Added `.stat-label`, `.stat-value`, `.card.stat`, `.card.full` shared styles
+
+**Navigation Update**
+
+- Updated nav bars in all 7 existing dashboard templates (`index.html`, `api.html`, `events.html`, `health.html`, `metrics.html`, `info.html`, `prometheus.html`) to include System App links
+
+**Tests**
+
+- 6 new integration tests in `PlatformApiTests.java` (Order 60-65): verify all System App pages return HTTP 200 with expected content
+- All 41 tests pass (BUILD SUCCESS)
+
+---
+
 ## [1.7.1] — 2026-03-02
 
 ### Fixed — Shared UI Consolidation + vMarketing-Org Stability

@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel — vAudit</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+    <style>
+      /* ── Filter Bar ────────────────────────────────── */
+      .filter-bar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+      .filter-input,
+      .filter-select {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 7px 12px;
+        color: var(--text);
+        font-size: 12px;
+      }
+      .filter-input {
+        width: 200px;
+      }
+      .filter-select {
+        min-width: 140px;
+      }
+      .filter-input::placeholder {
+        color: var(--dim);
+      }
+      .filter-input:focus,
+      .filter-select:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+
+      /* ── Audit Table ───────────────────────────────── */
+      .audit-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .audit-table th,
+      .audit-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .audit-table th {
+        font-weight: 700;
+        color: var(--dim);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: sticky;
+        top: 0;
+        background: var(--card);
+        z-index: 2;
+      }
+      .audit-table tr:hover {
+        background: rgba(99, 122, 255, 0.04);
+        cursor: pointer;
+      }
+      .audit-table .mono {
+        font-family: monospace;
+        font-size: 11px;
+        color: var(--dim);
+      }
+
+      /* ── Expandable Row ─────────────────────────────── */
+      .audit-detail {
+        display: none;
+        background: var(--bg);
+        animation: fadeIn 0.15s;
+      }
+      .audit-detail.show {
+        display: table-row;
+      }
+      .audit-detail td {
+        padding: 14px 20px;
+      }
+      .payload-block {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px;
+        font-family: monospace;
+        font-size: 11px;
+        line-height: 1.6;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        color: var(--text);
+        max-height: 250px;
+        overflow-y: auto;
+      }
+
+      /* ── Stats Row ──────────────────────────────────── */
+      .audit-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>&#128274; vAudit — Immutable Event Log</h1>
+      <span class="badge">SyR-PLAT-00.04</span>
+      <nav>
+        <a href="/">&#8962; Shell</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/dashboard/appstore">App Store</a>
+        <a href="/dashboard/settings">Settings</a>
+        <a class="active" href="/dashboard/audit">Audit</a>
+        <a href="/dashboard/data">vData</a>
+        <a href="/dashboard/automation">vFlow</a>
+        <a href="/dashboard/monitor">vMonitor</a>
+      </nav>
+    </div>
+
+    <div class="container">
+      <!-- Stats -->
+      <div class="audit-stats">
+        <div class="card stat">
+          <div class="stat-label">Total Events</div>
+          <div class="stat-value">{{TOTAL_EVENTS}}</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Published</div>
+          <div class="stat-value" style="color: var(--green)">
+            {{PUBLISHED_COUNT}}
+          </div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Failed</div>
+          <div class="stat-value" style="color: var(--red)">
+            {{FAILED_COUNT}}
+          </div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Source Apps</div>
+          <div class="stat-value">{{SOURCE_APPS_COUNT}}</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <input
+          type="text"
+          class="filter-input"
+          id="filterSearch"
+          placeholder="Search event type…"
+          oninput="applyFilters()"
+        />
+        <select
+          class="filter-select"
+          id="filterSource"
+          onchange="applyFilters()"
+        >
+          <option value="">All Sources</option>
+          {{SOURCE_OPTIONS}}
+        </select>
+        <select
+          class="filter-select"
+          id="filterStatus"
+          onchange="applyFilters()"
+        >
+          <option value="">All Statuses</option>
+          <option value="PUBLISHED">Published</option>
+          <option value="FAILED">Failed</option>
+        </select>
+        <span style="font-size: 12px; color: var(--dim); margin-left: auto"
+          >Showing last 100 events (immutable append-only log)</span
+        >
+      </div>
+
+      <!-- Audit Table -->
+      <div class="card full" style="overflow-x: auto">
+        <table class="audit-table" id="auditTable">
+          <thead>
+            <tr>
+              <th style="width: 24px"></th>
+              <th>Timestamp</th>
+              <th>Correlation ID</th>
+              <th>Event Type</th>
+              <th>Version</th>
+              <th>Source App</th>
+              <th>Status</th>
+              <th>Subscribers</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{EVENT_ROWS}}
+          </tbody>
+        </table>
+      </div>
+
+      {{EMPTY_STATE}}
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &mdash; vAudit (SyR-PLAT-00.04) &copy; Abivin 2026
+    </div>
+
+    <script>
+      // Toggle detail row
+      document.querySelectorAll(".audit-toggle").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.detail;
+          const row = document.getElementById(id);
+          if (row) {
+            row.classList.toggle("show");
+            btn.textContent = row.classList.contains("show") ? "▾" : "▸";
+          }
+        });
+      });
+
+      // Filter
+      function applyFilters() {
+        const q = document.getElementById("filterSearch").value.toLowerCase();
+        const src = document.getElementById("filterSource").value;
+        const st = document.getElementById("filterStatus").value;
+        document
+          .querySelectorAll("#auditTable tbody tr:not(.audit-detail)")
+          .forEach((row) => {
+            const txt = row.textContent.toLowerCase();
+            const srcMatch = !src || row.dataset.source === src;
+            const stMatch = !st || row.dataset.status === st;
+            const qMatch = !q || txt.includes(q);
+            const show = srcMatch && stMatch && qMatch;
+            row.style.display = show ? "" : "none";
+            // Hide matching detail row too
+            const next = row.nextElementSibling;
+            if (next && next.classList.contains("audit-detail")) {
+              if (!show) {
+                next.style.display = "none";
+                next.classList.remove("show");
+              }
+            }
+          });
+      }
+    </script>
+  </body>
+</html>

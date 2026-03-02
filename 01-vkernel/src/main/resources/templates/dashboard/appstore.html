@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel — App Store</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+    <style>
+      /* ── Tabs ─────────────────────────────────────── */
+      .tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+      }
+      .tab {
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--dim);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+      }
+      .tab:hover {
+        color: var(--text);
+      }
+      .tab.active {
+        color: var(--blue);
+        border-bottom-color: var(--blue);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* ── Bundle Cards ─────────────────────────────── */
+      .bundle-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      .bundle-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        transition: all 0.15s;
+      }
+      .bundle-card:hover {
+        border-color: var(--blue);
+        transform: translateY(-2px);
+      }
+      .bundle-card h3 {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .bundle-card .bundle-sub {
+        font-size: 11px;
+        color: var(--dim);
+        margin-bottom: 12px;
+      }
+      .bundle-card .bundle-apps {
+        font-size: 12px;
+        color: var(--dim);
+        margin-bottom: 14px;
+        line-height: 1.6;
+      }
+      .btn {
+        display: inline-block;
+        padding: 7px 16px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.15s;
+        text-decoration: none;
+      }
+      .btn-primary {
+        background: var(--blue);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        filter: brightness(1.15);
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--dim);
+      }
+      .btn-outline:hover {
+        border-color: var(--text);
+        color: var(--text);
+      }
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--red);
+      }
+      .btn-danger:hover {
+        background: rgba(239, 68, 68, 0.22);
+      }
+      .btn-sm {
+        padding: 4px 10px;
+        font-size: 11px;
+      }
+
+      /* ── Install Actions ───────────────────────────── */
+      .app-actions {
+        display: flex;
+        gap: 6px;
+        justify-content: flex-end;
+      }
+
+      /* ── Modal ──────────────────────────────────────── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+      }
+      .modal-overlay.show {
+        display: flex;
+      }
+      .modal {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 28px 32px;
+        max-width: 540px;
+        width: 90%;
+      }
+      .modal h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+      .modal p {
+        font-size: 13px;
+        color: var(--dim);
+        line-height: 1.7;
+        margin-bottom: 18px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      /* ── Status Badge ──────────────────────────────── */
+      .badge-installed {
+        background: rgba(34, 197, 94, 0.15);
+        color: var(--green);
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 8px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>&#127978; App Store</h1>
+      <span class="badge">SyR-PLAT-00.01</span>
+      <nav>
+        <a href="/">&#8962; Shell</a>
+        <a href="/dashboard">Dashboard</a>
+        <a class="active" href="/dashboard/appstore">App Store</a>
+        <a href="/dashboard/settings">Settings</a>
+        <a href="/dashboard/audit">Audit</a>
+        <a href="/dashboard/data">vData</a>
+        <a href="/dashboard/automation">vFlow</a>
+        <a href="/dashboard/monitor">vMonitor</a>
+      </nav>
+    </div>
+
+    <div class="container">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="explore">EXPLORE</button>
+        <button class="tab" data-tab="installed">
+          INSTALLED ({{APP_COUNT}})
+        </button>
+        <button class="tab" data-tab="updates">UPDATES</button>
+      </div>
+
+      <!-- EXPLORE Tab -->
+      <div class="tab-panel active" id="tab-explore">
+        <h2
+          style="
+            font-size: 13px;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+          "
+        >
+          Industry Bundles (GICS / ISIC Standard)
+        </h2>
+        <div class="bundle-grid">
+          <div class="bundle-card">
+            <h3>&#128666; Logistics (ISIC-H)</h3>
+            <div class="bundle-sub">Transport &amp; Supply Chain</div>
+            <div class="bundle-apps">Pre-config: vOps, vAsset, vStrategy</div>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="
+                showDepModal('Logistics Bundle', 'vOps, vAsset, vStrategy')
+              "
+            >
+              INSTALL BUNDLE
+            </button>
+          </div>
+          <div class="bundle-card">
+            <h3>&#9881; Manufacturing (ISIC-C)</h3>
+            <div class="bundle-sub">Production &amp; Quality</div>
+            <div class="bundle-apps">Pre-config: vProcure, vDev, vDesign</div>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="
+                showDepModal('Manufacturing Bundle', 'vProcure, vDev, vDesign')
+              "
+            >
+              INSTALL BUNDLE
+            </button>
+          </div>
+          <div class="bundle-card">
+            <h3>&#128722; Retail (GICS-45)</h3>
+            <div class="bundle-sub">Commerce &amp; Distribution</div>
+            <div class="bundle-apps">Pre-config: vSales, vMarketing</div>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="showDepModal('Retail Bundle', 'vSales, vMarketing')"
+            >
+              INSTALL BUNDLE
+            </button>
+          </div>
+          <div class="bundle-card">
+            <h3>&#127973; Healthcare (ISIC-Q)</h3>
+            <div class="bundle-sub">Health Services &amp; Compliance</div>
+            <div class="bundle-apps">Pre-config: vHR, vAsset, vSupport</div>
+            <button
+              class="btn btn-primary btn-sm"
+              onclick="
+                showDepModal('Healthcare Bundle', 'vHR, vAsset, vSupport')
+              "
+            >
+              INSTALL BUNDLE
+            </button>
+          </div>
+        </div>
+
+        <h2
+          style="
+            font-size: 13px;
+            color: var(--dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+          "
+        >
+          All Available Apps
+        </h2>
+        <div class="bundle-grid">
+          <div class="bundle-card">
+            <h3>&#9813; vStrategy</h3>
+            <div class="bundle-sub">S2P2R Strategic Planning</div>
+            <div class="bundle-apps">
+              KPI trees, balanced scorecards, OKR tracking
+            </div>
+            {{VSTRATEGY_STATUS}}
+          </div>
+          <div class="bundle-card">
+            <h3>&#128176; vFinance</h3>
+            <div class="bundle-sub">Revenue-to-Reconciliation</div>
+            <div class="bundle-apps">
+              General ledger, invoicing, tax reporting
+            </div>
+            {{VFINACC_STATUS}}
+          </div>
+          <div class="bundle-card">
+            <h3>&#128300; vDesign</h3>
+            <div class="bundle-sub">Idea-to-Spec Physical Design</div>
+            <div class="bundle-apps">Golden samples, prototypes, lab tests</div>
+            {{VDESIGN_STATUS}}
+          </div>
+          <div class="bundle-card">
+            <h3>&#128227; vMarketing</h3>
+            <div class="bundle-sub">M2L ABM Engine</div>
+            <div class="bundle-apps">
+              ABM campaigns, lead scoring, content assets
+            </div>
+            {{VMARKETING_STATUS}}
+          </div>
+        </div>
+      </div>
+
+      <!-- INSTALLED Tab -->
+      <div class="tab-panel" id="tab-installed">
+        <div class="card full">
+          <h2>Installed Applications ({{APP_COUNT}})</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Icon</th>
+                <th>App ID</th>
+                <th>Name</th>
+                <th>Version</th>
+                <th>Status</th>
+                <th style="text-align: right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{APP_ROWS}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- UPDATES Tab -->
+      <div class="tab-panel" id="tab-updates">
+        <div class="card" style="text-align: center; padding: 48px 20px">
+          <div style="font-size: 48px; margin-bottom: 12px">&#9989;</div>
+          <h2
+            style="
+              font-size: 16px;
+              color: var(--text);
+              text-transform: none;
+              letter-spacing: 0;
+            "
+          >
+            All Apps Up to Date
+          </h2>
+          <p style="color: var(--dim); font-size: 13px; margin-top: 8px">
+            No pending updates. vKernel automatically checks for new versions
+            every 24 hours.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dependency Resolution Modal -->
+    <div class="modal-overlay" id="dep-modal">
+      <div class="modal">
+        <h3>&#9888;&#65039; Installation Manager (SyR-PLAT-00.01)</h3>
+        <p id="dep-modal-msg">Checking dependencies…</p>
+        <div class="modal-actions">
+          <button class="btn btn-outline" onclick="closeDepModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="confirmInstall()">
+            INSTALL ALL
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &mdash; App Store (SyR-PLAT-00.01) &copy; Abivin 2026
+    </div>
+
+    <script>
+      // Tab switching
+      document.querySelectorAll(".tab").forEach((t) => {
+        t.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((x) => x.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-panel")
+            .forEach((x) => x.classList.remove("active"));
+          t.classList.add("active");
+          document
+            .getElementById("tab-" + t.dataset.tab)
+            .classList.add("active");
+        });
+      });
+      // Modal
+      function showDepModal(bundle, apps) {
+        document.getElementById("dep-modal-msg").innerHTML =
+          "You are about to install <strong>" +
+          bundle +
+          "</strong>.<br>" +
+          "This will install: <strong>" +
+          apps +
+          "</strong>.<br><br>" +
+          "All dependencies will be resolved automatically.";
+        document.getElementById("dep-modal").classList.add("show");
+      }
+      function closeDepModal() {
+        document.getElementById("dep-modal").classList.remove("show");
+      }
+      function confirmInstall() {
+        closeDepModal();
+        alert(
+          "Bundle installation queued. This feature will be fully functional in a future release.",
+        );
+      }
+      // Uninstall
+      async function uninstallApp(appId) {
+        if (
+          !confirm(
+            "Uninstall " +
+              appId +
+              "? This will remove the app and its permissions.",
+          )
+        )
+          return;
+        try {
+          const r = await fetch("/api/v1/apps/" + encodeURIComponent(appId), {
+            method: "DELETE",
+          });
+          if (r.ok) {
+            location.reload();
+          } else {
+            alert("Uninstall failed: " + r.status);
+          }
+        } catch (e) {
+          alert("Error: " + e.message);
+        }
+      }
+    </script>
+  </body>
+</html>

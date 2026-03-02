@@ -224,4 +224,67 @@ class PlatformApiTests {
         mvc.perform(get("/actuator/info"))
             .andExpect(status().isOk());
     }
+
+    // ══════════════════════════════════════════════════════════
+    // SyR-PLAT System App Dashboard Pages (HTML)
+    // ══════════════════════════════════════════════════════════
+
+    @Test @Order(60)
+    @DisplayName("SyR-PLAT-00.01 — App Store page → 200 + HTML with App Store title")
+    void test_dashboard_appstore() throws Exception {
+        mvc.perform(get("/dashboard/appstore"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("App Store")))
+            .andExpect(content().string(containsString("EXPLORE")))
+            .andExpect(content().string(containsString("Industry Bundles")));
+    }
+
+    @Test @Order(61)
+    @DisplayName("SyR-PLAT-00.02 — Settings/IAM page → 200 + permission matrix")
+    void test_dashboard_settings() throws Exception {
+        mvc.perform(get("/dashboard/settings"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Settings")))
+            .andExpect(content().string(containsString("PERMISSION MATRIX")))
+            .andExpect(content().string(containsString("CRUDIEA")));
+    }
+
+    @Test @Order(62)
+    @DisplayName("SyR-PLAT-00.04 — vAudit page → 200 + audit log table")
+    void test_dashboard_audit() throws Exception {
+        mvc.perform(get("/dashboard/audit"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("vAudit")))
+            .andExpect(content().string(containsString("Total Events")));
+    }
+
+    @Test @Order(63)
+    @DisplayName("SyR-PLAT-00.03 — vData/MDM page → 200 + golden records browser")
+    void test_dashboard_data() throws Exception {
+        mvc.perform(get("/dashboard/data"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("vData")))
+            .andExpect(content().string(containsString("Golden Records")))
+            .andExpect(content().string(containsString("STAKEHOLDERS")));
+    }
+
+    @Test @Order(64)
+    @DisplayName("SyR-PLAT-00.03 — vFlow/Automation page → 200 + subscription wiring")
+    void test_dashboard_automation() throws Exception {
+        mvc.perform(get("/dashboard/automation"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("vFlow")))
+            .andExpect(content().string(containsString("FLOW CANVAS")))
+            .andExpect(content().string(containsString("SUBSCRIPTIONS")));
+    }
+
+    @Test @Order(65)
+    @DisplayName("SyR-PLAT-00.04 — vMonitor page → 200 + health dashboard")
+    void test_dashboard_monitor() throws Exception {
+        mvc.perform(get("/dashboard/monitor"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("vMonitor")))
+            .andExpect(content().string(containsString("Platform Status")))
+            .andExpect(content().string(containsString("APP HEALTH")));
+    }
 }

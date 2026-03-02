@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel — Settings / IAM</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+    <style>
+      /* ── Tabs ─────────────────────────────────────── */
+      .tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+      }
+      .tab {
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--dim);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+      }
+      .tab:hover {
+        color: var(--text);
+      }
+      .tab.active {
+        color: var(--blue);
+        border-bottom-color: var(--blue);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* ── Permission Matrix ─────────────────────────── */
+      .matrix-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .matrix-table th,
+      .matrix-table td {
+        padding: 8px 6px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+      }
+      .matrix-table th {
+        font-weight: 700;
+        color: var(--dim);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: sticky;
+        top: 0;
+        background: var(--card);
+        z-index: 2;
+      }
+      .matrix-table th:first-child,
+      .matrix-table td:first-child {
+        text-align: left;
+        padding-left: 14px;
+        min-width: 140px;
+      }
+      .matrix-table tr:hover {
+        background: rgba(99, 122, 255, 0.04);
+      }
+      .matrix-check {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--blue);
+        cursor: pointer;
+      }
+      .matrix-check:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      /* ── CRUDIEA Legend ─────────────────────────────── */
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 18px;
+        font-size: 12px;
+        color: var(--dim);
+      }
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .legend-code {
+        font-weight: 700;
+        color: var(--blue);
+        font-size: 13px;
+      }
+
+      /* ── App permission group ───────────────────────── */
+      .perm-group {
+        margin-bottom: 28px;
+      }
+      .perm-group-header {
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .perm-group-header .badge-s {
+        font-size: 10px;
+      }
+
+      /* ── Filter ─────────────────────────────────────── */
+      .filter-bar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+      .search-input {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 7px 14px;
+        color: var(--text);
+        font-size: 13px;
+        width: 260px;
+      }
+      .search-input::placeholder {
+        color: var(--dim);
+      }
+      .search-input:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+
+      /* ── Config Cards (General tab) ─────────────────── */
+      .config-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
+      }
+      .config-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+      }
+      .config-card h3 {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .config-card p {
+        font-size: 12px;
+        color: var(--dim);
+        line-height: 1.6;
+      }
+      .config-val {
+        font-family: monospace;
+        color: var(--blue);
+        font-size: 13px;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>&#9881; Settings &amp; IAM</h1>
+      <span class="badge">SyR-PLAT-00.02</span>
+      <nav>
+        <a href="/">&#8962; Shell</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/dashboard/appstore">App Store</a>
+        <a class="active" href="/dashboard/settings">Settings</a>
+        <a href="/dashboard/audit">Audit</a>
+        <a href="/dashboard/data">vData</a>
+        <a href="/dashboard/automation">vFlow</a>
+        <a href="/dashboard/monitor">vMonitor</a>
+      </nav>
+    </div>
+
+    <div class="container">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="permissions">
+          PERMISSION MATRIX
+        </button>
+        <button class="tab" data-tab="general">GENERAL CONFIG</button>
+      </div>
+
+      <!-- PERMISSIONS Tab -->
+      <div class="tab-panel active" id="tab-permissions">
+        <!-- Legend -->
+        <div class="legend">
+          <span><span class="legend-code">C</span> Create</span>
+          <span><span class="legend-code">R</span> Read</span>
+          <span><span class="legend-code">U</span> Update</span>
+          <span><span class="legend-code">D</span> Delete</span>
+          <span><span class="legend-code">L</span> List</span>
+          <span><span class="legend-code">I</span> Import</span>
+          <span><span class="legend-code">E</span> Export</span>
+          <span><span class="legend-code">A</span> Approve</span>
+        </div>
+
+        <!-- Filter -->
+        <div class="filter-bar">
+          <input
+            type="text"
+            class="search-input"
+            id="permFilter"
+            placeholder="Search permissions by app or code…"
+            oninput="filterPermissions()"
+          />
+          <span style="font-size: 12px; color: var(--dim)"
+            >{{PERM_COUNT}} permissions across {{APP_COUNT}} apps</span
+          >
+        </div>
+
+        <!-- Matrix -->
+        <div class="card full" style="overflow-x: auto">
+          <table class="matrix-table" id="permMatrix">
+            <thead>
+              <tr>
+                <th>Permission</th>
+                <th>App</th>
+                <th title="CEO – Chief Executive Officer">CEO</th>
+                <th title="CAO – Chief Admin Officer">CAO</th>
+                <th title="FAM – Finance Manager">FAM</th>
+                <th title="ITM – IT Manager">ITM</th>
+                <th title="BDM – Business Dev Manager">BDM</th>
+                <th title="HRM – Human Resources Manager">HRM</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{PERMISSION_ROWS}}
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 14px; font-size: 11px; color: var(--dim)">
+          &#9432; Permission matrix is read-only. Edit permissions via the
+          <a href="/dashboard/api" style="color: var(--blue)">API Explorer</a>
+          <code style="font-size: 11px">POST /api/v1/permissions</code>.
+        </div>
+      </div>
+
+      <!-- GENERAL CONFIG Tab -->
+      <div class="tab-panel" id="tab-general">
+        <div class="config-grid">
+          <div class="config-card">
+            <h3>&#128274; SSO / Authentication</h3>
+            <p>
+              Single Sign-On gateway for all vApps. JWT-based session tokens
+              with configurable expiry.
+            </p>
+            <div class="config-val">JWT_EXPIRY = 86400s</div>
+          </div>
+          <div class="config-card">
+            <h3>&#127760; Tenant Configuration</h3>
+            <p>
+              Default tenant for multi-org isolation. Each tenant has isolated
+              data and IAM policies.
+            </p>
+            <div class="config-val">TENANT = {{TENANT_NAME}}</div>
+          </div>
+          <div class="config-card">
+            <h3>&#128233; Notification Channels</h3>
+            <p>
+              Configure email, Slack, and webhook notification endpoints for
+              event-driven alerts.
+            </p>
+            <div class="config-val">Channels: EventBus → WebSocket</div>
+          </div>
+          <div class="config-card">
+            <h3>&#128197; Backup &amp; Recovery</h3>
+            <p>
+              Automated PostgreSQL backup schedules and point-in-time recovery
+              configuration.
+            </p>
+            <div class="config-val">BACKUP = daily @ 02:00 UTC</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &mdash; Settings / IAM (SyR-PLAT-00.02) &copy; Abivin 2026
+    </div>
+
+    <script>
+      // Tab switching
+      document.querySelectorAll(".tab").forEach((t) => {
+        t.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((x) => x.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-panel")
+            .forEach((x) => x.classList.remove("active"));
+          t.classList.add("active");
+          document
+            .getElementById("tab-" + t.dataset.tab)
+            .classList.add("active");
+        });
+      });
+      // Permission filter
+      function filterPermissions() {
+        const q = document.getElementById("permFilter").value.toLowerCase();
+        document.querySelectorAll("#permMatrix tbody tr").forEach((row) => {
+          const txt = row.textContent.toLowerCase();
+          row.style.display = txt.includes(q) ? "" : "none";
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -9,6 +9,10 @@
 │  TIER 1: Business Apps (vApps)                              │
 │  ♟️ vStrategy │ 💰 vFinacc │ 🔬 vDesign │ 📢 vMarketing │ …  │
 ├─────────────────────────────────────────────────────────────┤
+│  TIER 1.5: System Utilities (6)                             │
+│  🏪 App Store│ ⚙ Settings │ 🗃 vData   │ ⚡ vFlow        │   │
+│  🔒 vAudit   │ 📈 vMonitor│            │                 │   │
+├─────────────────────────────────────────────────────────────┤
 │  TIER 2: vKernel Core OS (Java 21 / Spring Boot 3.3)       │
 │  ┌──────────┐ ┌─────────┐ ┌───────────┐ ┌──────────────┐   │
 │  │ API GW   │ │ IAM/SSO │ │ App Engine│ │ Data Backbone│   │
@@ -28,7 +32,7 @@
 
 | Layer    | Technology                                                                                | Status   |
 | -------- | ----------------------------------------------------------------------------------------- | -------- |
-| Core OS  | Java 21, Spring Boot 3.3, Spring Cloud GW                                                 | **v1.3** |
+| Core OS  | Java 21, Spring Boot 3.3, Spring Cloud GW                                                 | **v1.8** |
 | vApps    | Python 3.12 / FastAPI (vStrategy, vFinacc, vDesign Physical, vMarketing Org), TS frontend | **v1.7** |
 | Database | PostgreSQL 16, Flyway (kernel) + Alembic (vApps)                                          | **v1.3** |
 | Events   | Pub/Sub (Spring + DB), Redis (infra ready)                                                | **v1.3** |
