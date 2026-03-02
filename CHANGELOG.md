@@ -2,6 +2,16 @@
 
 Tất cả thay đổi đáng chú ý được ghi nhận tại đây. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.6.0] — 2026-03-02
+
+### Added — PRDs & Build Plan for 2 New vApps
+
+- **vDesign Physical PRD** (`00-design/docs/vdesign-physical-prd.md`) — Physical Layer module for Idea-to-Spec: Spec Master (Golden Sample Vault), Idea Inbox (Material Ingestion), Version Control (Prototype Tracker), Feasibility Checker (Lab Stress Test), Handover Kit (Tooling Shipment). 5 SyRs (SyR-PHY-00 through SyR-PHY-04), 5 NFRs, manifest sample, 4 Gherkin acceptance criteria.
+- **vMarketing Organization PRD** (`00-design/docs/vmarketing-org-prd.md`) — M2L ABM Engine: Campaign Orchestrator, Tracking Pixel (IP-to-Company Intent Sensing), Audience Segment (Firmographic/Technographic), Content Asset (Knowledge Hub), Lead Scorer (Account Qualification + Auto-Handover). 5 SyRs (SyR-MKT-ORG-00 through SyR-MKT-ORG-04), 5 NFRs, manifest sample, 3 Gherkin scenarios.
+- **TODO Steps 10 & 11** — Detailed build plans: Step 10 = vDesign Physical (port 8083, `04-vdesign-physical/`), Step 11 = vMarketing Organization (port 8084, `05-vmarketing-org/`).
+
+---
+
 ## [1.5.1] — 2026-03-02
 
 ### Fixed
