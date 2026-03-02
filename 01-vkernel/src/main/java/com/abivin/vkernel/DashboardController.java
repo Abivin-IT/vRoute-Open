@@ -73,9 +73,13 @@ public class DashboardController {
 
         StringBuilder appRows = new StringBuilder();
         for (var app : apps) {
+            String shortId = app.getAppId().contains(".") ?
+                app.getAppId().substring(app.getAppId().lastIndexOf('.') + 1) : app.getAppId();
             appRows.append(String.format(
-                "<tr><td><strong>%s</strong></td><td>%s</td><td>%s</td><td><span class=\"badge-s badge-active\">%s</span></td></tr>\n",
-                app.getAppId(), app.getName(), app.getVersion(), app.getStatus()));
+                "<tr><td><strong>%s</strong></td><td>%s</td><td>%s</td>" +
+                "<td><span class=\"badge-s badge-active\">%s</span></td>" +
+                "<td><a class=\"link\" href=\"/shell/%s\">&#128640; Open</a></td></tr>\n",
+                app.getAppId(), app.getName(), app.getVersion(), app.getStatus(), shortId));
         }
 
         return loadTemplate("index.html")
