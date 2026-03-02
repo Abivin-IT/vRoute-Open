@@ -79,29 +79,12 @@ public class DashboardController {
     }
 
     /**
-     * Main dashboard — overview of vKernel system status.
-     * GET /dashboard
+     * Dashboard redirect — GET /dashboard → 302 → /dashboard/monitor.
+     * The old standalone dashboard is now merged into vMonitor's OVERVIEW tab.
      */
-    @GetMapping(value = "/dashboard", produces = MediaType.TEXT_HTML_VALUE)
-    public String dashboard() {
-        List<AppRegistryEntity> apps = appLifecycle.listInstalled();
-        String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-        StringBuilder appRows = new StringBuilder();
-        for (var app : apps) {
-            String shortId = app.getAppId().contains(".") ?
-                app.getAppId().substring(app.getAppId().lastIndexOf('.') + 1) : app.getAppId();
-            appRows.append(String.format(
-                "<tr><td><strong>%s</strong></td><td>%s</td><td>%s</td>" +
-                "<td><span class=\"badge-s badge-active\">%s</span></td>" +
-                "<td><a class=\"link\" href=\"/shell/%s\">&#128640; Open</a></td></tr>\n",
-                app.getAppId(), app.getName(), app.getVersion(), app.getStatus(), shortId));
-        }
-
-        return loadTemplate("index.html")
-            .replace("{{NOW}}",       now)
-            .replace("{{APP_COUNT}}", String.valueOf(apps.size()))
-            .replace("{{APP_ROWS}}",  appRows.toString());
+    @GetMapping(value = "/dashboard")
+    public RedirectView dashboard() {
+        return new RedirectView("/dashboard/monitor");
     }
 
     /**
@@ -188,16 +171,19 @@ public class DashboardController {
 
         StringBuilder appRows = new StringBuilder();
         for (var app : apps) {
+            String shortId = app.getAppId().contains(".")
+                ? app.getAppId().substring(app.getAppId().lastIndexOf('.') + 1) : app.getAppId();
+            boolean isSystem = AppLifecycleService.SYSTEM_APP_IDS.contains(app.getAppId());
+            String actionCol = isSystem
+                ? "<span class=\"badge-s\" style=\"background:var(--blue);color:#fff\">System</span>"
+                : "<a class=\"btn btn-outline btn-sm\" href=\"/shell/" + shortId + "\">Open</a> " +
+                  "<button class=\"btn btn-danger btn-sm\" onclick=\"uninstallApp('" + app.getAppId() + "')\">Uninstall</button>";
             appRows.append(String.format(
                 "<tr><td>%s</td><td><code>%s</code></td><td>%s</td><td>%s</td>" +
                 "<td><span class=\"badge-s badge-active\">%s</span></td>" +
-                "<td class=\"app-actions\">" +
-                "<a class=\"btn btn-outline btn-sm\" href=\"/shell/%s\">Open</a> " +
-                "<button class=\"btn btn-danger btn-sm\" onclick=\"uninstallApp('%s')\">Uninstall</button>" +
-                "</td></tr>\n",
+                "<td class=\"app-actions\">%s</td></tr>\n",
                 app.getIcon(), app.getAppId(), app.getName(), app.getVersion(), app.getStatus(),
-                app.getAppId().contains(".") ? app.getAppId().substring(app.getAppId().lastIndexOf('.') + 1) : app.getAppId(),
-                app.getAppId()));
+                actionCol));
         }
 
         // Status badges for explore cards

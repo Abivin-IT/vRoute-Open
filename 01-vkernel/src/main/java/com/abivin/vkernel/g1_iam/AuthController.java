@@ -52,6 +52,14 @@ public class AuthController {
             ));
         }
 
+        // NFR-SAFE: guard against oversized inputs before reaching the DB
+        if (email.length() > 255) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "VALIDATION_ERROR",
+                    "message", "Email exceeds maximum allowed length of 255 characters"
+            ));
+        }
+
         if (userRepo.findByEmail(email).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
                     "error", "USER_EXISTS",

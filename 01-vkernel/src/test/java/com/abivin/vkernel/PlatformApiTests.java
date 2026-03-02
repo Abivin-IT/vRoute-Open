@@ -287,4 +287,73 @@ class PlatformApiTests {
             .andExpect(content().string(containsString("Platform Status")))
             .andExpect(content().string(containsString("APP HEALTH")));
     }
+
+    // ══════════════════════════════════════════════════════════
+    // UI Refactor v1.8.1 — Sidebar, Home Launcher, Redirects
+    // ══════════════════════════════════════════════════════════
+
+    @Test @Order(70)
+    @DisplayName("UI-01 — GET /shell → 200 + PRD App Launcher (greeting + Business Modules + System Utilities)")
+    void test_shell_home_prd_launcher() throws Exception {
+        mvc.perform(get("/shell"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Good Morning, Administrator")))
+            .andExpect(content().string(containsString("Business Modules")))
+            .andExpect(content().string(containsString("System Utilities")))
+            .andExpect(content().string(containsString("App Store")))
+            .andExpect(content().string(containsString("vMonitor")));
+    }
+
+    @Test @Order(71)
+    @DisplayName("UI-02 — GET /shell → sidebar has Platform/Business Apps/System sections (no Dashboard link)")
+    void test_shell_sidebar_structure() throws Exception {
+        String html = mvc.perform(get("/shell"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        // Option B sidebar: Platform (Home only), Business Apps, System (6)
+        org.assertj.core.api.Assertions.assertThat(html).contains("Platform");
+        org.assertj.core.api.Assertions.assertThat(html).contains("Business Apps");
+        org.assertj.core.api.Assertions.assertThat(html).contains("System (6)");
+        // Old Dashboard/API Explorer/Metrics links must NOT appear in sidebar
+        org.assertj.core.api.Assertions.assertThat(html).doesNotContain(">Dashboard</span>");
+        org.assertj.core.api.Assertions.assertThat(html).doesNotContain(">API Explorer</span>");
+    }
+
+    @Test @Order(72)
+    @DisplayName("UI-03 — GET /dashboard → 302 redirect to /dashboard/monitor")
+    void test_dashboard_redirects_to_monitor() throws Exception {
+        mvc.perform(get("/dashboard"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(header().string("Location", "/dashboard/monitor"));
+    }
+
+    @Test @Order(73)
+    @DisplayName("UI-04 — System app uninstall blocked → 403 FORBIDDEN")
+    void test_system_app_uninstall_blocked() throws Exception {
+        mvc.perform(delete("/api/v1/apps/vkernel.monitor")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test @Order(74)
+    @DisplayName("UI-05 — Topbar settings gear links to /dashboard/settings")
+    void test_topbar_settings_link() throws Exception {
+        String html = mvc.perform(get("/shell"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+        org.assertj.core.api.Assertions.assertThat(html)
+            .contains("href=\"/dashboard/settings\" title=\"Platform Settings\"");
+    }
+
+    @Test @Order(75)
+    @DisplayName("UI-06 — HTML templates nav links point to /shell (Home), not /dashboard")
+    void test_templates_nav_links_updated() throws Exception {
+        // Verify at least one template has the updated nav link
+        String html = mvc.perform(get("/dashboard/api"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+        org.assertj.core.api.Assertions.assertThat(html).contains("href=\"/shell\">Home</a>");
+        org.assertj.core.api.Assertions.assertThat(html).doesNotContain("href=\"/dashboard\">Dashboard</a>");
+    }
 }

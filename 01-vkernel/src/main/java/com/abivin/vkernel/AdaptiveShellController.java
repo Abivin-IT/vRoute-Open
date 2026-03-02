@@ -30,7 +30,8 @@ public class AdaptiveShellController {
     private static final String SHELL_CSS = """
         :root{--bg:#0c0e14;--sidebar:#111318;--card:#151821;--border:#252836;
               --text:#e4e4e7;--dim:#71717a;--green:#22c55e;--blue:#3b82f6;
-              --purple:#a855f7;--active:#1e293b;--hover:rgba(255,255,255,.04)}
+              --purple:#a855f7;--active:#1e293b;--hover:rgba(255,255,255,.04);
+              --yellow:#eab308;--orange:#f97316}
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
         .shell{display:flex;height:100vh}
@@ -59,15 +60,23 @@ public class AdaptiveShellController {
         .logo-name{font-size:13px;font-weight:700;line-height:1.1}
         .logo-sub{font-size:9px;color:var(--dim);text-transform:uppercase;letter-spacing:.6px;line-height:1.1}
         .app-frame{flex:1;border:none;width:100%;height:100%}
-        .welcome{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:40px}
-        .welcome h2{font-size:24px;margin-bottom:12px}
-        .welcome p{color:var(--dim);font-size:14px;max-width:500px;line-height:1.8}
-        .app-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:24px;padding:0 40px;max-width:800px}
-        .app-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:all .15s;text-decoration:none;color:var(--text)}
+        /* ── PRD App Launcher Styles ── */
+        .launcher{flex:1;overflow-y:auto;padding:32px 40px}
+        .greeting{font-size:22px;font-weight:700;margin-bottom:4px}
+        .greeting-sub{font-size:13px;color:var(--dim);margin-bottom:28px}
+        .section-title{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);font-weight:600;margin-bottom:14px;margin-top:32px}
+        .app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+        .app-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;cursor:pointer;transition:all .15s;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:6px}
         .app-card:hover{border-color:var(--blue);transform:translateY(-2px)}
-        .app-card .app-icon{font-size:32px;margin-bottom:8px}
+        .app-card .app-icon{font-size:28px}
         .app-card .app-name{font-weight:600;font-size:14px}
-        .app-card .app-ver{font-size:11px;color:var(--dim);margin-top:4px}
+        .app-card .app-kpi{font-size:11px;color:var(--dim)}
+        .sys-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+        .sys-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .15s;text-decoration:none;color:var(--text)}
+        .sys-card:hover{border-color:var(--blue);transform:translateY(-1px)}
+        .sys-card .sys-icon{font-size:24px;margin-bottom:4px}
+        .sys-card .sys-name{font-weight:600;font-size:12px}
+        .sys-card .sys-desc{font-size:10px;color:var(--dim)}
     """;
 
     /**
@@ -118,23 +127,26 @@ public class AdaptiveShellController {
                 "ACTIVE".equals(app.getStatus()) ? "<span class=\"status\"></span>" : ""));
         }
 
-        // Build app cards for welcome screen
+        // Build app cards for PRD App Launcher (with KPI placeholders)
         StringBuilder appCards = new StringBuilder();
         for (var app : apps) {
+            String shortId = app.getAppId().contains(".")
+                ? app.getAppId().substring(app.getAppId().lastIndexOf('.') + 1) : app.getAppId();
+            String kpi = resolveKpiHint(shortId);
             appCards.append(String.format("""
                 <a class="app-card" href="/shell/%s">
                     <div class="app-icon">%s</div>
                     <div class="app-name">%s</div>
-                    <div class="app-ver">%s</div>
+                    <div class="app-kpi">%s</div>
                 </a>
                 """,
                 app.getAppId(),
                 app.getIcon() != null ? app.getIcon() : "📦",
                 app.getName(),
-                app.getVersion()));
+                kpi));
         }
 
-        // Main content: welcome screen or iframe
+        // Main content: iframe (app selected) OR full PRD App Launcher
         String mainContent;
         if (iframeUrl != null) {
             mainContent = String.format(
@@ -142,15 +154,22 @@ public class AdaptiveShellController {
                     iframeUrl, activeAppName);
         } else {
             mainContent = String.format("""
-                <div class="welcome">
-                    <div>
-                        <h2>&#127968; Welcome to vRoute</h2>
-                        <p>Select an app from the sidebar, or launch one below.<br>
-                        Each vApp runs in isolation with its own database schema and UI.</p>
-                        <div class="app-grid">%s</div>
+                <div class="launcher">
+                    <div class="greeting">Good Morning, Administrator</div>
+                    <div class="greeting-sub">Welcome to vRoute — your modular ERP platform.</div>
+                    <div class="section-title">Your Installed Apps &mdash; Business Modules (%d)</div>
+                    <div class="app-grid">%s</div>
+                    <div class="section-title">System Utilities &mdash; Core Admin</div>
+                    <div class="sys-grid">
+                        <a class="sys-card" href="/dashboard/appstore"><div class="sys-icon">&#127978;</div><div class="sys-name">App Store</div><div class="sys-desc">Installer</div></a>
+                        <a class="sys-card" href="/dashboard/settings"><div class="sys-icon">&#9881;</div><div class="sys-name">Settings</div><div class="sys-desc">Config / IAM</div></a>
+                        <a class="sys-card" href="/dashboard/data"><div class="sys-icon">&#128451;</div><div class="sys-name">vData</div><div class="sys-desc">MDM Core</div></a>
+                        <a class="sys-card" href="/dashboard/automation"><div class="sys-icon">&#9889;</div><div class="sys-name">vFlow</div><div class="sys-desc">Automation</div></a>
+                        <a class="sys-card" href="/dashboard/audit"><div class="sys-icon">&#128274;</div><div class="sys-name">vAudit</div><div class="sys-desc">Logs / Sec</div></a>
+                        <a class="sys-card" href="/dashboard/monitor"><div class="sys-icon">&#128200;</div><div class="sys-name">vMonitor</div><div class="sys-desc">Health</div></a>
                     </div>
                 </div>
-                """, appCards.toString());
+                """, apps.size(), appCards.toString());
         }
 
         return """
@@ -171,18 +190,9 @@ public class AdaptiveShellController {
                     <a class="nav-item %s" href="/shell">
                         <span class="icon">&#127968;</span><span>Home</span>
                     </a>
-                    <a class="nav-item" href="/dashboard">
-                        <span class="icon">&#128202;</span><span>Dashboard</span>
-                    </a>
-                    <a class="nav-item" href="/dashboard/api">
-                        <span class="icon">&#128268;</span><span>API Explorer</span>
-                    </a>
-                    <a class="nav-item" href="/dashboard/metrics">
-                        <span class="icon">&#128200;</span><span>Metrics</span>
-                    </a>
-                    <div class="nav-section">Installed Apps (%d)</div>
+                    <div class="nav-section">Business Apps (%d)</div>
                     %s
-                    <div class="nav-section">System Utilities (6)</div>
+                    <div class="nav-section">System (6)</div>
                     <a class="nav-item" href="/dashboard/appstore">
                         <span class="icon">&#127978;</span><span>App Store</span>
                     </a>
@@ -214,7 +224,7 @@ public class AdaptiveShellController {
                                onblur="this.placeholder='&#128269; Search across platform... (Ctrl+K)'" />
                         <div class="topbar-actions">
                             <button class="topbar-btn" id="notif-btn" title="Notifications" aria-label="Notifications">&#128276;<span class="notif-dot" id="notif-dot" style="display:none"></span></button>
-                            <a class="topbar-btn" href="/dashboard" title="Platform Settings" aria-label="Settings">&#9881;&#65039;</a>
+                            <a class="topbar-btn" href="/dashboard/settings" title="Platform Settings" aria-label="Settings">&#9881;&#65039;</a>
                         </div>
                     </div>
                     %s
@@ -264,5 +274,27 @@ public class AdaptiveShellController {
         String[] parts = appId.split("\\.");
         String shortName = parts[parts.length - 1];
         return "/" + shortName + "/";
+    }
+
+    /**
+     * Provide a short KPI hint for each business app shown on the Home launcher.
+     * In production these would come from a live metrics endpoint.
+     */
+    private String resolveKpiHint(String shortId) {
+        return switch (shortId) {
+            case "vstrategy"  -> "3 active plans";
+            case "vhr"        -> "People & org";
+            case "vdesign"    -> "Physical product";
+            case "vmarketing" -> "Campaigns & CRM";
+            case "vfinance", "vfinacc" -> "GL & reports";
+            case "vprocure"   -> "Procurement";
+            case "vdev"       -> "R&D pipeline";
+            case "vsales"     -> "Revenue ops";
+            case "vasset"     -> "Asset tracking";
+            case "vit"        -> "IT service desk";
+            case "vops"       -> "Operations";
+            case "vsupport"   -> "Customer support";
+            default           -> "Open module";
+        };
     }
 }

@@ -7,7 +7,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, date
 from decimal import Decimal
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -15,8 +15,8 @@ from pydantic import BaseModel, Field
 # ---- Plan ----
 
 class PlanCreate(BaseModel):
-    period_label: str
-    period_type: str = "QUARTERLY"
+    period_label: str = Field(..., min_length=1, max_length=100)
+    period_type: Literal["MONTHLY", "QUARTERLY", "HALF_YEARLY", "ANNUAL"] = "QUARTERLY"
     created_by: Optional[str] = None
 
 
