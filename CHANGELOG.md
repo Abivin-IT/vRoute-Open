@@ -2,6 +2,116 @@
 
 Tất cả thay đổi đáng chú ý được ghi nhận tại đây. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.6.0] — 2026-03-02
+
+### Added — PRDs & Build Plan for 2 New vApps
+
+- **vDesign Physical PRD** (`00-design/docs/vdesign-physical-prd.md`) — Physical Layer module for Idea-to-Spec: Spec Master (Golden Sample Vault), Idea Inbox (Material Ingestion), Version Control (Prototype Tracker), Feasibility Checker (Lab Stress Test), Handover Kit (Tooling Shipment). 5 SyRs (SyR-PHY-00 through SyR-PHY-04), 5 NFRs, manifest sample, 4 Gherkin acceptance criteria.
+- **vMarketing Organization PRD** (`00-design/docs/vmarketing-org-prd.md`) — M2L ABM Engine: Campaign Orchestrator, Tracking Pixel (IP-to-Company Intent Sensing), Audience Segment (Firmographic/Technographic), Content Asset (Knowledge Hub), Lead Scorer (Account Qualification + Auto-Handover). 5 SyRs (SyR-MKT-ORG-00 through SyR-MKT-ORG-04), 5 NFRs, manifest sample, 3 Gherkin scenarios.
+- **TODO Steps 10 & 11** — Detailed build plans: Step 10 = vDesign Physical (port 8083, `04-vdesign-physical/`), Step 11 = vMarketing Organization (port 8084, `05-vmarketing-org/`).
+
+---
+
+## [1.5.1] — 2026-03-02
+
+### Fixed
+
+- **vFinacc Alembic migration crash** — `op.get_bind().exec_driver_sql()` fails on SQLAlchemy 2.x (`TypeError: immutabledict`). Replaced with `op.execute(sa.text())` + `ON CONFLICT DO NOTHING` for each seed INSERT. (`e1aca63`)
+- **Gateway UI routing 404** — `/vfinacc/**` and `/vstrategy/**` forwarded full path to backend but FastAPI static mount expected `/`. Added `RewritePath` filters in `application.yml` and explicit UI catch-all routes in both `main.py` files. (`90698c0`)
+- **`/api/v1/` returning empty** — No handler existed for this path. Added `GET /api/v1{/}` in `DashboardController.java` redirecting to `/dashboard/api` + `permitAll` in `SecurityConfig`. (`46c8006`)
+
+### Added
+
+- **Single-port access** — All services now accessed exclusively through vKernel gateway `:8080`. Removed host port bindings for vstrategy (8081) and vfinacc (8082) in docker-compose. Added `permitAll` for all vApp proxy paths. Updated Makefile, README, user guide, developer guide. (`2df0e3e`)
+- **Per-module READMEs with cross-references** — `01-vkernel/README.md`, `02-vstrategy/README.md`, `03-vfinacc/README.md` — each documents its tech stack, API endpoints, integration points, and bidirectional links to sibling modules.
+
+---
+
+## [1.5.0] — 2026-03-02
+
+### Changed — Project Restructure: Numbered Folders + Guides
+
+**Folder Restructure (numbered prefixes: lower = more important)**
+
+- `vkernel/` → `01-vkernel/` — Core OS (highest priority)
+- `vstrategy/` → `02-vstrategy/` — vApp #1
+- `vfinacc/` → `03-vfinacc/` — vApp #2
+- `docs/prd/` → `00-design/docs/` — PRD documents
+- `sheets/` → `00-design/sheets/` — Data tables & contracts
+- `helm/` + `docker-compose.yml` → `80-deploy/` — Deployment infrastructure grouped
+- Created `90-guide/` — User + Developer documentation
+
+**vKernel Awareness of vFinacc**
+
+- `.github/workflows/ci.yml` — Added `test-vfinacc` job (Python 3.12, pytest), vfinacc image push to GHCR, updated all `working-directory` paths
+- `Makefile` — Updated DIR vars (`VKERNEL_DIR`, `VSTRATEGY_DIR`, `VFINACC_DIR`, `DEPLOY_DIR`), `COMPOSE` now uses `-f 80-deploy/docker-compose.yml`, `make up` banner includes vFinacc
+- `80-deploy/docker-compose.yml` — Build contexts updated to parent-relative paths (`../01-vkernel`, `../02-vstrategy`, `../03-vfinacc`)
+- `01-vkernel/src/main/resources/application.yml` — Improved gateway route comments with folder references, added generic vApp route template
+
+**World-Class Documentation**
+
+- `90-guide/user/README.md` — Comprehensive user guide: Authentication (JWT, SSO, Magic Link), Using vKernel/vStrategy/vFinacc, API endpoint tables, Troubleshooting
+- `90-guide/developer/README.md` — Developer guide: Architecture overview, Getting Started, Project Structure, How to Add a New vApp (7-step checklist), Coding Standards, Testing Strategy, Database & Migrations, gRPC IPC, Event Bus, CI/CD Pipeline, Deployment, Contributing
+
+**README.md Rewrite**
+
+- Project structure tree updated with all numbered folders
+- Helm path updated to `./80-deploy/helm/vroute`
+
+---
+
+## [1.4.0] — 2026-03-12
+
+### Added — vFinacc: vFinance R2R Module (SyR-FIN-00 through SyR-FIN-04)
+
+**PRD & Design Sheets**
+
+- `docs/prd/vfinacc-prd.md` — Full PRD (5 system requirements, NFRs, architecture overview)
+- `sheets/vfinacc/api-contract.md` — REST API contract table (16 endpoints: Ledger, Transactions, Reconciliation, Cost Centers, Compliance, Health)
+- `sheets/vfinacc/acceptance-criteria.md` — 7 Gherkin acceptance scenarios
+- `sheets/vfinacc/data-model.md` — 5 table schemas with column types and constraints
+
+**vFinacc Backend (Python 3.12 / FastAPI)**
+
+- `vfinacc/app/config.py` — Pydantic Settings (port 8082, env-based configuration)
+- `vfinacc/app/database.py` — Async SQLAlchemy engine (lazy init, asyncpg/aiosqlite)
+- `vfinacc/app/models.py` — 5 ORM models: `LedgerEntry` (DRAFT/POSTED/FLAGGED/REVERSED), `Transaction` (RAW/MATCHED/RECONCILED/REJECTED), `ReconciliationMatch` (3-way: FULL/PARTIAL/NO_MATCH), `CostAllocation` (GROW/RUN/TRANSFORM/GIVE), `ComplianceCheck` (PASS/FLAG/FAIL)
+- `vfinacc/app/schemas.py` — Pydantic v2 DTOs (from_attributes, field validators)
+- `vfinacc/app/service.py` — Business logic (~290 lines): Continuous Ledger CRUD+posting, Transaction Ingestor, 3-way Reconciliation Engine (confidence %), Cost Center allocation (68/27/5/0.1 targets, 2% tolerance), Tax & Compliance Guard (VAT 10%, CIT 20%, $25K threshold)
+- `vfinacc/app/routes.py` — FastAPI Router at `/api/v1/vfinacc` (16 endpoints)
+- `vfinacc/app/grpc_client.py` — KernelGrpcClient (source="vfinacc", graceful degradation)
+- `vfinacc/app/main.py` — FastAPI entry with lifespan (gRPC ping on startup), CORS, static files
+- `vfinacc/manifest.json` — vApp manifest: 4 permissions, 4 published events, 2 subscribed events, depends on vkernel + vstrategy
+
+**Database Migrations**
+
+- `vfinacc/alembic.ini` + `alembic/env.py` — Alembic config (version table `alembic_version_vfinacc`)
+- `vfinacc/alembic/versions/0001_vfinacc_init.py` — Schema (5 tables + indexes) + seed data (demo ledger entries, transactions, reconciliation matches, cost allocations, compliance checks)
+- `V8__register_vfinacc.sql` — Flyway: register vfinacc in App Registry + inject 4 permissions
+
+**Testing**
+
+- `vfinacc/tests/test_finance_api.py` — 25 integration tests (pytest-asyncio + httpx + SQLite in-memory) covering all 5 SyR-FIN requirements: Ledger (7), Transactions (3), Reconciliation (5), Cost Centers (6), Compliance (6), Health (1)
+
+**UI**
+
+- `vfinacc/static/index.html` — Dark-theme dashboard (4 cards: Continuous Ledger, Reconciliation Engine, Cost Center Allocation, Tax & Compliance)
+
+**Infrastructure**
+
+- `vfinacc/Dockerfile` — 2-stage: Node 20-alpine (frontend) + Python 3.12-slim (runtime), port 8082
+- `vfinacc/requirements.txt` — 15 dependencies (same stack as vstrategy)
+- `vfinacc/pyproject.toml` — Project config + pytest settings
+
+### Changed
+
+- `docker-compose.yml` — Added vfinacc service (port 8082, shared DB, depends on postgres)
+- `application.yml` — Added gateway routes: `vfinacc-route` (`/api/v1/vfinacc/**`) + `vfinacc-ui` (`/vfinacc/**`) → vfinacc:8082
+- `Makefile` — Parameterized `pytest` macro (accepts directory arg), added `test-finacc` target, updated `test` to include vfinacc, updated `clean` for vfinacc pycache
+- `README.md` — Added vFinacc to architecture diagram, tech stack, project structure, quick start section
+
+---
+
 ## [1.3.0] — 2026-03-11
 
 ### Added — OIDC SSO + Magic Link + Universal Search + UI Shell + Helm
