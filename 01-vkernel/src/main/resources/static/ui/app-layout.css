@@ -1,0 +1,248 @@
+/* ============================================================
+   vRoute Shared App Layout  ·  served by vKernel at /ui/app-layout.css
+   Referenced by all vApps running behind the Spring Cloud Gateway.
+   Provides: top bar, Abivin logo, search, notifications, settings.
+   ============================================================ */
+
+:root {
+  --vr-topbar-bg: #111318;
+  --vr-topbar-h: 52px;
+  --vr-border: #252836;
+  --vr-text: #e4e4e7;
+  --vr-dim: #71717a;
+  --vr-hover: rgba(255, 255, 255, 0.05);
+  --vr-blue: #3b82f6;
+  --vr-cyan: #06b6d4;
+  --vr-red: #ef4444;
+  --vr-bg: #0c0e14;
+}
+
+/* ── Reset basics ───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--vr-bg);
+  color: var(--vr-text);
+  line-height: 1.5;
+}
+
+/* ── Top bar container ──────────────────────────────────────── */
+.vr-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  height: var(--vr-topbar-h);
+  background: var(--vr-topbar-bg);
+  border-bottom: 1px solid var(--vr-border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+}
+
+/* ── Abivin logo ────────────────────────────────────────────── */
+.vr-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.vr-logo-mark {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, var(--vr-blue) 0%, var(--vr-cyan) 100%);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  color: #fff;
+  letter-spacing: -0.5px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.vr-logo-texts {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.vr-logo-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--vr-text);
+}
+
+.vr-logo-sub {
+  font-size: 9px;
+  color: var(--vr-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* ── Divider ────────────────────────────────────────────────── */
+.vr-sep {
+  width: 1px;
+  height: 22px;
+  background: var(--vr-border);
+  flex-shrink: 0;
+}
+
+/* ── App title ──────────────────────────────────────────────── */
+.vr-app-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vr-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}
+
+/* ── Spacer ─────────────────────────────────────────────────── */
+.vr-spacer {
+  flex: 1 1 auto;
+  min-width: 12px;
+}
+
+/* ── Search ─────────────────────────────────────────────────── */
+.vr-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--vr-border);
+  border-radius: 8px;
+  padding: 0 12px;
+  height: 32px;
+  width: 240px;
+  flex-shrink: 0;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.vr-search:focus-within {
+  border-color: var(--vr-blue);
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.vr-search-icon {
+  color: var(--vr-dim);
+  font-size: 14px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.vr-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--vr-text);
+  font-size: 12px;
+  font-family: inherit;
+  width: 100%;
+}
+
+.vr-search-input::placeholder {
+  color: var(--vr-dim);
+}
+
+/* ── Action buttons ─────────────────────────────────────────── */
+.vr-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.vr-btn {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--vr-dim);
+  font-size: 16px;
+  text-decoration: none;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  flex-shrink: 0;
+}
+
+.vr-btn:hover {
+  background: var(--vr-hover);
+  color: var(--vr-text);
+}
+
+/* Notification red dot */
+.vr-notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--vr-red);
+  border: 1.5px solid var(--vr-topbar-bg);
+}
+
+/* ── Tooltip on hover ───────────────────────────────────────── */
+.vr-btn[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: var(--vr-text);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 300;
+  border: 1px solid var(--vr-border);
+}
+
+/* ── Sub-header (app-specific controls below topbar) ────────── */
+.vr-subbar {
+  height: 44px;
+  background: var(--vr-topbar-bg);
+  border-bottom: 1px solid var(--vr-border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+}
+
+/* ── Responsive: hide search label on small screens ─────────── */
+@media (max-width: 700px) {
+  .vr-search {
+    width: 140px;
+  }
+  .vr-app-name {
+    display: none;
+  }
+  .vr-sep {
+    display: none;
+  }
+}

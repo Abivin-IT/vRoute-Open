@@ -43,6 +43,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(fo -> fo.sameOrigin()))
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/register",
@@ -59,10 +60,13 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1", "/api/v1/").permitAll()
                 .requestMatchers("/dashboard", "/dashboard/**").permitAll()
                 .requestMatchers("/css/**").permitAll()
+                .requestMatchers("/ui/**").permitAll()
                 .requestMatchers("/shell", "/shell/**").permitAll()
                 // Gateway proxy routes — vApps are internal-only; vKernel is the auth boundary
                 .requestMatchers("/api/v1/vstrategy/**", "/vstrategy/**").permitAll()
                 .requestMatchers("/api/v1/vfinacc/**", "/vfinacc/**").permitAll()
+                .requestMatchers("/api/v1/vdesign-physical/**", "/vdesign-physical/**").permitAll()
+                .requestMatchers("/api/v1/vmarketing-org/**", "/vmarketing-org/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);

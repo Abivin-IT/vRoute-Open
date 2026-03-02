@@ -1,0 +1,37 @@
+{
+    "app_code": "vmarketing-org",
+    "display_name": "vMarketing Org · M2L ABM Engine",
+    "version": "0.5.0",
+    "description": "Account-Based Marketing engine — campaigns, tracking pixels, audience segments, content assets, lead scoring & handoff.",
+    "icon": "📢",
+    "permissions": [
+        {
+            "code": "marketing.campaign.view",
+            "description": "View ABM campaigns"
+        },
+        {
+            "code": "marketing.campaign.manage",
+            "description": "Create, launch, pause, complete campaigns"
+        },
+        {
+            "code": "marketing.lead.qualify",
+            "description": "Score and hand off leads to sales"
+        }
+    ],
+    "published_events": [
+        "marketing.campaign.launched",
+        "marketing.campaign.completed",
+        "marketing.lead.qualified",
+        "marketing.lead.handed_off"
+    ],
+    "subscribed_events": [
+        "kernel.app.installed",
+        "kernel.config.changed",
+        "strategy.kpi.updated"
+    ],
+    "ui": {
+        "entry_point": "/vmarketing-org",
+        "nav_label": "vMarketing Org",
+        "icon_class": "icon-marketing"
+    }
+}

@@ -45,12 +45,12 @@ public class DashboardController {
 
 
     /**
-     * Root redirect — GET / → /dashboard
+     * Root redirect — GET / → /shell
      */
     @GetMapping(value = "/", produces = MediaType.TEXT_HTML_VALUE)
     public String root() {
-        return "<html><head><meta http-equiv=\"refresh\" content=\"0;url=/dashboard\"><title>vKernel</title></head>"
-             + "<body style='background:#0c0e14;color:#e4e4e7;font-family:sans-serif;padding:40px'>Redirecting to dashboard&hellip;</body></html>";
+        return "<html><head><meta http-equiv=\"refresh\" content=\"0;url=/shell\"><title>vKernel</title></head>"
+             + "<body style='background:#0c0e14;color:#e4e4e7;font-family:sans-serif;padding:40px'>Redirecting to shell&hellip;</body></html>";
     }
 
     /**
@@ -73,9 +73,13 @@ public class DashboardController {
 
         StringBuilder appRows = new StringBuilder();
         for (var app : apps) {
+            String shortId = app.getAppId().contains(".") ?
+                app.getAppId().substring(app.getAppId().lastIndexOf('.') + 1) : app.getAppId();
             appRows.append(String.format(
-                "<tr><td><strong>%s</strong></td><td>%s</td><td>%s</td><td><span class=\"badge-s badge-active\">%s</span></td></tr>\n",
-                app.getAppId(), app.getName(), app.getVersion(), app.getStatus()));
+                "<tr><td><strong>%s</strong></td><td>%s</td><td>%s</td>" +
+                "<td><span class=\"badge-s badge-active\">%s</span></td>" +
+                "<td><a class=\"link\" href=\"/shell/%s\">&#128640; Open</a></td></tr>\n",
+                app.getAppId(), app.getName(), app.getVersion(), app.getStatus(), shortId));
         }
 
         return loadTemplate("index.html")

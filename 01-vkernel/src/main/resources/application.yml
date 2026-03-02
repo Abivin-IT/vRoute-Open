@@ -66,6 +66,28 @@ spring:
               - Path=/vfinacc/**
             filters:
               - RewritePath=/vfinacc/(?<remaining>.*), /${remaining}
+          # --- vDesign Physical (04-vdesign-physical, port 8083) ---
+          - id: vdesign-physical-route
+            uri: ${VDESIGN_URL:http://vdesign-physical:8083}
+            predicates:
+              - Path=/api/v1/vdesign-physical/**
+          - id: vdesign-physical-ui
+            uri: ${VDESIGN_URL:http://vdesign-physical:8083}
+            predicates:
+              - Path=/vdesign-physical/**
+            filters:
+              - RewritePath=/vdesign-physical/(?<remaining>.*), /${remaining}
+          # --- vMarketing Org (05-vmarketing-org, port 8084) ---
+          - id: vmarketing-org-route
+            uri: ${VMARKETING_URL:http://vmarketing-org:8084}
+            predicates:
+              - Path=/api/v1/vmarketing-org/**
+          - id: vmarketing-org-ui
+            uri: ${VMARKETING_URL:http://vmarketing-org:8084}
+            predicates:
+              - Path=/vmarketing-org/**
+            filters:
+              - RewritePath=/vmarketing-org/(?<remaining>.*), /${remaining}
           # --- Template: add new vApp routes here ---
           # - id: vnewapp-route
           #   uri: http://vnewapp:PORT

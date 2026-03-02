@@ -100,5 +100,47 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # --- vDesign Physical (I2S Physical Layer — Python/FastAPI) ---
+  # No host port exposed — access via vKernel gateway on :8080
+  vdesign-physical:
+    build:
+      context: ../04-vdesign-physical
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-vkernel}
+      DB_USER: ${DB_USER:-vkernel}
+      DB_PASS: ${DB_PASS:-vkernel}
+      DATABASE_URL: postgresql://${DB_USER:-vkernel}:${DB_PASS:-vkernel}@postgres:5432/${DB_NAME:-vkernel}
+      KERNEL_URL: http://vkernel:8080
+      KERNEL_GRPC_HOST: vkernel
+      KERNEL_GRPC_PORT: 9090
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # --- vMarketing Org (M2L ABM Engine — Python/FastAPI) ---
+  # No host port exposed — access via vKernel gateway on :8080
+  vmarketing-org:
+    build:
+      context: ../05-vmarketing-org
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-vkernel}
+      DB_USER: ${DB_USER:-vkernel}
+      DB_PASS: ${DB_PASS:-vkernel}
+      DATABASE_URL: postgresql://${DB_USER:-vkernel}:${DB_PASS:-vkernel}@postgres:5432/${DB_NAME:-vkernel}
+      KERNEL_URL: http://vkernel:8080
+      KERNEL_GRPC_HOST: vkernel
+      KERNEL_GRPC_PORT: 9090
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   pgdata:

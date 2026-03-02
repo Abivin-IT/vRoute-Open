@@ -1,0 +1,79 @@
+{
+    "app": {
+        "id": "com.vcorp.vdesign-physical",
+        "name": "vDesign Physical",
+        "version": "1.0.0",
+        "min_kernel_version": "0.4.0"
+    },
+    "dependencies": [
+        {
+            "app_id": "com.vcorp.kernel.settings",
+            "version_range": "^1.0.0",
+            "reason": "Core platform settings required"
+        }
+    ],
+    "permissions": [
+        {
+            "code": "design.sample.view",
+            "name": "View Samples",
+            "description": "View golden samples, materials, and prototypes",
+            "category": "design",
+            "default_roles": [
+                "CPO",
+                "LAB_ADMIN"
+            ]
+        },
+        {
+            "code": "design.sample.manage",
+            "name": "Manage Samples",
+            "description": "Create, seal, and manage golden samples and prototypes",
+            "category": "design",
+            "default_roles": [
+                "CPO",
+                "LAB_ADMIN"
+            ]
+        },
+        {
+            "code": "design.lab.execute",
+            "name": "Execute Lab Tests",
+            "description": "Run and complete lab tests on samples and prototypes",
+            "category": "design",
+            "default_roles": [
+                "LAB_ADMIN",
+                "MATERIAL_ENG"
+            ]
+        }
+    ],
+    "ui": {
+        "menu_label": "vDesign Physical",
+        "menu_icon": "🔬",
+        "menu_order": 3,
+        "entry_url": "/vdesign-physical/"
+    },
+    "api": {
+        "provided": [
+            "/api/v1/vdesign-physical/golden-samples",
+            "/api/v1/vdesign-physical/materials",
+            "/api/v1/vdesign-physical/prototypes",
+            "/api/v1/vdesign-physical/lab-tests",
+            "/api/v1/vdesign-physical/handover-kits"
+        ],
+        "consumed": [
+            "/api/v1/data/stakeholders",
+            "/api/v1/events/publish"
+        ]
+    },
+    "events": {
+        "published": [
+            "GOLDEN_SAMPLE_SEALED",
+            "SAMPLE_COMPROMISED",
+            "LAB_TEST_COMPLETED",
+            "HANDOVER_KIT_DISPATCHED"
+        ],
+        "subscribed": [
+            "SPEC_APPROVED",
+            "BUILD_REQUEST_CREATED",
+            "APP_INSTALLED"
+        ]
+    }
+}
