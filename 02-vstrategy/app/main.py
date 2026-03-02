@@ -8,6 +8,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.routes import router
@@ -50,7 +51,14 @@ app.add_middleware(
 # API routes
 app.include_router(router)
 
-# Static files (TypeScript frontend build → static/)
+# Static files
 static_dir = Path(__file__).parent.parent / "static"
+
+# Explicit UI catch-all: serves index.html for /vstrategy and /vstrategy/
+@app.get("/vstrategy", include_in_schema=False)
+@app.get("/vstrategy/", include_in_schema=False)
+async def vstrategy_ui_root():
+    return FileResponse(str(static_dir / "index.html"))
+
 if static_dir.exists():
     app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="static")

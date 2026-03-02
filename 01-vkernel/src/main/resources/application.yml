@@ -53,6 +53,8 @@ spring:
             uri: ${VSTRATEGY_URL:http://vstrategy:8081}
             predicates:
               - Path=/vstrategy/**
+            filters:
+              - RewritePath=/vstrategy/(?<remaining>.*), /${remaining}
           # --- vFinacc (03-vfinacc, port 8082) ---
           - id: vfinacc-route
             uri: ${VFINACC_URL:http://vfinacc:8082}
@@ -62,6 +64,8 @@ spring:
             uri: ${VFINACC_URL:http://vfinacc:8082}
             predicates:
               - Path=/vfinacc/**
+            filters:
+              - RewritePath=/vfinacc/(?<remaining>.*), /${remaining}
           # --- Template: add new vApp routes here ---
           # - id: vnewapp-route
           #   uri: http://vnewapp:PORT
