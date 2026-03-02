@@ -84,7 +84,7 @@
 - [x] 5 ORM models: `LedgerEntry` (DRAFT/POSTED), `Transaction` (RAW/MATCHED/RECONCILED), `ReconciliationMatch` (3-way), `CostAllocation` (GROW/RUN/TRANSFORM/GIVE), `ComplianceCheck` (VAT/CIT/THRESHOLD)
 - [x] Business logic service.py (~290 lines): Continuous Ledger, Transaction Ingestor, 3-way Reconciliation Engine, Cost Center 68/27/5/0.1 allocation, Tax & Compliance Guard
 - [x] Full REST API: 16 endpoints at `/api/v1/vfinacc` (Ledger, Transactions, Reconciliation, Cost Centers, Compliance, Health)
-- [x] `manifest.json` — 4 permissions (finance.*), 4 published events, 2 subscribed events, depends on vstrategy
+- [x] `manifest.json` — 4 permissions (finance.\*), 4 published events, 2 subscribed events, depends on vstrategy
 - [x] Alembic migration `0001_vfinacc_init.py` — 5 tables + indexes + seed data
 - [x] vKernel `V8__register_vfinacc.sql` — Auto-register in app registry + inject 4 permissions
 - [x] Gateway routes: `/api/v1/vfinacc/**` + `/vfinacc/**` → vfinacc:8082

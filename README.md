@@ -26,20 +26,20 @@
 
 ## Tech Stack
 
-| Layer    | Technology                                              | Status   |
-| -------- | ------------------------------------------------------- | -------- |
-| Core OS  | Java 21, Spring Boot 3.3, Spring Cloud GW               | **v1.3** |
-| vApps    | Python 3.12 / FastAPI (vStrategy, vFinacc), TS frontend  | **v1.4** |
-| Database | PostgreSQL 16, Flyway (kernel) + Alembic (vApps)        | **v1.3** |
-| Events   | Pub/Sub (Spring + DB), Redis (infra ready)              | **v1.3** |
-| IPC      | gRPC / protobuf3 (vKernel port 9090)                    | **v1.3** |
-| Auth     | JWT + OIDC SSO (Google/Microsoft/GitHub) + Magic Link   | **v1.3** |
-| Search   | PostgreSQL FTS (tsvector + GIN + ts_rank)               | **v1.3** |
-| UI       | Adaptive Shell (micro-frontend host, iframe isolation)  | **v1.3** |
-| Metrics  | Micrometer + Prometheus (actuator endpoint)             | **v1.3** |
-| CI/CD    | GitHub Actions (test → docker-build → GHCR push)        | **v1.3** |
+| Layer    | Technology                                                       | Status   |
+| -------- | ---------------------------------------------------------------- | -------- |
+| Core OS  | Java 21, Spring Boot 3.3, Spring Cloud GW                        | **v1.3** |
+| vApps    | Python 3.12 / FastAPI (vStrategy, vFinacc), TS frontend          | **v1.4** |
+| Database | PostgreSQL 16, Flyway (kernel) + Alembic (vApps)                 | **v1.3** |
+| Events   | Pub/Sub (Spring + DB), Redis (infra ready)                       | **v1.3** |
+| IPC      | gRPC / protobuf3 (vKernel port 9090)                             | **v1.3** |
+| Auth     | JWT + OIDC SSO (Google/Microsoft/GitHub) + Magic Link            | **v1.3** |
+| Search   | PostgreSQL FTS (tsvector + GIN + ts_rank)                        | **v1.3** |
+| UI       | Adaptive Shell (micro-frontend host, iframe isolation)           | **v1.3** |
+| Metrics  | Micrometer + Prometheus (actuator endpoint)                      | **v1.3** |
+| CI/CD    | GitHub Actions (test → docker-build → GHCR push)                 | **v1.3** |
 | Tests    | JUnit 5 + MockMvc (vKernel), pytest-asyncio (vStrategy, vFinacc) | **v1.4** |
-| Deploy   | Docker Compose (dev), Helm chart (prod K8s)             | **v1.3** |
+| Deploy   | Docker Compose (dev), Helm chart (prod K8s)                      | **v1.3** |
 
 ## Project Structure
 
