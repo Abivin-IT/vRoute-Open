@@ -45,7 +45,11 @@ public class AdaptiveShellController {
         .nav-item.active{background:var(--active);color:var(--text);font-weight:600}
         .nav-item .icon{font-size:16px;width:20px;text-align:center}
         .nav-item .status{margin-left:auto;width:6px;height:6px;border-radius:50%;background:var(--green)}
-        .sidebar-footer{margin-top:auto;padding:16px;border-top:1px solid var(--border);font-size:11px;color:var(--dim)}
+        .sidebar-nav{flex:1;overflow-y:auto;padding-bottom:8px}
+        .sidebar-nav::-webkit-scrollbar{width:4px}
+        .sidebar-nav::-webkit-scrollbar-track{background:transparent}
+        .sidebar-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+        .sidebar-footer{padding:16px;border-top:1px solid var(--border);font-size:11px;color:var(--dim);flex-shrink:0}
         .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
         .topbar{height:48px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
         .topbar .breadcrumb{font-size:13px;color:var(--dim)}
@@ -186,6 +190,7 @@ public class AdaptiveShellController {
                             <div class="logo-sub">vRoute OS</div>
                         </div>
                     </div>
+                    <div class="sidebar-nav">
                     <div class="nav-section">Platform</div>
                     <a class="nav-item %s" href="/shell">
                         <span class="icon">&#127968;</span><span>Home</span>
@@ -211,6 +216,7 @@ public class AdaptiveShellController {
                     <a class="nav-item" href="/dashboard/monitor">
                         <span class="icon">&#128200;</span><span>vMonitor</span>
                     </a>
+                    </div>
                     <div class="sidebar-footer">
                         vKernel Core OS v1.3.0<br>
                         &#169; Abivin 2026

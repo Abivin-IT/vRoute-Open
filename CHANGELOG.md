@@ -7,29 +7,35 @@ Tất cả thay đổi đáng chú ý được ghi nhận tại đây. Format: [
 ### Changed — UI Refactor: Sidebar, Home Launcher, Dashboard Redirect
 
 **Sidebar Restructure (Option B)**
+
 - Removed Dashboard / API Explorer / Metrics links from Platform section
 - Sidebar now has 3 clean sections: **Platform** (Home only) → **Business Apps (N)** → **System (6)**
 - Topbar settings gear now links to `/dashboard/settings` instead of `/dashboard`
 
 **Home → PRD App Launcher Wireframe**
+
 - Replaced basic welcome screen with full App Launcher dashboard
 - Greeting banner: "Good Morning, Administrator"
 - Business Modules grid: installed app cards with KPI hint snippets
 - System Utilities grid: 6 cards (App Store, Settings, vData, vFlow, vAudit, vMonitor)
 
 **Dashboard Redirect**
+
 - `GET /dashboard` now returns **302 → `/dashboard/monitor`**
 - Old standalone dashboard content absorbed into vMonitor OVERVIEW tab
 
 **System App Uninstall Guard**
+
 - Added `SYSTEM_APP_IDS` constant in `AppLifecycleService` (6 system apps)
 - `DELETE /api/v1/apps/{systemAppId}` now returns **403 FORBIDDEN**
 - App Store INSTALLED tab shows "System" badge for system apps (no Uninstall button)
 
 **Template Nav Links**
+
 - Updated all 13 HTML templates: `<a href="/dashboard">Dashboard</a>` → `<a href="/shell">Home</a>`
 
 ### Tests
+
 - 6 new UI refactor tests in `PlatformApiTests.java` (UI-01 → UI-06)
 - Total: **263 tests** (65 Java + 51 + 46 + 54 + 47 Python) — all passing
 
