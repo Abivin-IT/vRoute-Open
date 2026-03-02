@@ -6,14 +6,12 @@ from __future__ import annotations
 
 from typing import AsyncGenerator
 
-import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.database import Base, get_db
-from app.main import app
-from app.models import LedgerEntry, Transaction, ReconciliationMatch, CostAllocation, ComplianceCheck  # noqa: F401 — register models
+from app.main import app  # noqa: F401 import registers all models via app.routes → app.service → app.models
 
 TEST_DB_URL = "sqlite+aiosqlite:///:memory:"
 

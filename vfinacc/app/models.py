@@ -7,13 +7,11 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, date, timezone
-from decimal import Decimal
-from typing import Optional
+from datetime import datetime, timezone
 
 from sqlalchemy import (
-    Boolean, Column, DateTime, ForeignKey, Index, Integer, Numeric, String, Text,
-    text, Date, JSON, Uuid,
+    Boolean, Column, Date, DateTime, ForeignKey, Index, Numeric, String, Text,
+    JSON, Uuid,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
