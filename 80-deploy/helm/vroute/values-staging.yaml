@@ -14,11 +14,11 @@
 # =============================================================
 
 global:
-  imagePullPolicy: Always          # staging always pulls latest
+  imagePullPolicy: Always # staging always pulls latest
 
 vkernel:
   image: ghcr.io/abivin/vkernel:staging
-  replicas: 1                      # single-node staging
+  replicas: 1 # single-node staging
   env:
     JWT_SECRET: "OVERRIDE_VIA_CLI" # helm --set vkernel.env.JWT_SECRET=...
     JWT_EXPIRATION: "86400000"
@@ -29,7 +29,7 @@ vstrategy:
   replicas: 1
 
 postgresql:
-  password: "OVERRIDE_VIA_CLI"     # helm --set postgresql.password=...
+  password: "OVERRIDE_VIA_CLI" # helm --set postgresql.password=...
   storage: 5Gi
 
 redis:
@@ -41,7 +41,7 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
     cert-manager.io/cluster-issuer: letsencrypt-prod
-  host: staging.example.com      # override: --set ingress.host="$STAGING_DOMAIN"
+  host: staging.example.com # override: --set ingress.host="$STAGING_DOMAIN"
   tls:
     enabled: true
     secretName: vroute-staging-tls

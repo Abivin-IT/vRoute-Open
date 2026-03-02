@@ -15,11 +15,11 @@
 # =============================================================
 
 global:
-  imagePullPolicy: IfNotPresent    # prod uses pinned tags
+  imagePullPolicy: IfNotPresent # prod uses pinned tags
 
 vkernel:
-  image: ghcr.io/abivin/vkernel:latest   # tag pinned by CD pipeline
-  replicas: 2                             # HA across 4 nodes
+  image: ghcr.io/abivin/vkernel:latest # tag pinned by CD pipeline
+  replicas: 2 # HA across 4 nodes
   resources:
     requests:
       cpu: 500m
@@ -37,7 +37,7 @@ vstrategy:
   replicas: 2
 
 postgresql:
-  replicas: 1                             # single-writer; add pgpool for HA
+  replicas: 1 # single-writer; add pgpool for HA
   password: "OVERRIDE_VIA_CLI"
   storage: 50Gi
   resources:

@@ -2,11 +2,11 @@
 
 ## Environments
 
-| Env | Branch | Domain | Method |
-|-----|--------|--------|--------|
-| **Local** | any | `localhost:8080` | `make up` |
-| **Staging** | `staging` | `$STAGING_DOMAIN` | `make up-staging` |
-| **Production** | `main` | `$PROD_DOMAIN` (primary) + aliases | Helm |
+| Env            | Branch    | Domain                             | Method            |
+| -------------- | --------- | ---------------------------------- | ----------------- |
+| **Local**      | any       | `localhost:8080`                   | `make up`         |
+| **Staging**    | `staging` | `$STAGING_DOMAIN`                  | `make up-staging` |
+| **Production** | `main`    | `$PROD_DOMAIN` (primary) + aliases | Helm              |
 
 > Actual domains and server addresses are kept outside this repo.
 > Set them as environment variables or pass via `--set` at deploy time.
@@ -90,6 +90,7 @@ server {
 ```
 
 Obtain TLS cert:
+
 ```bash
 certbot --nginx -d <STAGING_DOMAIN>
 ```
@@ -129,20 +130,21 @@ push to main     →  CI tests  →  push :latest  images  →  deploy to prod c
 ```
 
 Image tags (GHCR):
-- `:staging`     — from `staging` branch
-- `:latest`      — from `main` branch
+
+- `:staging` — from `staging` branch
+- `:latest` — from `main` branch
 - `:sha-abc1234` — every push (immutable, use for rollback)
 
 ## Secret Management
 
-| Secret | Staging | Production |
-|--------|---------|------------|
-| `DB_PASS` | `.env` file on server | `helm --set` / Vault |
-| `JWT_SECRET` | `.env` file (min 32 chars) | `helm --set` / Vault |
-| OIDC client keys | `.env` file | K8s Secret / SOPS |
-| `OIDC_REDIRECT_BASE` | `.env` file | `helm --set` |
-| TLS certificate | Certbot (auto-renew) | cert-manager (auto) |
-| Domain names | `.env` → `STAGING_DOMAIN` | `--set ingress.host` |
+| Secret               | Staging                    | Production           |
+| -------------------- | -------------------------- | -------------------- |
+| `DB_PASS`            | `.env` file on server      | `helm --set` / Vault |
+| `JWT_SECRET`         | `.env` file (min 32 chars) | `helm --set` / Vault |
+| OIDC client keys     | `.env` file                | K8s Secret / SOPS    |
+| `OIDC_REDIRECT_BASE` | `.env` file                | `helm --set`         |
+| TLS certificate      | Certbot (auto-renew)       | cert-manager (auto)  |
+| Domain names         | `.env` → `STAGING_DOMAIN`  | `--set ingress.host` |
 
 > **Rule**: This is an open-source repo. Never commit `.env`, secrets, IP
 > addresses, domain names, or server hostnames. Use `.env` files (gitignored),

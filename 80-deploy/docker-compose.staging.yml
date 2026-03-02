@@ -19,13 +19,13 @@
 services:
   vkernel:
     image: ghcr.io/abivin/vkernel:staging
-    build: !reset null                  # skip local build, use image
+    build: !reset null # skip local build, use image
     ports:
-      - "127.0.0.1:8080:8080"          # bind loopback only
+      - "127.0.0.1:8080:8080" # bind loopback only
       - "127.0.0.1:9090:9090"
     environment:
       SPRING_PROFILES_ACTIVE: staging
-      OIDC_REDIRECT_BASE: ${OIDC_REDIRECT_BASE}   # set in .env: https://staging.example.com
+      OIDC_REDIRECT_BASE: ${OIDC_REDIRECT_BASE} # set in .env: https://staging.example.com
     deploy:
       resources:
         limits:
@@ -75,7 +75,7 @@ services:
 
   postgres:
     ports:
-      - "127.0.0.1:5432:5432"          # bind loopback only
+      - "127.0.0.1:5432:5432" # bind loopback only
     restart: always
 
   redis:
