@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel — Event Bus</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>&#9881; vKernel</h1>
+      <span class="badge">Core OS</span>
+      <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/dashboard/api">API Explorer</a>
+        <a class="active" href="/dashboard/events">Event Bus</a>
+        <a href="/dashboard/metrics">Metrics</a>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="card full">
+        <h2>Recent Events (Audit Log)</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Source App</th>
+              <th>Status</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{EVENT_ROWS}}
+          </tbody>
+        </table>
+        {{EMPTY_STATE}}
+      </div>
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &mdash; Corp as Code Platform &copy; Abivin 2025
+    </div>
+  </body>
+</html>

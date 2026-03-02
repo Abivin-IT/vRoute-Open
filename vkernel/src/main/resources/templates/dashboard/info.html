@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel &#8212; Application Info</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+    <style>
+      /* ── Info-page extras ── */
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        font-size: 13px;
+        gap: 24px;
+      }
+      .info-key {
+        color: var(--dim);
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+      .info-val {
+        font-family: monospace;
+        color: var(--text);
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>&#9881; vKernel</h1>
+      <span class="badge">Core OS</span>
+      <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/dashboard/api">API Explorer</a>
+        <a href="/dashboard/events">Event Bus</a>
+        <a href="/dashboard/metrics">Metrics</a>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 16px;
+        "
+      >
+        <h2 style="font-size: 16px; font-weight: 600">Application Info</h2>
+        <a
+          class="link"
+          href="/actuator/info"
+          target="_blank"
+          style="margin-left: auto; font-size: 12px"
+          >Raw JSON</a
+        >
+      </div>
+      <div id="root"><p style="color: var(--dim)">Loading&#8230;</p></div>
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &#8212; Corp as Code Platform &copy; Abivin 2025
+    </div>
+
+    <script>
+      function flatRows(obj, prefix) {
+        let html = "";
+        for (const [k, v] of Object.entries(obj || {})) {
+          const key = prefix ? prefix + "." + k : k;
+          if (v && typeof v === "object" && !Array.isArray(v)) {
+            html += flatRows(v, key);
+          } else {
+            html +=
+              '<div class="info-row">' +
+              '<span class="info-key">' +
+              key +
+              "</span>" +
+              '<span class="info-val">' +
+              (Array.isArray(v) ? v.join(", ") : String(v)) +
+              "</span>" +
+              "</div>";
+          }
+        }
+        return html;
+      }
+
+      async function load() {
+        try {
+          const r = await fetch("/actuator/info");
+          const d = await r.json();
+          const keys = Object.keys(d);
+          let html = '<div class="grid">';
+
+          if (keys.length === 0) {
+            html +=
+              '<div class="card full"><p style="color:var(--dim)">' +
+              "No application info configured.<br>" +
+              "Add <code>management.info.env.enabled=true</code> and <code>info.*</code> properties in <code>application.yml</code>." +
+              "</p></div>";
+          } else {
+            for (const k of keys) {
+              html +=
+                '<div class="card"><h2>' +
+                k +
+                "</h2>" +
+                flatRows(d[k], "") +
+                "</div>";
+            }
+          }
+          html += "</div>";
+          document.getElementById("root").innerHTML = html;
+        } catch (e) {
+          document.getElementById("root").innerHTML =
+            '<div class="card full"><p style="color:var(--red)">Error loading info: ' +
+            e.message +
+            "</p></div>";
+        }
+      }
+
+      load();
+    </script>
+  </body>
+</html>

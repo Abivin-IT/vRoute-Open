@@ -57,6 +57,7 @@ public class SecurityConfig {
                                  "/actuator/metrics").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/dashboard", "/dashboard/**").permitAll()
+                .requestMatchers("/css/**").permitAll()
                 .requestMatchers("/shell", "/shell/**").permitAll()
                 .anyRequest().authenticated()
             )
