@@ -4,7 +4,6 @@
 # =============================================================
 from __future__ import annotations
 
-import asyncio
 from typing import AsyncGenerator
 
 import pytest
@@ -17,13 +16,6 @@ from app.main import app
 from app.models import Plan, AlignmentNode, PivotSignal  # noqa: F401 — register models
 
 TEST_DB_URL = "sqlite+aiosqlite:///:memory:"
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest_asyncio.fixture(scope="session")

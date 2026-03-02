@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from decimal import Decimal
 from typing import Optional
 
@@ -49,8 +49,8 @@ class Plan(Base):
     decision_log_json = Column(FlexibleJSON, default={})
     sop_config_json = Column(FlexibleJSON, default={})
     created_by = Column(String(255), nullable=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     nodes = relationship("AlignmentNode", back_populates="plan", cascade="all, delete-orphan")
     signals = relationship("PivotSignal", back_populates="plan", cascade="all, delete-orphan")
@@ -82,8 +82,8 @@ class AlignmentNode(Base):
     timeline_end = Column(Date, nullable=True)
     metadata_json = Column(FlexibleJSON, default={})
     sort_order = Column(Integer, nullable=False, default=0)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     plan = relationship("Plan", back_populates="nodes")
     parent = relationship("AlignmentNode", remote_side=[id], backref="children")
@@ -124,7 +124,7 @@ class PivotSignal(Base):
     recommendation = Column(String(500), nullable=True)
     resolution = Column(String(20), nullable=True)
     resolved_by = Column(String(255), nullable=True)
-    created_at = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     resolved_at = Column(DateTime(timezone=True), nullable=True)
 
     plan = relationship("Plan", back_populates="signals")

@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any
 
@@ -55,7 +55,7 @@ async def update_plan(db: AsyncSession, plan_id: uuid.UUID, data: PlanUpdate) ->
     update_data = data.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(plan, key, value)
-    plan.updated_at = datetime.utcnow()
+    plan.updated_at = datetime.now(timezone.utc)
     await db.flush()
     await db.refresh(plan)
     return plan
@@ -108,7 +108,7 @@ async def update_node(db: AsyncSession, node_id: uuid.UUID, data: NodeUpdate) ->
     if "progress_pct" in update_data and update_data["progress_pct"] is not None:
         node.status = AlignmentNode.traffic_light(update_data["progress_pct"])
 
-    node.updated_at = datetime.utcnow()
+    node.updated_at = datetime.now(timezone.utc)
     await db.flush()
     await db.refresh(node)
     return node
@@ -150,7 +150,7 @@ async def propagate_status(db: AsyncSession, node_id: uuid.UUID) -> list[dict]:
         if status_changed:
             parent.progress_pct = avg_pct
             parent.status = new_status
-            parent.updated_at = datetime.utcnow()
+            parent.updated_at = datetime.now(timezone.utc)
             changed.append({"id": str(parent.id), "progress_pct": float(avg_pct), "status": new_status})
 
         current_parent_id = parent.parent_id
