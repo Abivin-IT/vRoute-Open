@@ -10,7 +10,6 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, date, timezone
 from decimal import Decimal, ROUND_HALF_UP
-from typing import Any
 
 from fastapi import HTTPException
 from sqlalchemy import select, update, func
