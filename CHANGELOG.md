@@ -2,6 +2,21 @@
 
 Tất cả thay đổi đáng chú ý được ghi nhận tại đây. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.5.1] — 2026-03-02
+
+### Fixed
+
+- **vFinacc Alembic migration crash** — `op.get_bind().exec_driver_sql()` fails on SQLAlchemy 2.x (`TypeError: immutabledict`). Replaced with `op.execute(sa.text())` + `ON CONFLICT DO NOTHING` for each seed INSERT. (`e1aca63`)
+- **Gateway UI routing 404** — `/vfinacc/**` and `/vstrategy/**` forwarded full path to backend but FastAPI static mount expected `/`. Added `RewritePath` filters in `application.yml` and explicit UI catch-all routes in both `main.py` files. (`90698c0`)
+- **`/api/v1/` returning empty** — No handler existed for this path. Added `GET /api/v1{/}` in `DashboardController.java` redirecting to `/dashboard/api` + `permitAll` in `SecurityConfig`. (`46c8006`)
+
+### Added
+
+- **Single-port access** — All services now accessed exclusively through vKernel gateway `:8080`. Removed host port bindings for vstrategy (8081) and vfinacc (8082) in docker-compose. Added `permitAll` for all vApp proxy paths. Updated Makefile, README, user guide, developer guide. (`2df0e3e`)
+- **Per-module READMEs with cross-references** — `01-vkernel/README.md`, `02-vstrategy/README.md`, `03-vfinacc/README.md` — each documents its tech stack, API endpoints, integration points, and bidirectional links to sibling modules.
+
+---
+
 ## [1.5.0] — 2026-03-02
 
 ### Changed — Project Restructure: Numbered Folders + Guides

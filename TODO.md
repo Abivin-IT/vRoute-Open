@@ -92,3 +92,17 @@
 - [x] 25 integration tests (pytest-asyncio + httpx + aiosqlite) — all domains covered
 - [x] `Dockerfile` — 2-stage: Node 20-alpine + Python 3.12-slim, port 8082
 - [x] Added to `docker-compose.yml`, `Makefile` (`test-finacc` target), `README.md`
+
+## Step 9: Restructure + Gateway Fixes + Single-Port + Cross-References ✅ DONE
+
+- [x] **Numbered folder prefixes** — `01-vkernel/`, `02-vstrategy/`, `03-vfinacc/`, `00-design/`, `80-deploy/`, `90-guide/` (lower = more important)
+- [x] Updated `docker-compose.yml`, `Makefile`, CI/CD, `application.yml` for new paths
+- [x] **User guide** (`90-guide/user/README.md`) — Auth, vKernel, vStrategy, vFinacc, API tables, Troubleshooting
+- [x] **Developer guide** (`90-guide/developer/README.md`) — Architecture, Getting Started, Add-a-vApp checklist, gRPC, Events, CI/CD
+- [x] **README.md** rewrite — project structure tree, Helm path updated
+- [x] **Fix: vFinacc Alembic crash** — `exec_driver_sql` → `op.execute(sa.text())` + `ON CONFLICT DO NOTHING`
+- [x] **Fix: Gateway RewritePath** — `/vstrategy/**` and `/vfinacc/**` UI 404 → added `RewritePath` filters + catch-all routes
+- [x] **Fix: /api/v1/ redirect** — Added `GET /api/v1{/}` → redirect to `/dashboard/api` + `SecurityConfig permitAll`
+- [x] **Single-port architecture** — Removed host port bindings for 8081/8082, all traffic through `:8080`, updated all port references across docs
+- [x] **Cross-reference READMEs** — `01-vkernel/README.md` (gateway routes table, registered vApps), `02-vstrategy/README.md` (deps, API, integration), `03-vfinacc/README.md` (deps, API, integration)
+- [x] **CHANGELOG v1.5.1** — Documented all fixes and additions
