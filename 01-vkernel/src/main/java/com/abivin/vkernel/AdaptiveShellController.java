@@ -179,12 +179,12 @@ public class AdaptiveShellController {
                     <div class="app-grid">%s</div>
                     <div class="section-title">System Utilities &mdash; Core Admin</div>
                     <div class="sys-grid">
-                        <a class="sys-card" href="/dashboard/appstore"><div class="sys-icon">&#127978;</div><div class="sys-name">App Store</div><div class="sys-desc">Installer</div></a>
-                        <a class="sys-card" href="/dashboard/settings"><div class="sys-icon">&#9881;</div><div class="sys-name">Settings</div><div class="sys-desc">Config / IAM</div></a>
-                        <a class="sys-card" href="/dashboard/data"><div class="sys-icon">&#128451;</div><div class="sys-name">vData</div><div class="sys-desc">MDM Core</div></a>
-                        <a class="sys-card" href="/dashboard/automation"><div class="sys-icon">&#9889;</div><div class="sys-name">vFlow</div><div class="sys-desc">Automation</div></a>
-                        <a class="sys-card" href="/dashboard/audit"><div class="sys-icon">&#128274;</div><div class="sys-name">vAudit</div><div class="sys-desc">Logs / Sec</div></a>
-                        <a class="sys-card" href="/dashboard/monitor"><div class="sys-icon">&#128200;</div><div class="sys-name">vMonitor</div><div class="sys-desc">Health</div></a>
+                        <a class="sys-card" href="/shell/vkernel.appstore"><div class="sys-icon">&#127978;</div><div class="sys-name">App Store</div><div class="sys-desc">Installer</div></a>
+                        <a class="sys-card" href="/shell/vkernel.settings"><div class="sys-icon">&#9881;</div><div class="sys-name">Settings</div><div class="sys-desc">Config / IAM</div></a>
+                        <a class="sys-card" href="/shell/vkernel.data"><div class="sys-icon">&#128451;</div><div class="sys-name">vData</div><div class="sys-desc">MDM Core</div></a>
+                        <a class="sys-card" href="/shell/vkernel.automation"><div class="sys-icon">&#9889;</div><div class="sys-name">vFlow</div><div class="sys-desc">Automation</div></a>
+                        <a class="sys-card" href="/shell/vkernel.audit"><div class="sys-icon">&#128274;</div><div class="sys-name">vAudit</div><div class="sys-desc">Logs / Sec</div></a>
+                        <a class="sys-card" href="/shell/vkernel.monitor"><div class="sys-icon">&#128200;</div><div class="sys-name">vMonitor</div><div class="sys-desc">Health</div></a>
                     </div>
                 </div>
                 """, apps.size(), appCards.toString());
@@ -252,7 +252,7 @@ public class AdaptiveShellController {
                                onblur="this.placeholder='&#128269; Search across platform... (Ctrl+K)'" />
                         <div class="topbar-actions">
                             <button class="topbar-btn" id="notif-btn" title="Notifications" aria-label="Notifications">&#128276;<span class="notif-dot" id="notif-dot" style="display:none"></span></button>
-                            <a class="topbar-btn" href="/dashboard/settings" title="Platform Settings" aria-label="Settings">&#9881;&#65039;</a>
+                            <a class="topbar-btn" href="/shell/vkernel.settings" title="Platform Settings" aria-label="Settings">&#9881;&#65039;</a>
                         </div>
                     </div>
                     %s
