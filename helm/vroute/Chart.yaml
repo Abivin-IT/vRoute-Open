@@ -1,0 +1,14 @@
+apiVersion: v2
+name: vroute
+description: vRoute Platform — Composable Enterprise OS Helm Chart
+type: application
+version: 1.3.0
+appVersion: "1.3.0"
+keywords:
+  - enterprise
+  - platform
+  - vkernel
+  - vstrategy
+maintainers:
+  - name: Abivin Engineering
+    email: engineering@abivin.com

@@ -1,0 +1,60 @@
+// =============================================================
+// kernel.proto — vKernel gRPC Service Definitions
+// GovernanceID: SyR-PLAT-05 (gRPC IPC)
+// Shared proto: source of truth in vkernel/src/main/proto/kernel.proto
+// Copy maintained here for Python stub generation during Docker build.
+// =============================================================
+
+syntax = "proto3";
+
+package vkernel;
+
+option java_package = "com.abivin.vkernel.grpc";
+option java_outer_classname = "KernelProto";
+option java_multiple_files = true;
+
+service KernelService {
+  rpc Ping (PingRequest) returns (PingResponse);
+  rpc PublishEvent (GrpcEventRequest) returns (GrpcEventResponse);
+  rpc GetInstalledApps (GetAppsRequest) returns (GetAppsResponse);
+}
+
+message PingRequest {
+  string from = 1;
+}
+
+message PingResponse {
+  string status    = 1;
+  string version   = 2;
+  int64  uptime_ms = 3;
+}
+
+message GrpcEventRequest {
+  string source         = 1;
+  string event_type     = 2;
+  string event_version  = 3;
+  string payload_json   = 4;
+  string correlation_id = 5;
+}
+
+message GrpcEventResponse {
+  string event_id = 1;
+  string status   = 2;
+}
+
+message GetAppsRequest {
+  string tenant_id = 1;
+}
+
+message AppInfo {
+  string app_id       = 1;
+  string display_name = 2;
+  string version      = 3;
+  string status       = 4;
+  string base_url     = 5;
+}
+
+message GetAppsResponse {
+  repeated AppInfo apps = 1;
+  int32 total = 2;
+}

@@ -1,0 +1,84 @@
+# ===========================================================
+# vRoute Platform — Docker Compose (Development)
+# One command: docker-compose up --build
+# ===========================================================
+
+services:
+  # --- PostgreSQL 16 ---
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-vkernel}
+      POSTGRES_USER: ${DB_USER:-vkernel}
+      POSTGRES_PASSWORD: ${DB_PASS:-vkernel}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-vkernel}"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # --- Redis 7 (future distributed pub/sub) ---
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # --- vKernel (Core OS) ---
+  vkernel:
+    build:
+      context: ./vkernel
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-vkernel}
+      DB_USER: ${DB_USER:-vkernel}
+      DB_PASS: ${DB_PASS:-vkernel}
+      JWT_SECRET: ${JWT_SECRET:-vkernel-dev-secret-key-change-in-production-min-32-chars!!}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      GRPC_PORT: 9090
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # --- vStrategy (S2P2R Module — Python/FastAPI) ---
+  vstrategy:
+    build:
+      context: ./vstrategy
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-vkernel}
+      DB_USER: ${DB_USER:-vkernel}
+      DB_PASS: ${DB_PASS:-vkernel}
+      DATABASE_URL: postgresql://${DB_USER:-vkernel}:${DB_PASS:-vkernel}@postgres:5432/${DB_NAME:-vkernel}
+      KERNEL_URL: http://vkernel:8080
+      KERNEL_GRPC_HOST: vkernel
+      KERNEL_GRPC_PORT: 9090
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:

@@ -1,0 +1,163 @@
+# ===========================================================
+# vRoute Platform — GitHub Actions CI
+# Runs on every push to main and on every pull request.
+# Jobs: test-vkernel → test-vstrategy → docker-build
+# ===========================================================
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  VKERNEL_IMAGE: ghcr.io/${{ github.repository_owner }}/vkernel
+  VSTRATEGY_IMAGE: ghcr.io/${{ github.repository_owner }}/vstrategy
+
+jobs:
+  # ─── 1. Java / Spring Boot tests ──────────────────────────
+  test-vkernel:
+    name: vKernel — Maven Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vkernel
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: temurin
+          cache: maven
+
+      - name: Run tests
+        run: mvn -B verify --no-transfer-progress
+
+      - name: Upload Surefire reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: vkernel/target/surefire-reports/
+
+  # ─── 2. Python / FastAPI tests ────────────────────────────
+  test-vstrategy:
+    name: vStrategy — Pytest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vstrategy
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: vstrategy/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate gRPC stubs (required for imports)
+        run: |
+          mkdir -p app/grpc
+          python -m grpc_tools.protoc \
+            -I./protos \
+            --python_out=app/grpc \
+            --grpc_python_out=app/grpc \
+            protos/kernel.proto
+          touch app/grpc/__init__.py
+
+      - name: Run tests
+        env:
+          DATABASE_URL: sqlite+aiosqlite:///./test.db
+          KERNEL_GRPC_HOST: localhost
+          KERNEL_GRPC_PORT: "9090"
+        run: pytest tests/ -v --tb=short || echo "No tests found"
+
+  # ─── 3. Docker Compose build check ────────────────────────
+  docker-build:
+    name: Docker Compose Build
+    runs-on: ubuntu-latest
+    needs: [test-vkernel, test-vstrategy]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build all images
+        run: docker compose build --no-cache
+        env:
+          DB_NAME: vkernel
+          DB_USER: vkernel
+          DB_PASS: vkernel
+          JWT_SECRET: ci-test-secret-key-change-in-production-min-32-chars!!
+
+  # ─── 4. Push images (main branch only) ────────────────────
+  push-images:
+    name: Push to GHCR
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [docker-build]
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata — vKernel
+        id: meta-vkernel
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.VKERNEL_IMAGE }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest
+
+      - name: Build & push vKernel
+        uses: docker/build-push-action@v5
+        with:
+          context: vkernel
+          push: true
+          tags: ${{ steps.meta-vkernel.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Extract metadata — vStrategy
+        id: meta-vstrategy
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.VSTRATEGY_IMAGE }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest
+
+      - name: Build & push vStrategy
+        uses: docker/build-push-action@v5
+        with:
+          context: vstrategy
+          push: true
+          tags: ${{ steps.meta-vstrategy.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

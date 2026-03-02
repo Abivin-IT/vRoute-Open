@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-vkernel
+  labels:
+    app: vkernel
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.vkernel.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: {{ .Values.vkernel.grpcPort }}
+      targetPort: grpc
+      protocol: TCP
+      name: grpc
+  selector:
+    app: vkernel
+---
+{{- if .Values.vstrategy.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-vstrategy
+  labels:
+    app: vstrategy
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.vstrategy.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: vstrategy
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgresql
+  labels:
+    app: postgresql
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.postgresql.port }}
+      targetPort: {{ .Values.postgresql.port }}
+      protocol: TCP
+  selector:
+    app: postgresql
+---
+{{- if .Values.redis.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-redis
+  labels:
+    app: redis
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.redis.port }}
+      targetPort: {{ .Values.redis.port }}
+      protocol: TCP
+  selector:
+    app: redis
+{{- end }}

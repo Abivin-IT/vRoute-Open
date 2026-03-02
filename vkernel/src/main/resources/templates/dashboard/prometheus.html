@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel &#8212; Prometheus Metrics</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+    <style>
+      /* ── Prometheus-page extras ── */
+      #filter {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 8px 12px;
+        border-radius: 6px;
+        width: 100%;
+        font-size: 13px;
+      }
+      #raw {
+        font-family: monospace;
+        font-size: 12px;
+        white-space: pre;
+        max-height: 70vh;
+        overflow-y: auto;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 16px;
+        border-radius: 8px;
+        line-height: 1.7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>&#9881; vKernel</h1>
+      <span class="badge">Core OS</span>
+      <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/dashboard/api">API Explorer</a>
+        <a href="/dashboard/events">Event Bus</a>
+        <a href="/dashboard/metrics">Metrics</a>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="card full">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+          "
+        >
+          <h2 style="font-size: 16px; font-weight: 600; margin: 0">
+            Prometheus Scrape Output
+          </h2>
+          <span id="count" style="font-size: 12px; color: var(--dim)"></span>
+          <a
+            class="link"
+            href="/actuator/prometheus"
+            target="_blank"
+            style="margin-left: auto; font-size: 12px"
+            >Raw</a
+          >
+        </div>
+        <input
+          id="filter"
+          type="text"
+          placeholder="Filter by metric name&#8230;"
+          style="margin-bottom: 12px"
+        />
+        <div id="raw">Loading&#8230;</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &#8212; Corp as Code Platform &copy; Abivin 2025
+    </div>
+
+    <script>
+      let allLines = [];
+
+      function render() {
+        const q = document.getElementById("filter").value.toLowerCase();
+        const show = q
+          ? allLines.filter(
+              (l) => l.startsWith("#") || l.toLowerCase().includes(q),
+            )
+          : allLines;
+        document.getElementById("raw").textContent = show.join("\n");
+        document.getElementById("count").textContent =
+          show.filter((l) => l && !l.startsWith("#")).length +
+          " series" +
+          (q ? " (filtered)" : "");
+      }
+
+      document.getElementById("filter").addEventListener("input", render);
+
+      async function load() {
+        try {
+          const r = await fetch("/actuator/prometheus");
+          const t = await r.text();
+          allLines = t.split("\n");
+          render();
+        } catch (e) {
+          document.getElementById("raw").textContent = "Error: " + e.message;
+        }
+      }
+
+      load();
+      setInterval(load, 10000);
+    </script>
+  </body>
+</html>

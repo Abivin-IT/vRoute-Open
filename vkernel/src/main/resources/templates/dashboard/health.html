@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel &#8212; Health Check</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+    <style>
+      /* ── Health-page extras ── */
+      .status-UP {
+        color: var(--green);
+      }
+      .status-DOWN {
+        color: var(--red);
+      }
+      .status-UNKNOWN {
+        color: var(--yellow);
+      }
+      .status-OUT_OF_SERVICE {
+        color: var(--red);
+      }
+      .comp-card {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 8px;
+      }
+      .comp-name {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+      .comp-detail {
+        font-size: 12px;
+        color: var(--dim);
+        font-family: monospace;
+        white-space: pre-wrap;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>&#9881; vKernel</h1>
+      <span class="badge">Core OS</span>
+      <nav>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/dashboard/api">API Explorer</a>
+        <a href="/dashboard/events">Event Bus</a>
+        <a href="/dashboard/metrics">Metrics</a>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 16px;
+        "
+      >
+        <h2 style="font-size: 16px; font-weight: 600">Health Check</h2>
+        <span style="font-size: 12px; color: var(--dim)"
+          >Auto-refreshes every 10 s</span
+        >
+        <a
+          class="link"
+          href="/actuator/health"
+          target="_blank"
+          style="margin-left: auto; font-size: 12px"
+          >Raw JSON</a
+        >
+      </div>
+      <div id="root"><p style="color: var(--dim)">Loading&#8230;</p></div>
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &#8212; Corp as Code Platform &copy; Abivin 2025
+    </div>
+
+    <script>
+      async function load() {
+        try {
+          const r = await fetch("/actuator/health");
+          const d = await r.json();
+          const sc = "status-" + (d.status || "UNKNOWN");
+
+          let html =
+            '<div class="grid" style="margin-bottom:16px">' +
+            '<div class="card"><h2>Overall Status</h2>' +
+            '<div class="stat ' +
+            sc +
+            '">' +
+            d.status +
+            "</div></div></div>" +
+            '<div class="card full"><h2>Components</h2>';
+
+          const comps = d.components || {};
+          if (Object.keys(comps).length === 0) {
+            html +=
+              '<p style="color:var(--dim);padding:8px">No components reported.</p>';
+          } else {
+            for (const [k, v] of Object.entries(comps)) {
+              const cs = "status-" + (v.status || "UNKNOWN");
+              html +=
+                '<div class="comp-card">' +
+                '<div class="comp-name"><span class="' +
+                cs +
+                '">&#9679; ' +
+                v.status +
+                "</span>&nbsp;&nbsp;<strong>" +
+                k +
+                "</strong></div>" +
+                (v.details
+                  ? '<div class="comp-detail">' +
+                    JSON.stringify(v.details, null, 2) +
+                    "</div>"
+                  : "") +
+                "</div>";
+            }
+          }
+          html += "</div>";
+          document.getElementById("root").innerHTML = html;
+        } catch (e) {
+          document.getElementById("root").innerHTML =
+            '<div class="card full"><p style="color:var(--red)">Error loading health data: ' +
+            e.message +
+            "</p></div>";
+        }
+      }
+
+      load();
+      setInterval(load, 10000);
+    </script>
+  </body>
+</html>

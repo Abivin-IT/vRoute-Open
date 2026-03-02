@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel — Platform Dashboard</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>&#9881; vKernel</h1>
+      <span class="badge">Core OS</span>
+      <nav>
+        <a class="active" href="/dashboard">Dashboard</a>
+        <a href="/dashboard/api">API Explorer</a>
+        <a href="/dashboard/events">Event Bus</a>
+        <a href="/dashboard/metrics">Metrics</a>
+      </nav>
+    </div>
+
+    <div class="container">
+      <div class="grid">
+        <div class="card">
+          <h2>System Status</h2>
+          <div class="stat stat-green">&#9679; ONLINE</div>
+          <div class="stat-label">Last checked: {{NOW}}</div>
+        </div>
+        <div class="card">
+          <h2>Installed vApps</h2>
+          <div class="stat stat-blue">{{APP_COUNT}}</div>
+          <div class="stat-label">Active applications</div>
+        </div>
+        <div class="card">
+          <h2>Platform Services</h2>
+          <div class="stat stat-purple">6</div>
+          <div class="stat-label">
+            IAM &middot; App Engine &middot; Data &middot; Events &middot; gRPC
+            &middot; Observability
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card full">
+          <h2>Installed Applications</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Name</th>
+                <th>Version</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{APP_ROWS}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Quick Links</h2>
+          <p style="margin-bottom: 8px">
+            <a class="link" href="/dashboard/health">Health Check</a> &mdash;
+            <code>GET /actuator/health</code>
+          </p>
+          <p style="margin-bottom: 8px">
+            <a class="link" href="/dashboard/prometheus">Prometheus Metrics</a>
+            &mdash; <code>GET /actuator/prometheus</code>
+          </p>
+          <p style="margin-bottom: 8px">
+            <a class="link" href="/dashboard/info">App Info</a> &mdash;
+            <code>GET /actuator/info</code>
+          </p>
+          <p style="margin-bottom: 8px">
+            <a class="link" href="/dashboard/metrics">Micrometer Metrics</a>
+            &mdash; <code>GET /actuator/metrics</code>
+          </p>
+          <p style="margin-bottom: 8px">
+            <a class="link" href="/dashboard/api">API Explorer</a> &mdash; All
+            vKernel endpoints
+          </p>
+        </div>
+        <div class="card">
+          <h2>Architecture</h2>
+          <p style="font-size: 13px; color: var(--dim)">
+            <strong>Tier 1:</strong> Business Apps (vStrategy, vFinance, ...)<br />
+            <strong>Tier 2:</strong> vKernel Core OS (this dashboard)<br />
+            <strong>Tier 3:</strong> PostgreSQL 16 + Redis 7
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &mdash; Corp as Code Platform &copy; Abivin 2025
+    </div>
+  </body>
+</html>
