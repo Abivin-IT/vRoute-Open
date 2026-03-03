@@ -224,4 +224,136 @@ class PlatformApiTests {
         mvc.perform(get("/actuator/info"))
             .andExpect(status().isOk());
     }
+
+    // ══════════════════════════════════════════════════════════
+    // SyR-PLAT System App Pages (HTML) — served at /vkernel/*
+    // ══════════════════════════════════════════════════════════
+
+    @Test @Order(60)
+    @DisplayName("SyR-PLAT-00.01 — App Store page → 200 + HTML with App Store title")
+    void test_dashboard_appstore() throws Exception {
+        mvc.perform(get("/vkernel/appstore"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("App Store")))
+            .andExpect(content().string(containsString("EXPLORE")))
+            .andExpect(content().string(containsString("Industry Bundles")));
+    }
+
+    @Test @Order(61)
+    @DisplayName("SyR-PLAT-00.02 — Settings/IAM page → 200 + permission matrix")
+    void test_dashboard_settings() throws Exception {
+        mvc.perform(get("/vkernel/settings"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Settings")))
+            .andExpect(content().string(containsString("PERMISSION MATRIX")))
+            .andExpect(content().string(containsString("CRUDIEA")));
+    }
+
+    @Test @Order(62)
+    @DisplayName("SyR-PLAT-00.04 — vAudit page → 200 + audit log table")
+    void test_dashboard_audit() throws Exception {
+        mvc.perform(get("/vkernel/audit"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("vAudit")))
+            .andExpect(content().string(containsString("Total Events")));
+    }
+
+    @Test @Order(63)
+    @DisplayName("SyR-PLAT-00.03 — vData/MDM page → 200 + golden records browser")
+    void test_dashboard_data() throws Exception {
+        mvc.perform(get("/vkernel/data"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("vData")))
+            .andExpect(content().string(containsString("Golden Records")))
+            .andExpect(content().string(containsString("STAKEHOLDERS")));
+    }
+
+    @Test @Order(64)
+    @DisplayName("SyR-PLAT-00.03 — vFlow/Automation page → 200 + subscription wiring")
+    void test_dashboard_automation() throws Exception {
+        mvc.perform(get("/vkernel/automation"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("vFlow")))
+            .andExpect(content().string(containsString("FLOW CANVAS")))
+            .andExpect(content().string(containsString("SUBSCRIPTIONS")));
+    }
+
+    @Test @Order(65)
+    @DisplayName("SyR-PLAT-00.04 — vMonitor page → 200 + health dashboard")
+    void test_dashboard_monitor() throws Exception {
+        mvc.perform(get("/vkernel/monitor"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("vMonitor")))
+            .andExpect(content().string(containsString("Platform Status")))
+            .andExpect(content().string(containsString("APP HEALTH")));
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // UI Refactor v1.8.1 — Sidebar, Home Launcher, Redirects
+    // ══════════════════════════════════════════════════════════
+
+    @Test @Order(70)
+    @DisplayName("UI-01 — GET /shell → 200 + PRD App Launcher (greeting + Business Modules + System Utilities)")
+    void test_shell_home_prd_launcher() throws Exception {
+        mvc.perform(get("/shell"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Good Morning, Administrator")))
+            .andExpect(content().string(containsString("Business Modules")))
+            .andExpect(content().string(containsString("System Utilities")))
+            .andExpect(content().string(containsString("App Store")))
+            .andExpect(content().string(containsString("vMonitor")));
+    }
+
+    @Test @Order(71)
+    @DisplayName("UI-02 — GET /shell → sidebar has Platform/Business Apps/System sections (no Dashboard link)")
+    void test_shell_sidebar_structure() throws Exception {
+        String html = mvc.perform(get("/shell"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        // Option B sidebar: Platform (Home only), Business Apps, System (6)
+        org.assertj.core.api.Assertions.assertThat(html).contains("Platform");
+        org.assertj.core.api.Assertions.assertThat(html).contains("Business Apps");
+        org.assertj.core.api.Assertions.assertThat(html).contains("System (6)");
+        // Old Dashboard/API Explorer/Metrics links must NOT appear in sidebar
+        org.assertj.core.api.Assertions.assertThat(html).doesNotContain(">Dashboard</span>");
+        org.assertj.core.api.Assertions.assertThat(html).doesNotContain(">API Explorer</span>");
+    }
+
+    @Test @Order(72)
+    @DisplayName("UI-03 — GET /dashboard → 302 redirect to /vkernel/monitor (legacy compat)")
+    void test_dashboard_redirects_to_monitor() throws Exception {
+        mvc.perform(get("/dashboard"))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(header().string("Location", "/vkernel/monitor"));
+    }
+
+    @Test @Order(73)
+    @DisplayName("UI-04 — System app uninstall blocked → 403 FORBIDDEN")
+    void test_system_app_uninstall_blocked() throws Exception {
+        mvc.perform(delete("/api/v1/apps/vkernel.monitor")
+                .header("Authorization", "Bearer " + token))
+            .andExpect(status().isForbidden());
+    }
+
+    @Test @Order(74)
+    @DisplayName("UI-05 — Topbar settings gear links to /shell/vkernel.settings")
+    void test_topbar_settings_link() throws Exception {
+        String html = mvc.perform(get("/shell"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+        org.assertj.core.api.Assertions.assertThat(html)
+            .contains("href=\"/shell/vkernel.settings\" title=\"Platform Settings\"");
+    }
+
+    @Test @Order(75)
+    @DisplayName("UI-06 — HTML templates nav links point to /shell (Home), not /dashboard")
+    void test_templates_nav_links_updated() throws Exception {
+        // Verify at least one template has the updated nav link
+        String html = mvc.perform(get("/vkernel/api"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+        org.assertj.core.api.Assertions.assertThat(html).contains("href=\"/shell\">Home</a>");
+        org.assertj.core.api.Assertions.assertThat(html).doesNotContain("href=\"/dashboard\">Dashboard</a>");
+    }
 }

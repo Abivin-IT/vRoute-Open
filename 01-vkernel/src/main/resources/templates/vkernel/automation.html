@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel — vFlow / Automation</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+    <link rel="stylesheet" href="/ui/app-layout.css" />
+    <style>
+      /* ── Tabs ─────────────────────────────────────── */
+      .tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+      }
+      .tab {
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--dim);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+      }
+      .tab:hover {
+        color: var(--text);
+      }
+      .tab.active {
+        color: var(--blue);
+        border-bottom-color: var(--blue);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* ── Canvas Area ───────────────────────────────── */
+      .flow-canvas {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 22px;
+        min-height: 300px;
+        position: relative;
+        overflow: hidden;
+      }
+      .flow-node {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 18px;
+        margin: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.15s;
+      }
+      .flow-node:hover {
+        border-color: var(--blue);
+        transform: translateY(-1px);
+      }
+      .flow-node.trigger {
+        border-left: 3px solid var(--blue);
+      }
+      .flow-node.action {
+        border-left: 3px solid var(--green);
+      }
+      .flow-node.filter {
+        border-left: 3px solid var(--yellow);
+      }
+      .flow-arrow {
+        display: inline-flex;
+        align-items: center;
+        color: var(--dim);
+        font-size: 18px;
+        margin: 8px 4px;
+      }
+
+      /* ── Subscription Table ─────────────────────────── */
+      .sub-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .sub-table th,
+      .sub-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .sub-table th {
+        font-weight: 700;
+        color: var(--dim);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: sticky;
+        top: 0;
+        background: var(--card);
+        z-index: 2;
+      }
+      .sub-table tr:hover {
+        background: rgba(99, 122, 255, 0.04);
+      }
+
+      /* ── Stats ──────────────────────────────────────── */
+      .flow-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+
+      /* ── Status dots ────────────────────────────────── */
+      .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 6px;
+      }
+      .status-dot.active {
+        background: var(--green);
+      }
+      .status-dot.inactive {
+        background: var(--dim);
+      }
+
+      /* ── Run History ────────────────────────────────── */
+      .run-entry {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 12px;
+      }
+      .run-entry:last-child {
+        border-bottom: none;
+      }
+      .run-entry .run-time {
+        font-family: monospace;
+        color: var(--dim);
+        font-size: 11px;
+        min-width: 160px;
+      }
+      .run-entry .run-event {
+        font-weight: 600;
+        flex: 1;
+      }
+      .run-entry .run-status {
+        font-size: 11px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="vr-topbar"
+      data-app-title="vFlow — Automation · SyR-PLAT-00.03"
+    ></div>
+
+    <div class="container">
+      <!-- Stats -->
+      <div class="flow-stats">
+        <div class="card stat">
+          <div class="stat-label">Active Subscriptions</div>
+          <div class="stat-value">{{ACTIVE_SUBS}}</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Event Types Wired</div>
+          <div class="stat-value">{{EVENT_TYPES}}</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Subscriber Apps</div>
+          <div class="stat-value">{{SUBSCRIBER_APPS}}</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Events Processed (24h)</div>
+          <div class="stat-value">{{EVENTS_24H}}</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="canvas">FLOW CANVAS</button>
+        <button class="tab" data-tab="subscriptions">
+          SUBSCRIPTIONS ({{ACTIVE_SUBS}})
+        </button>
+        <button class="tab" data-tab="history">RUN HISTORY</button>
+      </div>
+
+      <!-- CANVAS Tab -->
+      <div class="tab-panel active" id="tab-canvas">
+        <div class="flow-canvas" id="flowCanvas">{{FLOW_DIAGRAM}}</div>
+        <div style="font-size: 12px; color: var(--dim)">
+          &#9432; Visual representation of active event subscriptions. Each
+          subscription creates a Trigger → Action flow via the EventBus.
+        </div>
+      </div>
+
+      <!-- SUBSCRIPTIONS Tab -->
+      <div class="tab-panel" id="tab-subscriptions">
+        <div class="card full" style="overflow-x: auto">
+          <table class="sub-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Subscriber App</th>
+                <th>Event Type</th>
+                <th>Created</th>
+                <th>ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{SUBSCRIPTION_ROWS}}
+            </tbody>
+          </table>
+        </div>
+        {{EMPTY_STATE}}
+      </div>
+
+      <!-- HISTORY Tab -->
+      <div class="tab-panel" id="tab-history">
+        <div class="card full">
+          <h2>Recent Event Processing</h2>
+          <div id="runHistory">{{RUN_HISTORY_ROWS}}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &mdash; vFlow / Automation (SyR-PLAT-00.03) &copy; Abivin
+      2026
+    </div>
+
+    <script>
+      // Tab switching
+      document.querySelectorAll(".tab").forEach((t) => {
+        t.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((x) => x.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-panel")
+            .forEach((x) => x.classList.remove("active"));
+          t.classList.add("active");
+          document
+            .getElementById("tab-" + t.dataset.tab)
+            .classList.add("active");
+        });
+      });
+    </script>
+    <script src="/ui/app-layout.js"></script>
+  </body>
+</html>

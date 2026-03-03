@@ -186,3 +186,32 @@ code {
   border-top: 1px solid var(--border);
   margin-top: 32px;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   System App Shared Styles (App Store, Settings, vAudit,
+   vData, vFlow, vMonitor)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Stat cards (reused in audit, data, flow) ───────────────── */
+.stat-label {
+  font-size: 11px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+}
+.card.stat {
+  padding: 20px;
+  text-align: center;
+}
+
+/* ── Full-width card ─────────────────────────────────────────── */
+.card.full {
+  grid-column: 1 / -1;
+}

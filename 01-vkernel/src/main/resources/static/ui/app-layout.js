@@ -11,7 +11,7 @@
  *   - App title (from data-app-title)
  *   - Search box (Ctrl+K to focus)
  *   - Notifications bell with red dot indicator
- *   - Settings gear (links to /dashboard)
+ *   - Settings gear (links to /shell/vkernel.settings)
  *   - Home button (links to /shell)
  *
  * @GovernanceID vkernel.ui.1.0
@@ -74,8 +74,8 @@
     ICON.bell +
     '    <span class="vr-notif-dot" id="vr-notif-dot" style="display:none"></span>' +
     "  </button>" +
-    // Settings → vKernel dashboard
-    '  <a class="vr-btn" href="/dashboard" target="_top" title="Platform Settings" aria-label="Settings">' +
+    // Settings → vKernel settings
+    '  <a class="vr-btn" href="/shell/vkernel.settings" target="_top" title="Platform Settings" aria-label="Settings">' +
     "    " +
     ICON.gear +
     "  </a>" +

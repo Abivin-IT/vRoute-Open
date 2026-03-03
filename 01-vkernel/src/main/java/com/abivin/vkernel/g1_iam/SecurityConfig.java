@@ -58,7 +58,8 @@ public class SecurityConfig {
                                  "/actuator/metrics").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/api/v1", "/api/v1/").permitAll()
-                .requestMatchers("/dashboard", "/dashboard/**").permitAll()
+                .requestMatchers("/dashboard").permitAll() // legacy redirect
+                .requestMatchers("/vkernel", "/vkernel/**").permitAll()
                 .requestMatchers("/css/**").permitAll()
                 .requestMatchers("/ui/**").permitAll()
                 .requestMatchers("/shell", "/shell/**").permitAll()

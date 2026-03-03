@@ -1,15 +1,19 @@
 # ===========================================================
 # vRoute Platform — GitHub Actions CI
-# Runs on every push to main and on every pull request.
-# Jobs: test-vkernel → test-vstrategy → test-vfinacc → test-vdesign-physical → test-vmarketing-org → docker-build
+# Runs on push to main/staging and on every pull request.
+# Jobs: test → docker-build → push-images
+#
+# Environments:
+#   staging  → branch: staging → images tagged :staging
+#   prod     → branch: main    → images tagged :latest + :sha-*
 # ===========================================================
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, staging]
   pull_request:
-    branches: [main]
+    branches: [main, staging]
 
 env:
   REGISTRY: ghcr.io
@@ -206,11 +210,11 @@ jobs:
           DB_PASS: vkernel
           JWT_SECRET: ci-test-secret-key-change-in-production-min-32-chars!!
 
-  # ─── 4. Push images (main branch only) ────────────────────
+  # ─── 4. Push images (main + staging) ───────────────────────
   push-images:
     name: Push to GHCR
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging') && github.event_name == 'push'
     needs: [docker-build]
     permissions:
       contents: read
@@ -236,7 +240,8 @@ jobs:
           images: ${{ env.VKERNEL_IMAGE }}
           tags: |
             type=sha,prefix=sha-
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/staging' }}
 
       - name: Build & push vKernel
         uses: docker/build-push-action@v5
@@ -254,7 +259,8 @@ jobs:
           images: ${{ env.VSTRATEGY_IMAGE }}
           tags: |
             type=sha,prefix=sha-
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/staging' }}
 
       - name: Build & push vStrategy
         uses: docker/build-push-action@v5
@@ -272,7 +278,8 @@ jobs:
           images: ${{ env.VFINACC_IMAGE }}
           tags: |
             type=sha,prefix=sha-
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/staging' }}
 
       - name: Build & push vFinacc
         uses: docker/build-push-action@v5
@@ -290,7 +297,8 @@ jobs:
           images: ${{ env.VDESIGN_IMAGE }}
           tags: |
             type=sha,prefix=sha-
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/staging' }}
 
       - name: Build & push vDesign Physical
         uses: docker/build-push-action@v5
@@ -308,7 +316,8 @@ jobs:
           images: ${{ env.VMARKETING_IMAGE }}
           tags: |
             type=sha,prefix=sha-
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=staging,enable=${{ github.ref == 'refs/heads/staging' }}
 
       - name: Build & push vMarketing Org
         uses: docker/build-push-action@v5

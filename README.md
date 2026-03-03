@@ -9,6 +9,10 @@
 │  TIER 1: Business Apps (vApps)                              │
 │  ♟️ vStrategy │ 💰 vFinacc │ 🔬 vDesign │ 📢 vMarketing │ …  │
 ├─────────────────────────────────────────────────────────────┤
+│  TIER 1.5: System Utilities (6)                             │
+│  🏪 App Store│ ⚙ Settings │ 🗃 vData   │ ⚡ vFlow        │   │
+│  🔒 vAudit   │ 📈 vMonitor│            │                 │   │
+├─────────────────────────────────────────────────────────────┤
 │  TIER 2: vKernel Core OS (Java 21 / Spring Boot 3.3)       │
 │  ┌──────────┐ ┌─────────┐ ┌───────────┐ ┌──────────────┐   │
 │  │ API GW   │ │ IAM/SSO │ │ App Engine│ │ Data Backbone│   │
@@ -28,7 +32,7 @@
 
 | Layer    | Technology                                                                                | Status   |
 | -------- | ----------------------------------------------------------------------------------------- | -------- |
-| Core OS  | Java 21, Spring Boot 3.3, Spring Cloud GW                                                 | **v1.3** |
+| Core OS  | Java 21, Spring Boot 3.3, Spring Cloud GW                                                 | **v1.8** |
 | vApps    | Python 3.12 / FastAPI (vStrategy, vFinacc, vDesign Physical, vMarketing Org), TS frontend | **v1.7** |
 | Database | PostgreSQL 16, Flyway (kernel) + Alembic (vApps)                                          | **v1.3** |
 | Events   | Pub/Sub (Spring + DB), Redis (infra ready)                                                | **v1.3** |
@@ -213,17 +217,19 @@ make down
 
 ## Kubernetes Deployment (Helm)
 
+See [80-deploy/README.md](80-deploy/README.md) for full deployment guide (local / staging / production).
+
 ```bash
-# Install with Helm
-helm install vroute ./80-deploy/helm/vroute \
-  --set vkernel.env.JWT_SECRET="your-production-secret-32-chars" \
-  --set postgresql.password="strong-db-password"
+# Staging (single-server, branch: staging)
+make up-staging
 
-# Upgrade
-helm upgrade vroute ./80-deploy/helm/vroute
-
-# Uninstall
-helm uninstall vroute
+# Production (K8s cluster, branch: main)
+helm upgrade --install vroute ./80-deploy/helm/vroute \
+  -f ./80-deploy/helm/vroute/values-prod.yaml \
+  --set ingress.host="$PROD_DOMAIN" \
+  --set postgresql.password="$DB_PASS" \
+  --set vkernel.env.JWT_SECRET="$JWT_SECRET" \
+  -n vroute --create-namespace
 ```
 
 ## Organizational Blocks (vApps — planned)

@@ -24,10 +24,10 @@ async def test_f01_index_html_served(client: AsyncClient):
 
 
 async def test_f02_index_html_contains_script_tag(client: AsyncClient):
-    """index.html loads app.js bundle."""
+    """index.html loads app.js bundle (relative or absolute path)."""
     r = await client.get("/")
     assert r.status_code == 200
-    assert "/app.js" in r.text
+    assert "app.js" in r.text
 
 
 async def test_f03_plan_select_element(client: AsyncClient):

@@ -24,6 +24,11 @@ public class AppLifecycleService {
 
     private static final String KERNEL_VERSION = "0.2.0";
 
+    /** System app IDs that cannot be uninstalled. */
+    public static final java.util.Set<String> SYSTEM_APP_IDS = java.util.Set.of(
+        "vkernel.appstore", "vkernel.settings", "vkernel.data",
+        "vkernel.automation", "vkernel.audit", "vkernel.monitor");
+
     private final AppRegistryEntity.Repository appRepo;
     private final PermissionEntity.Repository permRepo;
     private final EventBusService eventBus;
@@ -121,6 +126,12 @@ public class AppLifecycleService {
      */
     @Transactional
     public void uninstall(String appId, String uninstalledBy) throws Exception {
+        // Guard: system apps cannot be uninstalled
+        if (SYSTEM_APP_IDS.contains(appId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "System app '" + appId + "' cannot be uninstalled");
+        }
+
         var entityOpt = appRepo.findByAppId(appId);
         if (entityOpt.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,

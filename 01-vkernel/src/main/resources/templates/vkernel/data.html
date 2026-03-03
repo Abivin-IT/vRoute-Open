@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>vKernel — vData / MDM</title>
+    <link rel="stylesheet" href="/css/vkernel.css" />
+    <link rel="stylesheet" href="/ui/app-layout.css" />
+    <style>
+      /* ── Tabs ─────────────────────────────────────── */
+      .tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+      }
+      .tab {
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--dim);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.15s;
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+      }
+      .tab:hover {
+        color: var(--text);
+      }
+      .tab.active {
+        color: var(--blue);
+        border-bottom-color: var(--blue);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+
+      /* ── Data Table ────────────────────────────────── */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .data-table th,
+      .data-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+      }
+      .data-table th {
+        font-weight: 700;
+        color: var(--dim);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: sticky;
+        top: 0;
+        background: var(--card);
+        z-index: 2;
+      }
+      .data-table tr:hover {
+        background: rgba(99, 122, 255, 0.04);
+      }
+      .data-table .mono {
+        font-family: monospace;
+        font-size: 11px;
+        color: var(--dim);
+      }
+
+      /* ── Stats ──────────────────────────────────────── */
+      .data-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+      }
+
+      /* ── Extension Viewer ───────────────────────────── */
+      .json-viewer {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px;
+        font-family: monospace;
+        font-size: 11px;
+        line-height: 1.6;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        color: var(--text);
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      /* ── Filter ─────────────────────────────────────── */
+      .filter-bar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+      .filter-input {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 7px 12px;
+        color: var(--text);
+        font-size: 12px;
+        width: 260px;
+      }
+      .filter-input::placeholder {
+        color: var(--dim);
+      }
+      .filter-input:focus {
+        outline: none;
+        border-color: var(--blue);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="vr-topbar"
+      data-app-title="vData — Master Data · SyR-PLAT-00.03"
+    ></div>
+
+    <div class="container">
+      <!-- Stats -->
+      <div class="data-stats">
+        <div class="card stat">
+          <div class="stat-label">Golden Records</div>
+          <div class="stat-value">{{TOTAL_RECORDS}}</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Stakeholders</div>
+          <div class="stat-value">{{STAKEHOLDER_COUNT}}</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Currencies</div>
+          <div class="stat-value">{{CURRENCY_COUNT}}</div>
+        </div>
+        <div class="card stat">
+          <div class="stat-label">Countries</div>
+          <div class="stat-value">{{COUNTRY_COUNT}}</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="stakeholders">
+          STAKEHOLDERS ({{STAKEHOLDER_COUNT}})
+        </button>
+        <button class="tab" data-tab="currencies">
+          CURRENCIES ({{CURRENCY_COUNT}})
+        </button>
+        <button class="tab" data-tab="countries">
+          COUNTRIES ({{COUNTRY_COUNT}})
+        </button>
+        <button class="tab" data-tab="extensions">JSONB EXTENSIONS</button>
+      </div>
+
+      <!-- STAKEHOLDERS Tab -->
+      <div class="tab-panel active" id="tab-stakeholders">
+        <div class="filter-bar">
+          <input
+            type="text"
+            class="filter-input"
+            id="filterStakeholders"
+            placeholder="Search stakeholders…"
+            oninput="filterTable('stakeholderTable', 'filterStakeholders')"
+          />
+        </div>
+        <div class="card full" style="overflow-x: auto">
+          <table class="data-table" id="stakeholderTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Email</th>
+                <th>City</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{STAKEHOLDER_ROWS}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CURRENCIES Tab -->
+      <div class="tab-panel" id="tab-currencies">
+        <div class="card full" style="overflow-x: auto">
+          <table class="data-table" id="currencyTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Symbol</th>
+                <th>Decimal Places</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{CURRENCY_ROWS}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COUNTRIES Tab -->
+      <div class="tab-panel" id="tab-countries">
+        <div class="card full" style="overflow-x: auto">
+          <table class="data-table" id="countryTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>ISO Code</th>
+                <th>Name</th>
+                <th>Region</th>
+                <th>Dial Code</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{COUNTRY_ROWS}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- EXTENSIONS Tab -->
+      <div class="tab-panel" id="tab-extensions">
+        <div class="card">
+          <h2>JSONB Data Extensions</h2>
+          <p style="font-size: 12px; color: var(--dim); margin-bottom: 16px">
+            vData supports JSONB extensions for any entity via
+            <code style="font-size: 12px"
+              >PATCH /api/v1/data/entities/{type}/{id}/extend</code
+            >. Extensions are stored in a JSONB column and schema-free.
+          </p>
+          <div style="margin-bottom: 12px; font-size: 12px; color: var(--dim)">
+            Example extension payload:
+          </div>
+          <div class="json-viewer">
+            { "custom_fields": { "loyalty_tier": "Gold", "credit_limit": 50000,
+            "preferred_currency": "USD" }, "tags": ["key-account", "priority"],
+            "metadata": { "last_synced": "2026-01-15T10:00:00Z",
+            "source_system": "SAP-ERP" } }
+          </div>
+        </div>
+      </div>
+
+      {{EMPTY_STATE}}
+    </div>
+
+    <div class="footer">
+      vKernel Core OS &mdash; vData / MDM (SyR-PLAT-00.03) &copy; Abivin 2026
+    </div>
+
+    <script>
+      // Tab switching
+      document.querySelectorAll(".tab").forEach((t) => {
+        t.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab")
+            .forEach((x) => x.classList.remove("active"));
+          document
+            .querySelectorAll(".tab-panel")
+            .forEach((x) => x.classList.remove("active"));
+          t.classList.add("active");
+          document
+            .getElementById("tab-" + t.dataset.tab)
+            .classList.add("active");
+        });
+      });
+      // Simple table filter
+      function filterTable(tableId, inputId) {
+        const q = document.getElementById(inputId).value.toLowerCase();
+        document
+          .querySelectorAll("#" + tableId + " tbody tr")
+          .forEach((row) => {
+            row.style.display = row.textContent.toLowerCase().includes(q)
+              ? ""
+              : "none";
+          });
+      }
+    </script>
+    <script src="/ui/app-layout.js"></script>
+  </body>
+</html>

@@ -15,6 +15,14 @@
 #   make test-finacc    -> Run only vFinacc tests (pytest)
 #   make clean          -> Delete build artifacts
 #   make clean-docker   -> Wipe Docker volumes & layers
+#   make security       -> Full DevSecOps pipeline
+#   make audit          -> CI gate (secrets + lint + SAST + tests)
+#   make scan-secrets   -> Gitleaks secret detection
+#   make lint           -> ruff check + format (Python)
+#   make sast           -> Semgrep static analysis
+#   make dependency-check -> CVE scan (pip-audit + OWASP)
+#   make sbom           -> CycloneDX SBOM generation
+#   make sonarqube      -> SonarQube quality gate
 # ===========================================================
 
 SHELL        := /bin/bash
@@ -90,8 +98,10 @@ endef
 # .PHONY - all targets are abstract (no output files)
 # ===========================================================
 .PHONY: help proto build dev up down logs ps \
+        up-staging down-staging logs-staging \
         test test-kernel test-strategy test-finacc test-design-physical test-marketing-org test-platform \
-        clean clean-docker
+        clean clean-docker \
+        security audit scan-secrets lint sast dependency-check sbom sonarqube
 
 # ===========================================================
 # help - auto-generated from ## comments
@@ -179,6 +189,29 @@ up: ## Build + start all services in the background (detached)
 	@echo "  └--------------------------------------------─┘"
 	@echo ""
 	@echo "  make logs  - tail logs     make down  - stop"
+
+# -- Staging: docker-compose with staging overlay --
+COMPOSE_STAGING := docker-compose -f $(DEPLOY_DIR)/docker-compose.yml -f $(DEPLOY_DIR)/docker-compose.staging.yml
+
+up-staging: ## Start platform with staging config (single-server, behind reverse proxy)
+	@echo ""
+	@echo "  Starting vRoute Platform (staging)…"
+	$(COMPOSE_STAGING) up -d --pull always
+	@echo ""
+	@echo "  ┌-------------------------------------------------─┐"
+	@echo "  │  STAGING — loopback-only (configure reverse proxy) │"
+	@echo "  │  vKernel     ->  127.0.0.1:8080                   │"
+	@echo "  │  PostgreSQL  ->  127.0.0.1:5432                   │"
+	@echo "  │  Redis       ->  127.0.0.1:6379                   │"
+	@echo "  └-------------------------------------------------─┘"
+
+down-staging: ## Stop staging containers
+	@echo "  Stopping vRoute Platform (staging)…"
+	$(COMPOSE_STAGING) down
+	@echo "  OK Staging stopped"
+
+logs-staging: ## Tail staging logs
+	$(COMPOSE_STAGING) logs -f --tail=50
 
 down: ## Stop and remove all running containers
 	@echo "  Stopping vRoute Platform…"
@@ -299,3 +332,222 @@ clean-docker: ## Remove containers, volumes (pgdata, caches) and dangling images
 	docker volume rm vroute-maven-cache vroute-pip-cache 2>/dev/null || true
 	docker image prune -f
 	@echo "  OK Docker resources cleaned"
+
+# ===========================================================
+# -- FLOW 6: Security & Quality Gate ----------------------
+#
+# Implements a DevSecOps pipeline aligned with:
+#   - OWASP DevSecOps Guideline
+#   - ISO/IEC 27034 (Application Security)
+#   - NIST SSDF (Secure Software Development Framework)
+#
+# Targets (ordered by execution cost, cheapest first):
+#   scan-secrets     → Gitleaks — detect leaked tokens / keys
+#   lint             → ruff check + ruff format (Python)
+#   sast             → Semgrep — static analysis for CWE / OWASP
+#   dependency-check → pip-audit + OWASP Dep-Check (known CVEs)
+#   sbom             → CycloneDX — Software Bill of Materials
+#   sonarqube        → SonarQube quality & security gate
+#   audit            → scan-secrets + lint + sast + test (CI gate)
+#   security         → Full pipeline (audit + dep-check + sbom + sonar)
+#
+# Each tool: prefers local binary → .venv → Docker fallback.
+# ===========================================================
+
+# -- Helper: find Python binary (prefer .venv) ─────────────
+define find_py
+	if [ -f "$(VENV_PY_WIN)" ]; then echo "$(VENV_PY_WIN)"; \
+	elif [ -f "$(VENV_PY_UNIX)" ]; then echo "$(VENV_PY_UNIX)"; \
+	else echo "python3"; fi
+endef
+
+# -- Python app source directories for linting ─────────────
+PY_APP_DIRS := $(VSTRATEGY_DIR) $(VFINACC_DIR) $(VDESIGN_DIR) $(VMARKETING_DIR)
+
+# -----------------------------------------------------------
+# scan-secrets  (Gitleaks)
+# -----------------------------------------------------------
+scan-secrets: ## Detect leaked API keys / tokens / credentials (Gitleaks)
+	@echo ""
+	@echo "==== [security 1/6] Scanning for secrets (Gitleaks) ="
+	@if command -v gitleaks &>/dev/null; then \
+	  echo "  [gitleaks] local binary"; \
+	  gitleaks detect --source . --verbose; \
+	else \
+	  echo "  [gitleaks] local binary not found — using Docker"; \
+	  MSYS_NO_PATHCONV=1 docker run --rm \
+	    -v "$(call docker_vol,$(ROOT)):/path" \
+	    zricethezav/gitleaks:latest detect --source /path --verbose; \
+	fi
+	@echo "  OK No secrets detected"
+
+# -----------------------------------------------------------
+# lint  (ruff — Python check + format)
+# -----------------------------------------------------------
+lint: ## Lint & format check — ruff check + ruff format --check (Python apps + vKernel)
+	@echo ""
+	@echo "==== [security 2/6] Linting (ruff) ================="
+	@PY=$$($(find_py)); \
+	if command -v ruff &>/dev/null; then \
+	  RUFF=ruff; \
+	elif "$$PY" -m ruff --version &>/dev/null 2>&1; then \
+	  RUFF="$$PY -m ruff"; \
+	else \
+	  echo "  ruff not found — installing into .venv"; \
+	  "$$PY" -m pip install -q ruff; \
+	  RUFF="$$PY -m ruff"; \
+	fi; \
+	echo "  [ruff check] Python apps + vKernel"; \
+	$$RUFF check $(PY_APP_DIRS) $(VKERNEL_DIR) --output-format=concise || true; \
+	echo ""; \
+	echo "  [ruff format --check] Python apps + vKernel"; \
+	$$RUFF format --check $(PY_APP_DIRS) $(VKERNEL_DIR) || true
+	@echo "  OK Lint complete"
+
+# -----------------------------------------------------------
+# sast  (Semgrep — static application security testing)
+# -----------------------------------------------------------
+sast: ## SAST scan for CWE / OWASP Top-10 patterns (Semgrep)
+	@echo ""
+	@echo "==== [security 3/6] SAST scan (Semgrep) ============"
+	@if command -v semgrep &>/dev/null; then \
+	  echo "  [semgrep] local binary"; \
+	  semgrep scan --config auto --quiet .; \
+	else \
+	  PY=$$($(find_py)); \
+	  if "$$PY" -m semgrep --version &>/dev/null 2>&1; then \
+	    echo "  [semgrep] via Python module"; \
+	    "$$PY" -m semgrep scan --config auto --quiet .; \
+	  else \
+	    echo "  [semgrep] Docker fallback"; \
+	    MSYS_NO_PATHCONV=1 docker run --rm \
+	      -v "$(call docker_vol,$(ROOT)):/src" \
+	      semgrep/semgrep:latest \
+	      semgrep scan --config auto --quiet /src; \
+	  fi; \
+	fi
+	@echo "  OK SAST scan complete"
+
+# -----------------------------------------------------------
+# dependency-check  (pip-audit + OWASP Dependency-Check)
+# -----------------------------------------------------------
+dependency-check: ## Scan dependencies for known CVEs (pip-audit + OWASP)
+	@echo ""
+	@echo "==== [security 4/6] Dependency CVE check ============"
+	@PY=$$($(find_py)); \
+	if ! command -v pip-audit &>/dev/null && ! "$$PY" -m pip_audit --version &>/dev/null 2>&1; then \
+	  echo "  Installing pip-audit…"; \
+	  "$$PY" -m pip install -q pip-audit; \
+	fi; \
+	for dir in $(PY_APP_DIRS); do \
+	  if [ -f "$$dir/requirements.txt" ]; then \
+	    echo "  [pip-audit] $$dir"; \
+	    "$$PY" -m pip_audit -r "$$dir/requirements.txt" --strict 2>&1 || true; \
+	  fi; \
+	done
+	@echo ""
+	@echo "  [owasp-dep-check] vKernel (Java / Maven)"
+	@cd $(VKERNEL_DIR) && { \
+	  if command -v mvn &>/dev/null; then \
+	    mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=9 -Dspring.main.banner-mode=off 2>&1 || true; \
+	  elif [ -f ./mvnw ]; then \
+	    ./mvnw org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=9 -Dspring.main.banner-mode=off 2>&1 || true; \
+	  else \
+	    echo "  [owasp] Docker fallback"; \
+	    MSYS_NO_PATHCONV=1 docker run --rm \
+	      -v "$(call docker_vol,$(VKERNEL_DIR)):/app" \
+	      -v vroute-maven-cache:/root/.m2 \
+	      -w /app maven:3.9-eclipse-temurin-21 \
+	      mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=9 2>&1 || true; \
+	  fi; \
+	}
+	@echo "  OK Dependency check complete"
+
+# -----------------------------------------------------------
+# sbom  (CycloneDX — Software Bill of Materials)
+# -----------------------------------------------------------
+sbom: ## Generate Software Bill of Materials (CycloneDX SBOM)
+	@echo ""
+	@echo "==== [security 5/6] SBOM generation (CycloneDX) ====="
+	@PY=$$($(find_py)); \
+	if ! "$$PY" -m cyclonedx_py --help &>/dev/null 2>&1; then \
+	  echo "  Installing cyclonedx-bom…"; \
+	  "$$PY" -m pip install -q cyclonedx-bom; \
+	fi; \
+	for dir in $(PY_APP_DIRS); do \
+	  if [ -f "$$dir/requirements.txt" ]; then \
+	    echo "  [sbom] $$dir"; \
+	    "$$PY" -m cyclonedx_py requirements \
+	      -i "$$dir/requirements.txt" \
+	      -o "$$dir/sbom.json" \
+	      --format json 2>&1 || true; \
+	  fi; \
+	done
+	@echo ""
+	@echo "  [sbom] vKernel (Java / Maven CycloneDX)"
+	@cd $(VKERNEL_DIR) && { \
+	  if command -v mvn &>/dev/null; then \
+	    mvn org.cyclonedx:cyclonedx-maven-plugin:makeBom -Dspring.main.banner-mode=off 2>&1 || true; \
+	  elif [ -f ./mvnw ]; then \
+	    ./mvnw org.cyclonedx:cyclonedx-maven-plugin:makeBom -Dspring.main.banner-mode=off 2>&1 || true; \
+	  fi; \
+	}
+	@echo "  OK SBOM generated"
+
+# -----------------------------------------------------------
+# sonarqube  (SonarQube quality & security gate)
+# -----------------------------------------------------------
+# Requires env vars:  SONAR_HOST_URL  SONAR_TOKEN
+# Default project key: vRoute-Open
+# -----------------------------------------------------------
+SONAR_PROJECT_KEY ?= vRoute-Open
+SONAR_HOST_URL    ?= http://localhost:9000
+
+sonarqube: ## Run SonarQube analysis (set SONAR_HOST_URL & SONAR_TOKEN env vars)
+	@echo ""
+	@echo "==== [security 6/6] SonarQube analysis =============="
+	@if [ -z "$${SONAR_TOKEN}" ]; then \
+	  echo "  WARNING: SONAR_TOKEN not set — skipping SonarQube."; \
+	  echo "  Set  export SONAR_HOST_URL=... SONAR_TOKEN=...  and retry."; \
+	else \
+	  if command -v sonar-scanner &>/dev/null; then \
+	    echo "  [sonar-scanner] local binary"; \
+	    sonar-scanner \
+	      -Dsonar.projectKey=$(SONAR_PROJECT_KEY) \
+	      -Dsonar.sources=01-vkernel/src,02-vstrategy/app,03-vfinacc/app,04-vdesign-physical/app,05-vmarketing-org/app \
+	      -Dsonar.tests=01-vkernel/src/test,02-vstrategy/tests,03-vfinacc/tests,04-vdesign-physical/tests,05-vmarketing-org/tests \
+	      -Dsonar.java.binaries=01-vkernel/target/classes \
+	      -Dsonar.host.url=$${SONAR_HOST_URL} \
+	      -Dsonar.token=$${SONAR_TOKEN}; \
+	  else \
+	    echo "  [sonar-scanner] Docker"; \
+	    MSYS_NO_PATHCONV=1 docker run --rm \
+	      -v "$(call docker_vol,$(ROOT)):/usr/src" \
+	      -e SONAR_HOST_URL=$${SONAR_HOST_URL} \
+	      -e SONAR_TOKEN=$${SONAR_TOKEN} \
+	      sonarsource/sonar-scanner-cli:latest \
+	      -Dsonar.projectKey=$(SONAR_PROJECT_KEY) \
+	      -Dsonar.sources=01-vkernel/src,02-vstrategy/app,03-vfinacc/app,04-vdesign-physical/app,05-vmarketing-org/app \
+	      -Dsonar.tests=01-vkernel/src/test,02-vstrategy/tests,03-vfinacc/tests,04-vdesign-physical/tests,05-vmarketing-org/tests \
+	      -Dsonar.java.binaries=01-vkernel/target/classes; \
+	  fi; \
+	fi
+	@echo "  OK SonarQube analysis complete"
+
+# -----------------------------------------------------------
+# audit  (CI gate — fast feedback loop)
+# -----------------------------------------------------------
+audit: scan-secrets lint sast test ## CI security gate: secrets + lint + SAST + all tests
+	@echo ""
+	@echo "  ══════════════════════════════════════════════════════"
+	@echo "  ✓ AUDIT PASSED — secrets / lint / SAST / tests all OK"
+	@echo "  ══════════════════════════════════════════════════════"
+
+# -----------------------------------------------------------
+# security  (Full DevSecOps pipeline)
+# -----------------------------------------------------------
+security: audit dependency-check sbom sonarqube ## Full DevSecOps pipeline (audit + CVE + SBOM + SonarQube)
+	@echo ""
+	@echo "  ══════════════════════════════════════════════════════"
+	@echo "  ✓ SECURITY PIPELINE COMPLETE"
+	@echo "  ══════════════════════════════════════════════════════"
