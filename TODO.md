@@ -20,6 +20,7 @@
 **Current**: flat `app/{models,schemas,routes,service}.py` (3 models, 8 schemas, 12 routes)
 
 **Target structure**:
+
 ```
 02-vstrategy/app/
 ├── __init__.py
@@ -75,6 +76,7 @@
 ```
 
 **Tasks**:
+
 - [ ] Create 5 feature folders: `plan/`, `alignment/`, `scorecard/`, `sop/`, `pivot_signal/`
 - [ ] Split `models.py` → `Plan` → `plan/models/entity.py`, `AlignmentNode` → `alignment/models/entity.py`, `PivotSignal` → `pivot_signal/models/entity.py`
 - [ ] Split `schemas.py` → distribute DTOs to `<feature>/models/schema.py`
@@ -92,15 +94,16 @@
 
 **Features → folders**:
 
-| Feature | Folder | Entity | Routes |
-|---------|--------|--------|--------|
-| Continuous Ledger | `ledger/` | `LedgerEntry` | 5 (CRUD + post) |
-| Transaction Ingestor | `transaction/` | `Transaction` | 3 (list, create, get) |
-| Reconciliation Engine | `reconciliation/` | `ReconciliationMatch` | 3 (list, run, summary) |
-| Cost Center Manager | `cost_center/` | `CostAllocation` | 3 (list, create, summary) |
-| Tax & Compliance Guard | `compliance/` | `ComplianceCheck` | 3 (list, check, summary) |
+| Feature                | Folder            | Entity                | Routes                    |
+| ---------------------- | ----------------- | --------------------- | ------------------------- |
+| Continuous Ledger      | `ledger/`         | `LedgerEntry`         | 5 (CRUD + post)           |
+| Transaction Ingestor   | `transaction/`    | `Transaction`         | 3 (list, create, get)     |
+| Reconciliation Engine  | `reconciliation/` | `ReconciliationMatch` | 3 (list, run, summary)    |
+| Cost Center Manager    | `cost_center/`    | `CostAllocation`      | 3 (list, create, summary) |
+| Tax & Compliance Guard | `compliance/`     | `ComplianceCheck`     | 3 (list, check, summary)  |
 
 **Tasks**:
+
 - [ ] Create 5 feature folders with `models/`, `views/`, `controllers/` each
 - [ ] Split `models.py` → 5 × `entity.py`
 - [ ] Split `schemas.py` → 5 × `schema.py`
@@ -115,15 +118,16 @@
 
 **Features → folders**:
 
-| Feature | Folder | Entity | Routes |
-|---------|--------|--------|--------|
-| Spec Master (DF) | `golden_sample/` | `GoldenSample` | 6 (CRUD + seal + compromise) |
-| Material Inbox | `material/` | `MaterialInbox` | 4 (list, create, get, scrap) |
-| Prototype Versions | `prototype/` | `Prototype` | 4 (list, create, get, retire) |
-| Lab Testing | `lab_test/` | `LabTest` | 5 (list, create, summary, get, complete) |
-| Handover Kit | `handover_kit/` | `HandoverKit` | 5 (list, create, get, advance, receive) |
+| Feature            | Folder           | Entity          | Routes                                   |
+| ------------------ | ---------------- | --------------- | ---------------------------------------- |
+| Spec Master (DF)   | `golden_sample/` | `GoldenSample`  | 6 (CRUD + seal + compromise)             |
+| Material Inbox     | `material/`      | `MaterialInbox` | 4 (list, create, get, scrap)             |
+| Prototype Versions | `prototype/`     | `Prototype`     | 4 (list, create, get, retire)            |
+| Lab Testing        | `lab_test/`      | `LabTest`       | 5 (list, create, summary, get, complete) |
+| Handover Kit       | `handover_kit/`  | `HandoverKit`   | 5 (list, create, get, advance, receive)  |
 
 **Tasks**:
+
 - [ ] Create 5 feature folders with `models/`, `views/`, `controllers/` each
 - [ ] Split monolithic files → per-feature MVC
 - [ ] Update `main.py`, `alembic/env.py`, test imports
@@ -135,15 +139,16 @@
 
 **Features → folders**:
 
-| Feature | Folder | Entity | Routes |
-|---------|--------|--------|--------|
-| Campaign Orchestrator | `campaign/` | `Campaign` | 7 (CRUD + launch + pause + complete) |
-| Tracking Pixel | `tracking/` | `TrackingEvent` | 4 (list, get, create, intent-summary) |
-| Audience Segment | `segment/` | `AudienceSegment` | 4 (list, get, create, archive) |
-| Content Asset | `content_asset/` | `ContentAsset` | 5 (list, get, create, publish, archive) |
-| Lead Scorer | `lead_score/` | `LeadScore` | 6 (list, get, create, qualify, handoff, disqualify) |
+| Feature               | Folder           | Entity            | Routes                                              |
+| --------------------- | ---------------- | ----------------- | --------------------------------------------------- |
+| Campaign Orchestrator | `campaign/`      | `Campaign`        | 7 (CRUD + launch + pause + complete)                |
+| Tracking Pixel        | `tracking/`      | `TrackingEvent`   | 4 (list, get, create, intent-summary)               |
+| Audience Segment      | `segment/`       | `AudienceSegment` | 4 (list, get, create, archive)                      |
+| Content Asset         | `content_asset/` | `ContentAsset`    | 5 (list, get, create, publish, archive)             |
+| Lead Scorer           | `lead_score/`    | `LeadScore`       | 6 (list, get, create, qualify, handoff, disqualify) |
 
 **Tasks**:
+
 - [ ] Create 5 feature folders with `models/`, `views/`, `controllers/` each
 - [ ] Split monolithic files → per-feature MVC
 - [ ] Update `main.py`, `alembic/env.py`, test imports
@@ -199,6 +204,7 @@ g6_shell/              → NEW domain for UI Shell
 ```
 
 **Tasks**:
+
 - [ ] Create `models/`, `views/`, `controllers/` sub-packages in each `gX_*`
 - [ ] Move entities → `models/`, controllers/services → `controllers/`
 - [ ] Create `g6_shell` package; move `DashboardController` + `AdaptiveShellController`
