@@ -193,18 +193,18 @@ We use the **1 Defining + 4 MECE Supporting** framework. Tracing Code: `SyR-PLAT
 
 ### 3.1. Requirements Traceability Matrix
 
-| Req ID      | Requirement Name           | Source Policy           | Verification Method                           | Notes                      |
-| ----------- | -------------------------- | ----------------------- | --------------------------------------------- | -------------------------- |
-| SyR-PLAT-00 | App Lifecycle              | [WATER] 3.2 Code First  | System Test (Install/Uninstall)               | Core defining requirement  |
-| SyR-PLAT-01 | Unified IAM                | [AIR] 3. Agent Identity | Security Test (Pen-test)                      | Security & SSO baseline    |
-| SyR-PLAT-02 | Data Backbone              | [EARTH] 6. Database     | Data Integrity Check                          | No silos — critical        |
-| SyR-PLAT-03 | Event Bus & Automation     | [WATER] 3. Process Arch | Integration Test                              | Automation foundation      |
-| SyR-PLAT-04 | Adaptive UI Shell          | [AIR] 6. Standards      | UAT (User Acceptance)                         | Unified UX                 |
-| NFR-PLAT-01 | Performance                | —                       | Benchmark                                     | <10s install, <300ms query |
-| NFR-PLAT-02 | Reliability & Availability | [WATER]                 | Chaos testing                                 | Zero-downtime              |
-| NFR-PLAT-03 | Security & Compliance      | [WATER]                 | Pen-test + compliance check                   | —                          |
-| NFR-PLAT-04 | Scalability                | —                       | Load test                                     |                            |
-| NFR-PLAT-05 | Data Isolation             | [EARTH] 6 + [AIR] 3     | Security Audit + RLS Test + Cross-Tenant Test |                            |
+| Req ID      | Requirement Name                        | Source Policy           | Verification Method                           | Notes                      |
+| ----------- | --------------------------------------- | ----------------------- | --------------------------------------------- | -------------------------- |
+| SyR-PLAT-00 | App Lifecycle                           | [WATER] 3.2 Code First  | System Test (Install/Uninstall)               | Core defining requirement  |
+| SyR-PLAT-01 | Unified IAM                             | [AIR] 3. Agent Identity | Security Test (Pen-test)                      | Security & SSO baseline    |
+| SyR-PLAT-02 | Data Backbone                           | [EARTH] 6. Database     | Data Integrity Check                          | No silos — critical        |
+| SyR-PLAT-03 | Event Bus & Automation                  | [WATER] 3. Process Arch | Integration Test                              | Automation foundation      |
+| SyR-PLAT-04 | Adaptive UI Shell (Micro-Frontend Host) | [AIR] 6. Standards      | UAT (User Acceptance)                         | 3-layer horizontal slicing |
+| NFR-PLAT-01 | Performance                             | —                       | Benchmark                                     | <10s install, <300ms query |
+| NFR-PLAT-02 | Reliability & Availability              | [WATER]                 | Chaos testing                                 | Zero-downtime              |
+| NFR-PLAT-03 | Security & Compliance                   | [WATER]                 | Pen-test + compliance check                   | —                          |
+| NFR-PLAT-04 | Scalability                             | —                       | Load test                                     |                            |
+| NFR-PLAT-05 | Data Isolation                          | [EARTH] 6 + [AIR] 3     | Security Audit + RLS Test + Cross-Tenant Test |                            |
 
 ### 3.2. SyR-PLAT-00 | The Dynamic App Engine
 
@@ -468,15 +468,49 @@ Wireframe Explanation:
 - **Data Inspector:** JSON payloads showing data flow between Apps.
 - **Toolbar:** Drag-and-drop tools (Trigger, Action, Logic, Timer).
 
-### 3.6. SyR-PLAT-04 | Adaptive UI Shell
+### 3.6. SyR-PLAT-04 | Adaptive UI Shell — Micro-Frontend Host
 
-**Goal:** Users feel they are using ONE software, not 12 different tools. The "Shell" wraps all Apps.
+**Goal:** Users feel they are using ONE software, not 12 different tools. The "Shell" wraps all Apps using a **3-layer horizontal slicing** layout.
 
-| Req ID         | Component Name              | Definition & Key Functions                                                                                        |
-| -------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| SyR-PLAT-04.01 | Dynamic Navigation Rail     | Persistent Left Sidebar. Icons appear/disappear based on which Apps are installed and the User's permissions.     |
-| SyR-PLAT-04.02 | Unified Notification Center | Aggregate notifications from all Apps into a single "Bell Icon" stream, prioritized by urgency (High/Medium/Low). |
-| SyR-PLAT-04.03 | Command Palette (CLI UI)    | Text-based interface for AI Agents to execute commands across Apps (e.g., `/finance check-balance`).              |
+| Req ID         | Component Name     | Definition & Key Functions                                                                                                                                                                                                                                         |
+| -------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| SyR-PLAT-04.01 | Top Navigation Bar | Persistent horizontal bar. **Left:** Logo + brand. **Center:** Menu categories (Master Data · Transactions · Reporting · Configurations) — each category aggregates items from all installed Apps. **Right:** Status indicators, Notifications bell, User profile. |
+| SyR-PLAT-04.02 | Control Bar        | Context-sensitive toolbar below Top Nav. **Left:** CREATE button (primary action). **Center:** Entity name + Smart Search (Ctrl+K). **Right:** View Switcher — toggle between 7 view types (List, Kanban, Form, Calendar, Graph, Pivot, Map).                      |
+| SyR-PLAT-04.03 | View Display Area  | Dynamic rendering area occupying the main viewport. **Default:** List View with sortable columns. Supports 7 view types, each with 3 defining features. View state persists per-entity per-user. Content loaded from installed vApps via micro-frontend isolation. |
+
+#### Wireframe — 3-Layer Horizontal Slicing
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│ [Logo]   Master Data ▾  Transactions ▾  Reporting ▾  Configs ▾   🔔  👤 Admin  │  ← Top Navigation Bar
+├──────────────────────────────────────────────────────────────────────────────────┤
+│ [+ CREATE]    Sales Orders          🔍 Search...          ☰ List │▦ Kanban│📊  │  ← Control Bar
+├──────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                  │
+│  ☐  Name              Customer         Amount      Status     Date              │
+│  ───────────────────────────────────────────────────────────────────────────     │
+│  ☐  SO-001             Abivin JSC       $12,400     ● Confirmed  2026-03-15    │
+│  ☐  SO-002             TechViet Ltd     $8,750      ○ Draft      2026-03-14    │
+│  ☐  SO-003             GreenCo          $23,100     ● Confirmed  2026-03-13    │
+│  ☐  SO-004             Mekong Corp      $5,200      ◐ Pending    2026-03-12    │
+│                                                                                  │  ← View Display Area
+│  ─────────────────────────────────────────────────────────────────────────       │
+│  ◄ 1  2  3  ... 12 ►        Showing 1-20 of 234 records                        │
+│                                                                                  │
+└──────────────────────────────────────────────────────────────────────────────────┘
+```
+
+#### View Types (7)
+
+| #   | View Type | 3 Defining Features                                                                 |
+| --- | --------- | ----------------------------------------------------------------------------------- |
+| 1   | List View | Sortable columns · Bulk actions (select all) · Inline edit                          |
+| 2   | Kanban    | Drag-and-drop cards · Stage columns (e.g., Draft → Confirmed → Done) · Color coding |
+| 3   | Form View | Single-record detail · Field validation · Chatter/activity log                      |
+| 4   | Calendar  | Day/Week/Month toggle · Drag to reschedule · Color by status                        |
+| 5   | Graph     | Bar/Line/Pie chart · Dimension selector (X/Y axis) · Export PNG/CSV                 |
+| 6   | Pivot     | Row/Column grouping · Measure aggregation (Sum/Avg/Count) · Drill-down              |
+| 7   | Map       | Geolocation pins · Cluster zoom · Route overlay (for logistics)                     |
 
 ---
 
@@ -997,27 +1031,27 @@ Feature: Audit Trail Logging
     And log is immutable and queryable by admin
 ```
 
-### SyR-PLAT-04: Adaptive UI Shell
+### SyR-PLAT-04: Adaptive UI Shell — Micro-Frontend Host
 
 ```gherkin
-Feature: Dynamic Navigation Rail
-  Scenario: Sidebar updates on App install
-    Given only vFinance is installed
-    When vSales is installed successfully
-    Then vSales icon appears in Left Sidebar
-    And position respects install order or priority
+Feature: Top Navigation Bar
+  Scenario: Menu categories aggregate installed Apps
+    Given vFinance and vSales are installed
+    When user opens the Top Navigation Bar
+    Then "Transactions" category shows both vFinance and vSales menu items
+    And categories reflect only Apps the user has permission to access
 
-Feature: Unified Notification Center
-  Scenario: Aggregate notifications
-    Given vFinance generates "Invoice Overdue" and vSales generates "Deal Won"
-    When user clicks Bell icon
-    Then notifications are shown in one stream, sorted by urgency (High first)
-    And clicking opens the relevant App record
+Feature: Control Bar
+  Scenario: View Switcher toggles between view types
+    Given user is on Sales Orders (List View)
+    When user clicks "Kanban" in the View Switcher
+    Then the View Display Area renders Kanban cards grouped by status
+    And the selected view persists for this entity on next visit
 
-Feature: Command Palette (CLI UI)
-  Scenario: Execute command via Command Palette
-    Given user types "/finance check-balance" in Cmd+K
-    When command is executed
-    Then system routes to vFinance balance check
-    And result is displayed inline or opens relevant page
+Feature: View Display Area
+  Scenario: Default List View with sorting
+    Given user navigates to any entity (e.g., Invoices)
+    When the View Display Area loads
+    Then records are shown in List View by default with sortable columns
+    And user can select multiple records for bulk actions
 ```

@@ -2,6 +2,40 @@
 
 Tất cả thay đổi đáng chú ý được ghi nhận tại đây. Format: [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.9.0] — 2026-03-12
+
+### Changed — DDD Refactoring (Steps 0.1–0.5) + Sheets Restructuring
+
+**Domain-Driven Design Refactoring**
+
+All 5 apps restructured from flat-file to feature-based MVC (`models/` · `views/` · `controllers/`):
+
+- **02-vstrategy** — 5 feature modules: `plan/`, `alignment/`, `scorecard/`, `sop/`, `pivot_signal/`
+- **03-vfinacc** — 5 feature modules: `ledger/`, `transaction/`, `reconciliation/`, `cost_center/`, `compliance/`
+- **04-vdesign-physical** — 5 feature modules: `golden_sample/`, `material/`, `prototype/`, `lab_test/`, `handover_kit/`
+- **05-vmarketing-org** — 5 feature modules: `campaign/`, `tracking/`, `segment/`, `content_asset/`, `lead_score/`
+- **01-vkernel** (Java) — Added `models/views/controllers` sub-packages in each `gX_*` domain; created `g6_shell` package for DashboardController + AdaptiveShellController
+
+**Sheets Restructuring**
+
+Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summary tables:
+
+- `api-contract-summary.md` — 4 → 103 endpoints (all 5 apps)
+- `acceptance-criteria.md` — 21 → 36 Gherkin scenarios (all 5 apps)
+- `requirements-traceability-matrix.md` — 25 → 45 requirements (all 5 apps)
+- `data-model.md` — **NEW**: 31 entities cross-app
+- `permission-matrix.md` — Flattened 3 sections → 1 unified table (27 permissions)
+- `nfr-targets.md` — Added Scope column + 4 app-specific NFRs
+- `user-personas.md` — Added Primary Apps column + 4 new journeys
+- Deleted `vfinacc/` subfolder
+- Updated `sheets/README.md` + root `README.md`
+
+### Tests
+
+- Total: **263 tests** — all passing (65 Java + 51 + 46 + 54 + 47 Python)
+
+---
+
 ## [1.8.1] — 2026-03-02
 
 ### Changed — UI Refactor: Sidebar, Home Launcher, Dashboard Redirect

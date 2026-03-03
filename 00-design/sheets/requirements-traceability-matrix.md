@@ -24,9 +24,9 @@
 | 15  | vKernel          | SyR-PLAT-03.02 | Subscription Engine (Pub/Sub)           | [WATER] 3.                | Integration Test                | Must     | Platform      |
 | 16  | vKernel          | SyR-PLAT-03.03 | Audit Trail Logging                     | [WATER] 3.                | Security Audit                  | Must     | Platform      |
 | 17  | vKernel          | SyR-PLAT-04    | Adaptive UI Shell                       | [AIR] 6. Standards        | UAT (User Acceptance)           | Must     | Platform      |
-| 18  | vKernel          | SyR-PLAT-04.01 | Dynamic Navigation Rail                 | [AIR] 6.                  | UAT                             | Must     | Platform      |
-| 19  | vKernel          | SyR-PLAT-04.02 | Unified Notification Center             | [AIR] 6.                  | UAT                             | Must     | Platform      |
-| 20  | vKernel          | SyR-PLAT-04.03 | Command Palette (CLI UI)                | [AIR] 6.                  | UAT                             | Must     | Platform      |
+| 18  | vKernel          | SyR-PLAT-04.01 | Top Navigation Bar                      | [AIR] 6.                  | UAT                             | Must     | Platform      |
+| 19  | vKernel          | SyR-PLAT-04.02 | Control Bar                             | [AIR] 6.                  | UAT                             | Must     | Platform      |
+| 20  | vKernel          | SyR-PLAT-04.03 | View Display Area                       | [AIR] 6.                  | UAT                             | Must     | Platform      |
 | 21  | vStrategy        | SyR-STR-00     | Alignment Tree & Goal Establishment     | vstrategy-prd §3.1        | System Test                     | Must     | S2P2R         |
 | 22  | vStrategy        | SyR-STR-01     | Contextual Baseline & Objectives        | vstrategy-prd §3.1        | System Test                     | Must     | S2P2R         |
 | 23  | vStrategy        | SyR-STR-02     | Strategic Analysis & Solution Selection | vstrategy-prd §3.1        | System Test                     | Must     | S2P2R         |
