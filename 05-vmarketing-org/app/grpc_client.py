@@ -7,9 +7,14 @@ from __future__ import annotations
 import logging
 import os
 
-import grpc
-
 log = logging.getLogger("vmarketing-org.grpc")
+
+try:
+    import grpc
+    GRPC_AVAILABLE = True
+except ImportError:
+    log.warning("gRPC not installed. gRPC features disabled.")
+    GRPC_AVAILABLE = False
 
 
 class KernelGrpcClient:
@@ -19,14 +24,18 @@ class KernelGrpcClient:
         host = os.environ.get("KERNEL_GRPC_HOST", "vkernel")
         port = os.environ.get("KERNEL_GRPC_PORT", "9090")
         self._target = os.environ.get("KERNEL_GRPC_URL", f"{host}:{port}")
-        self._channel: grpc.aio.Channel | None = None
+        self._channel = None
 
-    async def _ensure_channel(self) -> grpc.aio.Channel:
+    async def _ensure_channel(self):
+        if not GRPC_AVAILABLE:
+            return None
         if self._channel is None:
             self._channel = grpc.aio.insecure_channel(self._target)
         return self._channel
 
     async def ping(self) -> dict:
+        if not GRPC_AVAILABLE:
+            return {"target": self._target, "state": "GRPC_UNAVAILABLE"}
         try:
             ch = await self._ensure_channel()
             return {"target": self._target, "state": str(ch.get_state())}
@@ -43,7 +52,7 @@ class KernelGrpcClient:
         return ["vstrategy", "vfinacc", "vdesign-physical", "vmarketing-org"]
 
     async def close(self) -> None:
-        if self._channel is not None:
+        if self._channel is not None and GRPC_AVAILABLE:
             await self._channel.close()
             self._channel = None
             log.info("gRPC channel closed")

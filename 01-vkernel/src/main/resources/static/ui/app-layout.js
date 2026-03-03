@@ -125,4 +125,141 @@
         /* silently ignore */
       });
   }
+
+  // ── SyR-PLAT-04.01 — Menu Navigation ─────────────────────
+  var nav = window.__VR_NAV__;
+  if (nav && bar) {
+    // Hide app-name + separator — menus provide the context now
+    var _an = bar.querySelector(".vr-app-name");
+    var _sp = bar.querySelector(".vr-sep");
+    if (_an) _an.style.display = "none";
+    if (_sp) _sp.style.display = "none";
+
+    var navEl = document.createElement("nav");
+    navEl.className = "vr-nav";
+
+    var cats = [
+      { key: "masterData", label: "Master Data" },
+      { key: "transactions", label: "Transactions" },
+      { key: "reporting", label: "Reporting" },
+      { key: "configurations", label: "Configurations" },
+    ];
+
+    cats.forEach(function (cat) {
+      var items = nav[cat.key];
+      if (!items || !items.length) return;
+
+      var di = document.createElement("div");
+      di.className = "vr-nav-item";
+
+      var dropItems = "";
+      items.forEach(function (it) {
+        dropItems +=
+          '<a class="vr-nav-link" href="#section-' +
+          it.id +
+          '">' +
+          _esc(it.label) +
+          (it.hint
+            ? '<span class="vr-nav-hint">' + _esc(it.hint) + "</span>"
+            : "") +
+          "</a>";
+      });
+
+      di.innerHTML =
+        '<button class="vr-nav-trigger">' +
+        _esc(cat.label) +
+        ' <span class="vr-nav-caret">▾</span></button>' +
+        '<div class="vr-nav-drop">' +
+        dropItems +
+        "</div>";
+
+      navEl.appendChild(di);
+    });
+
+    // Insert nav before the spacer
+    var _spacer = bar.querySelector(".vr-spacer");
+    if (_spacer) bar.insertBefore(navEl, _spacer);
+
+    // Toggle dropdowns
+    navEl.querySelectorAll(".vr-nav-trigger").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var drop = btn.nextElementSibling;
+        var wasOpen = drop.classList.contains("open");
+        navEl.querySelectorAll(".vr-nav-drop").forEach(function (d) {
+          d.classList.remove("open");
+        });
+        navEl.querySelectorAll(".vr-nav-trigger").forEach(function (b) {
+          b.classList.remove("open");
+        });
+        if (!wasOpen) {
+          drop.classList.add("open");
+          btn.classList.add("open");
+        }
+      });
+    });
+
+    // Close dropdowns on outside click
+    document.addEventListener("click", function () {
+      navEl.querySelectorAll(".vr-nav-drop").forEach(function (d) {
+        d.classList.remove("open");
+      });
+      navEl.querySelectorAll(".vr-nav-trigger").forEach(function (b) {
+        b.classList.remove("open");
+      });
+    });
+
+    // Smooth scroll on nav link click
+    navEl.querySelectorAll(".vr-nav-link").forEach(function (link) {
+      link.addEventListener("click", function () {
+        navEl.querySelectorAll(".vr-nav-drop").forEach(function (d) {
+          d.classList.remove("open");
+        });
+        navEl.querySelectorAll(".vr-nav-trigger").forEach(function (b) {
+          b.classList.remove("open");
+        });
+      });
+    });
+  }
+
+  // ── SyR-PLAT-04.02 — Control Bar ─────────────────────────
+  var ctrl = window.__VR_CONTROL__;
+  if (ctrl && bar) {
+    var ctrlBar = document.createElement("div");
+    ctrlBar.className = "vr-control-bar";
+    var views = ctrl.views || ["☰ List", "▦ Kanban", "📊 Graph"];
+    var viewHtml = views
+      .map(function (v, i) {
+        return (
+          '<button class="vr-view-btn' +
+          (i === 0 ? " active" : "") +
+          '">' +
+          v +
+          "</button>"
+        );
+      })
+      .join("");
+
+    ctrlBar.innerHTML =
+      '<button class="vr-create-btn">+ CREATE</button>' +
+      '<span class="vr-entity-name">' +
+      _esc(ctrl.entity || "All Records") +
+      "</span>" +
+      '<div class="vr-control-spacer"></div>' +
+      '<div class="vr-view-sw">' +
+      viewHtml +
+      "</div>";
+
+    bar.after(ctrlBar);
+
+    // View switcher toggle (visual only — apps can hook into this)
+    ctrlBar.querySelectorAll(".vr-view-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        ctrlBar.querySelectorAll(".vr-view-btn").forEach(function (b) {
+          b.classList.remove("active");
+        });
+        btn.classList.add("active");
+      });
+    });
+  }
 })();

@@ -121,7 +121,20 @@
   <body>
     <div id="vr-topbar" data-app-title="vFinacc · R2R Finance"></div>
     <div id="loading">Loading dashboard…</div>
-    <div class="grid" id="dashboard" style="display: none">
+
+    <!-- ═══ Master Data ═══ -->
+    <div class="vr-section-hdr" id="section-cost-centers">📋 Master Data</div>
+    <div class="grid" id="dashboard-master" style="display: none">
+      <!-- Cost Centers -->
+      <div class="card" id="card-cost">
+        <h2>📊 Cost Center Allocation (SyR-FIN-03)</h2>
+        <div id="cost-bars"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Transactions ═══ -->
+    <div class="vr-section-hdr" id="section-ledger">📝 Transactions</div>
+    <div class="grid" id="dashboard-txn" style="display: none">
       <!-- Ledger Summary -->
       <div class="card" id="card-ledger">
         <h2>📒 Continuous Ledger (SyR-FIN-00)</h2>
@@ -155,11 +168,24 @@
           <tbody></tbody>
         </table>
       </div>
-      <!-- Cost Centers -->
-      <div class="card" id="card-cost">
-        <h2>📊 Cost Center Allocation (SyR-FIN-03)</h2>
-        <div id="cost-bars"></div>
+    </div>
+
+    <!-- ═══ Reporting ═══ -->
+    <div class="vr-section-hdr" id="section-reports">📊 Reporting</div>
+    <div class="grid" id="dashboard-report" style="display: none">
+      <!-- Reporting placeholder — summaries rendered inline in their sections -->
+      <div class="card" id="card-report-placeholder">
+        <h2>📈 Financial Summary</h2>
+        <div id="report-summary">
+          Summary metrics loaded from Ledger, Reconciliation, and Cost Center
+          data.
+        </div>
       </div>
+    </div>
+
+    <!-- ═══ Configurations ═══ -->
+    <div class="vr-section-hdr" id="section-compliance">⚙️ Configurations</div>
+    <div class="grid" id="dashboard-config" style="display: none">
       <!-- Compliance -->
       <div class="card" id="card-compliance">
         <h2>🛡️ Tax & Compliance (SyR-FIN-04)</h2>
@@ -237,13 +263,76 @@
             ctb.innerHTML += `<tr><td>${c.check_type}</td><td class="status-${c.result.toLowerCase()}">${c.result}</td><td>${c.tax_rate_pct ? c.tax_rate_pct + "%" : "-"}</td><td style="max-width:250px;overflow:hidden;text-overflow:ellipsis">${c.notes || ""}</td></tr>`;
           });
           document.getElementById("loading").style.display = "none";
-          document.getElementById("dashboard").style.display = "grid";
+          document.getElementById("dashboard-master").style.display = "grid";
+          document.getElementById("dashboard-txn").style.display = "grid";
+          document.getElementById("dashboard-report").style.display = "grid";
+          document.getElementById("dashboard-config").style.display = "grid";
+          // Reporting summary
+          document.getElementById("report-summary").innerHTML =
+            '<div class="metric"><div class="value">' +
+            ledgerR.count +
+            '</div><div class="label">Ledger Entries</div></div>' +
+            '<div class="metric"><div class="value">' +
+            reconSumR.total_matches +
+            '</div><div class="label">Recon Matches</div></div>' +
+            '<div class="metric"><div class="value">' +
+            reconSumR.auto_match_rate_pct +
+            '%</div><div class="label">Auto Rate</div></div>' +
+            '<div class="metric"><div class="value">' +
+            complSumR.pass_rate_pct +
+            '%</div><div class="label">Compliance Rate</div></div>';
         } catch (err) {
           document.getElementById("loading").innerHTML =
             `<p style="color:#f85149">Failed to load: ${err.message}</p><p style="margin-top:8px">Ensure vFinacc API is running on port 8082.</p>`;
         }
       }
       load();
+    </script>
+    <script>
+      window.__VR_NAV__ = {
+        masterData: [
+          {
+            id: "cost-centers",
+            label: "Cost Centers",
+            hint: "GROW / RUN / TRANSFORM / GIVE allocation",
+          },
+        ],
+        transactions: [
+          {
+            id: "ledger",
+            label: "Ledger Entries",
+            hint: "Continuous Ledger — CRUD + post",
+          },
+          {
+            id: "ledger",
+            label: "Transactions",
+            hint: "Bank webhook ingestor",
+          },
+          {
+            id: "ledger",
+            label: "Reconciliation",
+            hint: "3-way PO / GRN / Invoice matching",
+          },
+        ],
+        reporting: [
+          {
+            id: "reports",
+            label: "Financial Summary",
+            hint: "Recon rate, cost breakdown, compliance",
+          },
+        ],
+        configurations: [
+          {
+            id: "compliance",
+            label: "Tax & Compliance",
+            hint: "VAT rates, thresholds, audit rules",
+          },
+        ],
+      };
+      window.__VR_CONTROL__ = {
+        entity: "Ledger Entries",
+        views: ["☰ List", "📋 Form", "📊 Graph"],
+      };
     </script>
     <script src="/ui/app-layout.js"></script>
   </body>

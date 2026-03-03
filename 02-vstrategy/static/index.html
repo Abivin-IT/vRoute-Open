@@ -324,6 +324,52 @@
       <div class="loading">Loading dashboard...</div>
     </div>
     <script src="app.js"></script>
+    <script>
+      window.__VR_NAV__ = {
+        masterData: [
+          {
+            id: "plans",
+            label: "Strategic Plans",
+            hint: "CRUD · Period, Baseline, MECE",
+          },
+        ],
+        transactions: [
+          {
+            id: "alignment",
+            label: "Alignment Tree",
+            hint: "Vision → BSC → OKR → Initiative → Task",
+          },
+        ],
+        reporting: [
+          {
+            id: "scorecard",
+            label: "BSC Scorecard",
+            hint: "Balanced Scorecard metrics",
+          },
+          {
+            id: "sop",
+            label: "S&OP Validation",
+            hint: "68/27/5 resource allocation",
+          },
+          {
+            id: "signals",
+            label: "Pivot Signals",
+            hint: "Threshold-based triggers",
+          },
+        ],
+        configurations: [
+          {
+            id: "mece",
+            label: "MECE Framework",
+            hint: "Strategic options & decision log",
+          },
+        ],
+      };
+      window.__VR_CONTROL__ = {
+        entity: "Strategic Plans",
+        views: ["☰ List", "🌳 Tree", "📊 Scorecard"],
+      };
+    </script>
     <script src="/ui/app-layout.js"></script>
   </body>
 </html>

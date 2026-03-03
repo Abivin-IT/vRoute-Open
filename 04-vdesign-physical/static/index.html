@@ -96,10 +96,13 @@
       data-app-title="vDesign Physical · I2S Physical Layer"
     ></div>
     <div id="loading">Loading dashboard…</div>
-    <div class="grid" id="dashboard" style="display: none">
+
+    <!-- ═══ Master Data ═══ -->
+    <div class="vr-section-hdr" id="section-golden-samples">📋 Master Data</div>
+    <div class="grid" id="dashboard-master" style="display: none">
       <!-- Golden Samples -->
       <div class="card">
-        <h2>🏆 Golden Samples (SyR-PHY-00)</h2>
+        <h2>🏆 Golden Samples — Spec Master (SyR-PHY-00)</h2>
         <table id="samples-table">
           <thead>
             <tr>
@@ -128,6 +131,11 @@
           <tbody></tbody>
         </table>
       </div>
+    </div>
+
+    <!-- ═══ Transactions ═══ -->
+    <div class="vr-section-hdr" id="section-prototypes">📝 Transactions</div>
+    <div class="grid" id="dashboard-txn" style="display: none">
       <!-- Prototypes -->
       <div class="card">
         <h2>🧪 Prototypes (SyR-PHY-02)</h2>
@@ -176,6 +184,28 @@
           </thead>
           <tbody></tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- ═══ Reporting ═══ -->
+    <div class="vr-section-hdr" id="section-lab-summary">📊 Reporting</div>
+    <div class="grid" id="dashboard-report" style="display: none">
+      <div class="card">
+        <h2>📈 Lab Test Summary</h2>
+        <div id="report-lab-summary"></div>
+      </div>
+    </div>
+
+    <!-- ═══ Configurations ═══ -->
+    <div class="vr-section-hdr" id="section-spec-config">⚙️ Configurations</div>
+    <div class="grid" id="dashboard-config" style="display: none">
+      <div class="card">
+        <h2>🔧 Spec Tolerances & Thresholds</h2>
+        <p style="color: #8b949e; font-size: 13px">
+          Convergence thresholds, lab test pass/fail criteria, and handover kit
+          dispatch rules are configured via Golden Sample seal parameters and
+          Lab Test threshold values.
+        </p>
       </div>
     </div>
     <script>
@@ -233,14 +263,76 @@
             kt.innerHTML += `<tr><td>${k.kit_code}</td><td>${k.product_name}</td><td>${k.contents_summary}</td><td>${k.destination || "-"}</td><td>${k.status}</td></tr>`;
           });
 
+          // Reporting summary
+          const rls = document.getElementById("report-lab-summary");
+          rls.innerHTML =
+            `<div class="metric"><div class="value">${labSum.total_tests}</div><div class="label">Total Tests</div></div>` +
+            `<div class="metric"><div class="value status-passed">${labSum.passed}</div><div class="label">Passed</div></div>` +
+            `<div class="metric"><div class="value status-failed">${labSum.failed}</div><div class="label">Failed</div></div>` +
+            `<div class="metric"><div class="value">${((labSum.passed / (labSum.total_tests || 1)) * 100).toFixed(0)}%</div><div class="label">Pass Rate</div></div>`;
+
           document.getElementById("loading").style.display = "none";
-          document.getElementById("dashboard").style.display = "grid";
+          document.getElementById("dashboard-master").style.display = "grid";
+          document.getElementById("dashboard-txn").style.display = "grid";
+          document.getElementById("dashboard-report").style.display = "grid";
+          document.getElementById("dashboard-config").style.display = "grid";
         } catch (e) {
           document.getElementById("loading").textContent =
             "Failed to load: " + e.message;
         }
       }
       load();
+    </script>
+    <script>
+      window.__VR_NAV__ = {
+        masterData: [
+          {
+            id: "golden-samples",
+            label: "Golden Samples",
+            hint: "Spec master · convergence tracking",
+          },
+          {
+            id: "golden-samples",
+            label: "Materials",
+            hint: "Inbound material inbox",
+          },
+        ],
+        transactions: [
+          {
+            id: "prototypes",
+            label: "Prototypes",
+            hint: "Versioned fabrication runs",
+          },
+          {
+            id: "prototypes",
+            label: "Lab Tests",
+            hint: "Pass/fail against thresholds",
+          },
+          {
+            id: "prototypes",
+            label: "Handover Kits",
+            hint: "Dispatch to manufacturing",
+          },
+        ],
+        reporting: [
+          {
+            id: "lab-summary",
+            label: "Lab Test Summary",
+            hint: "Aggregate pass/fail metrics",
+          },
+        ],
+        configurations: [
+          {
+            id: "spec-config",
+            label: "Spec Tolerances",
+            hint: "Convergence & test thresholds",
+          },
+        ],
+      };
+      window.__VR_CONTROL__ = {
+        entity: "Golden Samples",
+        views: ["☰ List", "📋 Form", "🔬 Lab"],
+      };
     </script>
     <script src="/ui/app-layout.js"></script>
   </body>
