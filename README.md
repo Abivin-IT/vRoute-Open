@@ -58,10 +58,15 @@ vRoute-Open/
 │       ├── vfinacc-prd.md            #     Finance requirements (SyR-FIN-00→04)
 │       ├── vdesign-physical-prd.md   #     Physical design requirements (SyR-PHY-00→04)
 │       └── vmarketing-org-prd.md     #     Marketing requirements (SyR-MKT-ORG-00→04)
-│   └── sheets/                       #   Data tables & contracts
-│       ├── api-contract-summary.md
-│       ├── acceptance-criteria.md
-│       └── vfinacc/                  #     vFinacc-specific sheets
+│   └── sheets/                       #   Cross-app data tables & contracts
+│       ├── api-contract-summary.md   #     103 REST endpoints (all 5 apps)
+│       ├── acceptance-criteria.md    #     36 Gherkin scenarios (all 5 apps)
+│       ├── requirements-traceability-matrix.md  # 45 requirements
+│       ├── data-model.md             #     31 entities (all 5 apps)
+│       ├── permission-matrix.md      #     27 permissions × 6 roles
+│       ├── nfr-targets.md            #     17 NFR metrics
+│       ├── user-personas.md          #     6 personas + 6 journeys
+│       └── naming-conventions.md     #     Platform naming patterns
 ├── 01-vkernel/                       # Core OS (Java 21 / Spring Boot 3.3)
 │   ├── pom.xml
 │   ├── Dockerfile
