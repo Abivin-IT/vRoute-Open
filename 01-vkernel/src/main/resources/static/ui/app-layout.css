@@ -322,8 +322,101 @@ body {
   border-bottom: 1px solid var(--vr-border);
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  gap: 12px;
+  padding: 0 16px;
+  gap: 0;
+}
+
+.vr-cb-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.vr-cb-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-left: 16px;
+}
+
+.vr-cb-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--vr-border);
+  margin: 0 4px;
+}
+
+.vr-cb-btn {
+  background: none;
+  border: 1px solid var(--vr-border);
+  color: var(--vr-dim);
+  padding: 4px 12px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+  transition:
+    background 0.15s,
+    color 0.15s;
+  white-space: nowrap;
+}
+
+.vr-cb-btn:hover {
+  background: var(--vr-hover);
+  color: var(--vr-text);
+}
+
+.vr-cb-danger {
+  color: var(--vr-red);
+}
+
+.vr-cb-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--vr-red);
+}
+
+.vr-cb-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--vr-border);
+  border-radius: 6px;
+  padding: 0 10px;
+  height: 30px;
+  flex: 1;
+  max-width: 320px;
+}
+
+.vr-cb-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--vr-text);
+  font-size: 11px;
+  font-family: inherit;
+  width: 100%;
+}
+
+.vr-cb-search-input::placeholder {
+  color: var(--vr-dim);
+}
+
+.vr-cb-bulk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vr-bulk-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vr-blue);
+  white-space: nowrap;
 }
 
 .vr-create-btn {
@@ -349,9 +442,25 @@ body {
 
 .vr-entity-name {
   font-size: 13px;
-  font-weight: 600;
-  color: var(--vr-text);
+  color: var(--vr-dim);
   white-space: nowrap;
+}
+
+.vr-entity-name strong {
+  color: var(--vr-text);
+  font-weight: 600;
+}
+
+.vr-entity-select {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--vr-text);
+  border: 1px solid var(--vr-border);
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-family: inherit;
+  outline: none;
+  margin-left: 6px;
 }
 
 .vr-control-spacer {
@@ -390,6 +499,106 @@ body {
   background: rgba(59, 130, 246, 0.15);
   color: var(--vr-blue);
   border-color: var(--vr-blue);
+}
+
+/* ── List View Table (SyR-PLAT-04.03 — View Display Area) ─── */
+.vr-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.vr-list-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.vr-list-table th {
+  text-align: left;
+  padding: 10px 12px;
+  background: #111318;
+  color: var(--vr-dim);
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--vr-border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.vr-list-table th:hover {
+  color: var(--vr-text);
+}
+
+.vr-list-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: middle;
+}
+
+.vr-list-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.vr-list-table tr.vr-row-selected td {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.vr-chk-col {
+  width: 36px;
+  text-align: center;
+}
+
+.vr-list-table input[type="checkbox"] {
+  accent-color: var(--vr-blue);
+  cursor: pointer;
+}
+
+.vr-sort {
+  font-size: 10px;
+  opacity: 0.5;
+  margin-left: 4px;
+}
+
+.vr-row-action {
+  background: none;
+  border: none;
+  color: var(--vr-dim);
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.vr-row-action:hover {
+  background: var(--vr-hover);
+  color: var(--vr-text);
+}
+
+.vr-status-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.vr-status-pill.s-active {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.vr-status-pill.s-draft {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+}
+
+.vr-status-pill.s-closed {
+  background: rgba(113, 113, 122, 0.15);
+  color: #71717a;
 }
 
 /* ── Section Headers (SyR-PLAT-04.03 — View Display Area) ──── */

@@ -54,6 +54,11 @@ app.include_router(router)
 # Static files
 static_dir = Path(__file__).parent.parent / "static"
 
+# Shared UI from vKernel (dev-mode fallback; in prod, Gateway serves /ui/*)
+_ui_dir = Path(__file__).resolve().parent.parent.parent / "01-vkernel" / "src" / "main" / "resources" / "static" / "ui"
+if _ui_dir.is_dir():
+    app.mount("/ui", StaticFiles(directory=str(_ui_dir)), name="kernel-ui")
+
 # Explicit UI catch-all: serves index.html for /vdesign-physical and /vdesign-physical/
 @app.get("/vdesign-physical", include_in_schema=False)
 @app.get("/vdesign-physical/", include_in_schema=False)

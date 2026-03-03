@@ -227,12 +227,16 @@
   if (ctrl && bar) {
     var ctrlBar = document.createElement("div");
     ctrlBar.className = "vr-control-bar";
+    ctrlBar.id = "vr-control-bar";
+
     var views = ctrl.views || ["☰ List", "▦ Kanban", "📊 Graph"];
-    var viewHtml = views
+    var viewBtns = views
       .map(function (v, i) {
         return (
           '<button class="vr-view-btn' +
           (i === 0 ? " active" : "") +
+          '" data-view="' +
+          i +
           '">' +
           v +
           "</button>"
@@ -241,25 +245,68 @@
       .join("");
 
     ctrlBar.innerHTML =
-      '<button class="vr-create-btn">+ CREATE</button>' +
-      '<span class="vr-entity-name">' +
+      '<div class="vr-cb-left">' +
+      '<button class="vr-create-btn">➕ CREATE</button>' +
+      '<button class="vr-cb-btn">📥 Import</button>' +
+      '<button class="vr-cb-btn">🔄 Pull</button>' +
+      '<span class="vr-cb-sep"></span>' +
+      '<span class="vr-entity-name">Entity: <strong>' +
       _esc(ctrl.entity || "All Records") +
+      "</strong></span>" +
+      (ctrl.entitySlot || "") +
+      "</div>" +
+      '<div class="vr-cb-right">' +
+      '<div class="vr-cb-bulk" id="vr-bulk-bar" style="display:none">' +
+      '<span class="vr-bulk-count" id="vr-bulk-count">☑ 0 Selected</span>' +
+      '<button class="vr-cb-btn">Change Col</button>' +
+      '<button class="vr-cb-btn">📤 Export</button>' +
+      '<button class="vr-cb-btn vr-cb-danger">🗑 Delete</button>' +
+      "</div>" +
+      '<label class="vr-cb-search" id="vr-cb-search-wrap">' +
+      '<span class="vr-search-icon">' +
+      ICON.search +
       "</span>" +
-      '<div class="vr-control-spacer"></div>' +
+      '<input class="vr-cb-search-input" type="text" placeholder="' +
+      _esc(ctrl.searchPlaceholder || "Search / Filter / Group By\u2026") +
+      '" />' +
+      "</label>" +
       '<div class="vr-view-sw">' +
-      viewHtml +
+      viewBtns +
+      "</div>" +
       "</div>";
 
     bar.after(ctrlBar);
 
-    // View switcher toggle (visual only — apps can hook into this)
+    // View switcher — dispatch custom event for apps to handle
     ctrlBar.querySelectorAll(".vr-view-btn").forEach(function (btn) {
       btn.addEventListener("click", function () {
         ctrlBar.querySelectorAll(".vr-view-btn").forEach(function (b) {
           b.classList.remove("active");
         });
         btn.classList.add("active");
+        var idx = parseInt(btn.dataset.view, 10);
+        document.dispatchEvent(
+          new CustomEvent("vr:view-change", {
+            detail: { index: idx, label: btn.textContent.trim() },
+          }),
+        );
       });
     });
   }
+
+  // ── SyR-PLAT-04.03 — Bulk Selection helper ───────────────
+  window.__VR_BULK_UPDATE__ = function (count) {
+    var bulk = document.getElementById("vr-bulk-bar");
+    var search = document.getElementById("vr-cb-search-wrap");
+    var countEl = document.getElementById("vr-bulk-count");
+    if (!bulk) return;
+    if (count > 0) {
+      bulk.style.display = "flex";
+      if (search) search.style.display = "none";
+      if (countEl) countEl.textContent = "☑ " + count + " Selected";
+    } else {
+      bulk.style.display = "none";
+      if (search) search.style.display = "";
+    }
+  };
 })();

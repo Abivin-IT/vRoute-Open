@@ -28,20 +28,7 @@
         color: var(--text);
         line-height: 1.5;
       }
-      .plan-sel {
-        background: rgba(255, 255, 255, 0.07);
-        color: var(--text);
-        border: 1px solid var(--border);
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-family: inherit;
-        outline: none;
-      }
-      .plan-sel-label {
-        font-size: 12px;
-        color: var(--dim);
-      }
+
       .container {
         max-width: 1400px;
         margin: 0 auto;
@@ -314,12 +301,6 @@
   </head>
   <body>
     <div id="vr-topbar" data-app-title="vStrategy · S2P2R Plan Dashboard"></div>
-    <div class="vr-subbar">
-      <span class="plan-sel-label">Plan:</span>
-      <select class="plan-sel" id="planSelect">
-        <option>Loading...</option>
-      </select>
-    </div>
     <div class="container" id="app">
       <div class="loading">Loading dashboard...</div>
     </div>
@@ -368,6 +349,7 @@
       window.__VR_CONTROL__ = {
         entity: "Strategic Plans",
         views: ["☰ List", "🌳 Tree", "📊 Scorecard"],
+        entitySlot: '<select class="vr-entity-select" id="planSelect"><option>Loading…</option></select>',
       };
     </script>
     <script src="/ui/app-layout.js"></script>
