@@ -22,11 +22,11 @@ tracking pixels, audience segments, content assets, AI lead scoring & sales hand
 
 Live data-fetching dashboard served from `/` and `/vmarketing-org/` with 5 sections:
 
-- **[SyR-MKT-00] ABM Campaigns** — Table: code (monospace), name, stage, channel, budget w/ % bar, target accounts, engaged (green), MQLs (purple), status pill. Metrics: Total, Active, Draft, Paused, Completed, Total MQLs
-- **[SyR-MKT-02] Audience Segments** — Table: code, name, tier pill (TIER_1 purple, TIER_2 blue, TIER_3 gray), account count, status pill. Metrics: Total segments, Tier 1, Tier 2, Tier 3, Total accounts
-- **[SyR-MKT-03] Content Assets** — Table: code, title (truncated 180px), type, stage, downloads, views, status pill. Metrics: Total, Published (green), Draft (orange), Total downloads
-- **[SyR-MKT-04] Lead Scoring** — Table (full width): org, contact, title, score (0-100 bar with HOT/WARM/COLD colour), grade pill, status, handed_off_to. Metrics: Total leads, HOT (red), WARM (orange), COLD (blue), Qualified, Avg score
-- **[SyR-MKT-01] Tracking Events** — Table (full width): code, org, action_type, page_resource, dwell_seconds, intent_score (≥70 red / ≥40 orange / <40 gray), created_at (formatted). Metrics: Total events + dynamic metric pills per action type
+- **[FR-MKT-00] ABM Campaigns** — Table: code (monospace), name, stage, channel, budget w/ % bar, target accounts, engaged (green), MQLs (purple), status pill. Metrics: Total, Active, Draft, Paused, Completed, Total MQLs
+- **[FR-MKT-02] Audience Segments** — Table: code, name, tier pill (TIER_1 purple, TIER_2 blue, TIER_3 gray), account count, status pill. Metrics: Total segments, Tier 1, Tier 2, Tier 3, Total accounts
+- **[FR-MKT-03] Content Assets** — Table: code, title (truncated 180px), type, stage, downloads, views, status pill. Metrics: Total, Published (green), Draft (orange), Total downloads
+- **[FR-MKT-04] Lead Scoring** — Table (full width): org, contact, title, score (0-100 bar with HOT/WARM/COLD colour), grade pill, status, handed_off_to. Metrics: Total leads, HOT (red), WARM (orange), COLD (blue), Qualified, Avg score
+- **[FR-MKT-01] Tracking Events** — Table (full width): code, org, action_type, page_resource, dwell_seconds, intent_score (≥70 red / ≥40 orange / <40 gray), created_at (formatted). Metrics: Total events + dynamic metric pills per action type
 
 Dark GitHub theme (#0d1117 bg, #161b22 cards, #30363d borders). 5 async `fetch()` calls to `/api/v1/vmarketing-org/*` on page load. Status pills with semantic colours. Responsive grid layout.
 

@@ -1,6 +1,6 @@
 -- =============================================================
 -- V6__auth_hardening.sql — Auth hardening: refresh tokens + rate limits
--- GovernanceID: SyR-PLAT-06 (Auth Hardening)
+-- GovernanceID: FR-PLAT-06 (Auth Hardening)
 -- Step 7: Refresh token rotation, rate limit tracking.
 -- =============================================================
 

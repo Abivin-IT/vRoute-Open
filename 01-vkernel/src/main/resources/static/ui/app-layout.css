@@ -234,7 +234,7 @@ body {
   gap: 12px;
 }
 
-/* ── Menu Navigation (SyR-PLAT-04.01) ───────────────────────── */
+/* ── Menu Navigation (FR-PLAT-04.01) ───────────────────────── */
 .vr-nav {
   display: flex;
   align-items: center;
@@ -315,7 +315,7 @@ body {
   margin-top: 1px;
 }
 
-/* ── Control Bar (SyR-PLAT-04.02) ──────────────────────────── */
+/* ── Control Bar (FR-PLAT-04.02) ──────────────────────────── */
 .vr-control-bar {
   height: 44px;
   background: var(--vr-topbar-bg);
@@ -501,7 +501,7 @@ body {
   border-color: var(--vr-blue);
 }
 
-/* ── List View Table (SyR-PLAT-04.03 — View Display Area) ─── */
+/* ── List View Table (FR-PLAT-04.03 — Data View Area) ─── */
 .vr-list-table {
   width: 100%;
   border-collapse: collapse;
@@ -601,7 +601,7 @@ body {
   color: #71717a;
 }
 
-/* ── Section Headers (SyR-PLAT-04.03 — View Display Area) ──── */
+/* ── Section Headers (FR-PLAT-04.03 — Data View Area) ──── */
 .vr-section-hdr {
   font-size: 11px;
   color: var(--vr-dim);

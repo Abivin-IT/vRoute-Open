@@ -1,6 +1,6 @@
 # =============================================================
 # vFinacc — Integration Tests
-# Covers SyR-FIN-00 through SyR-FIN-04 (20+ test cases).
+# Covers FR-FIN-00 through FR-FIN-04 (20+ test cases).
 # =============================================================
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ pytestmark = pytest.mark.asyncio
 _state: dict = {}
 
 
-# =========== LEDGER ENTRIES (SyR-FIN-00) ===========
+# =========== LEDGER ENTRIES (FR-FIN-00) ===========
 
 async def test_01_create_ledger_entry_draft(client: AsyncClient):
     r = await client.post("/api/v1/vfinacc/ledger", json={
@@ -82,7 +82,7 @@ async def test_07_cannot_post_already_posted(client: AsyncClient):
     assert "DRAFT" in r.json()["detail"]
 
 
-# =========== TRANSACTIONS (SyR-FIN-01) ===========
+# =========== TRANSACTIONS (FR-FIN-01) ===========
 
 async def test_10_ingest_transaction(client: AsyncClient):
     r = await client.post("/api/v1/vfinacc/transactions", json={
@@ -113,7 +113,7 @@ async def test_12_get_transaction(client: AsyncClient):
     assert r.json()["external_id"] == "BANK-TXN-TEST-001"
 
 
-# =========== RECONCILIATION (SyR-FIN-02) ===========
+# =========== RECONCILIATION (FR-FIN-02) ===========
 
 async def test_20_run_reconciliation_full_match(client: AsyncClient):
     r = await client.post("/api/v1/vfinacc/reconciliation/run", json={
@@ -171,7 +171,7 @@ async def test_24_reconciliation_summary(client: AsyncClient):
     assert "auto_match_rate_pct" in data
 
 
-# =========== COST CENTERS (SyR-FIN-03) ===========
+# =========== COST CENTERS (FR-FIN-03) ===========
 
 async def test_30_create_cost_allocation_grow(client: AsyncClient):
     r = await client.post("/api/v1/vfinacc/cost-centers", json={
@@ -260,7 +260,7 @@ async def test_35_cost_center_summary(client: AsyncClient):
     assert "GIVE" in categories
 
 
-# =========== COMPLIANCE (SyR-FIN-04) ===========
+# =========== COMPLIANCE (FR-FIN-04) ===========
 
 async def test_40_compliance_check_vat(client: AsyncClient):
     # Create a fresh draft entry for compliance testing

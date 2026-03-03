@@ -79,39 +79,39 @@ vSTRATEGY MODULE
 
 ### 3.1. Requirements Traceability Matrix
 
-| Req ID     | Name                                    | FIRE Step | Priority |
-| ---------- | --------------------------------------- | --------- | -------- |
-| SyR-STR-00 | Alignment Tree & Goal Establishment     | Step 3    | Must     |
-| SyR-STR-01 | Contextual Baseline & Objectives        | Step 1    | Must     |
-| SyR-STR-02 | Strategic Analysis & Solution Selection | Step 2    | Must     |
-| SyR-STR-03 | Integrated S&OP & Resource Allocation   | Step 4    | Must     |
-| SyR-STR-04 | Performance Review & Variance Analysis  | Step 5    | Must     |
+| Req ID    | Name                                    | FIRE Step | Priority |
+| --------- | --------------------------------------- | --------- | -------- |
+| FR-STR-00 | Alignment Tree & Goal Establishment     | Step 3    | Must     |
+| FR-STR-01 | Contextual Baseline & Objectives        | Step 1    | Must     |
+| FR-STR-02 | Strategic Analysis & Solution Selection | Step 2    | Must     |
+| FR-STR-03 | Integrated S&OP & Resource Allocation   | Step 4    | Must     |
+| FR-STR-04 | Performance Review & Variance Analysis  | Step 5    | Must     |
 
-### 3.2. SyR-STR-00: Alignment Tree Engine
+### 3.2. FR-STR-00: Alignment Tree Engine
 
 - Vision (A1) ↔ OKR/BSC (A2) ↔ Key Initiatives (A3) ↔ Tasks (A4)
 - Status change propagates upward to Vision
 - Tree view: % completion, BSC perspectives, traffic light, Pivot Signal
 
-### 3.3. SyR-STR-01: Contextual Baseline & Objectives
+### 3.3. FR-STR-01: Contextual Baseline & Objectives
 
 - Trigger: Scheduled (Dec 15, Quarterly 20th, Monthly 25th) + Threshold
 - Baseline: Fiscal Constraints, Hard Cap
 - Objectives: Market Hypothesis, ICP, USP
 
-### 3.4. SyR-STR-02: Strategic Analysis & Solution Selection
+### 3.4. FR-STR-02: Strategic Analysis & Solution Selection
 
 - Gap Analysis (As-Is vs To-Be) + PESTLE/ADHR
 - 4 MECE Options: Growth, Profit, Pivot, Survival
 - CEO Decision Log
 
-### 3.5. SyR-STR-03: S&OP & Resource Allocation
+### 3.5. FR-STR-03: S&OP & Resource Allocation
 
 - Enforce 68% GROW (CMO), 27% RUN (CAO), 5% TRANSFORM (CPO), ~0.1% GIVE (CEO)
 - Key Initiatives, Budget Allocation, Headcount Plan
 - Validation with ±2% tolerance
 
-### 3.6. SyR-STR-04: Performance Review & Variance
+### 3.6. FR-STR-04: Performance Review & Variance
 
 - Variance Actual vs Plan
 - Traffic Light status

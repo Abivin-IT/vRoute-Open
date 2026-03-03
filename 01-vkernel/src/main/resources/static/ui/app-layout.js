@@ -126,7 +126,7 @@
       });
   }
 
-  // ── SyR-PLAT-04.01 — Menu Navigation ─────────────────────
+  // ── FR-PLAT-04.01 — Menu Navigation ─────────────────────
   var nav = window.__VR_NAV__;
   if (nav && bar) {
     // Hide app-name + separator — menus provide the context now
@@ -222,7 +222,7 @@
     });
   }
 
-  // ── SyR-PLAT-04.02 — Control Bar ─────────────────────────
+  // ── FR-PLAT-04.02 — Control Bar ─────────────────────────
   var ctrl = window.__VR_CONTROL__;
   if (ctrl && bar) {
     var ctrlBar = document.createElement("div");
@@ -294,7 +294,7 @@
     });
   }
 
-  // ── SyR-PLAT-04.03 — Bulk Selection helper ───────────────
+  // ── FR-PLAT-04.03 — Bulk Selection helper ───────────────
   window.__VR_BULK_UPDATE__ = function (count) {
     var bulk = document.getElementById("vr-bulk-bar");
     var search = document.getElementById("vr-cb-search-wrap");

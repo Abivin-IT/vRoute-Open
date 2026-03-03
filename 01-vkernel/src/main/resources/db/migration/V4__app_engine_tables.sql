@@ -1,10 +1,10 @@
 -- =============================================================
 -- V4__app_engine_tables.sql — App Registry & Permissions
--- GovernanceID: 0.1.0-SCHEMA  (SyR-PLAT-00 + SyR-PLAT-01.02)
+-- GovernanceID: 0.1.0-SCHEMA  (FR-PLAT-00 + FR-PLAT-01.02)
 -- DB-backed app registry + permission injection registry
 -- =============================================================
 
--- ---- App Registry (SyR-PLAT-00) ----
+-- ---- App Registry (FR-PLAT-00) ----
 CREATE TABLE IF NOT EXISTS kernel_app_registry (
     id              UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
     app_id          VARCHAR(150) NOT NULL UNIQUE,     -- com.vcorp.vfinance
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS kernel_app_registry (
 
 CREATE INDEX idx_app_registry_status ON kernel_app_registry(status);
 
--- ---- Permission Registry (SyR-PLAT-01.02 Dynamic Permission Injection) ----
+-- ---- Permission Registry (FR-PLAT-01.02 Dynamic Permission Injection) ----
 CREATE TABLE IF NOT EXISTS kernel_permissions (
     id              UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
     app_id          VARCHAR(150) NOT NULL,             -- owning app

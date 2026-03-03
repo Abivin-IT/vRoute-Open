@@ -10,7 +10,7 @@ import java.util.UUID;
 
 /**
  * DB-backed App Registry — replaces hardcoded list in AppRegistryController.
- * Stores installed apps with their manifest snapshot. (SyR-PLAT-00)
+ * Stores installed apps with their manifest snapshot. (FR-PLAT-00)
  *
  * @GovernanceID 0.1.0
  */

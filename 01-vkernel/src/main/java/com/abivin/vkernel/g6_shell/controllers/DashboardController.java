@@ -167,7 +167,7 @@ public class DashboardController {
     /**
      * App Store — browse, install, uninstall vApps. Industry bundles.
      * GET /vkernel/appstore  (loaded inside shell iframe via /shell/vkernel.appstore)
-     * @GovernanceID SyR-PLAT-00.01
+     * @GovernanceID FR-PLAT-00.01
      */
     @GetMapping(value = "/vkernel/appstore", produces = MediaType.TEXT_HTML_VALUE)
     public String appStorePage() {
@@ -209,7 +209,7 @@ public class DashboardController {
     /**
      * Settings / IAM — permission matrix (CRUDIEA × Roles).
      * GET /vkernel/settings  (loaded inside shell iframe via /shell/vkernel.settings)
-     * @GovernanceID SyR-PLAT-00.02
+     * @GovernanceID FR-PLAT-00.02
      */
     @GetMapping(value = "/vkernel/settings", produces = MediaType.TEXT_HTML_VALUE)
     public String settingsPage() {
@@ -252,7 +252,7 @@ public class DashboardController {
     /**
      * vAudit — immutable event audit log with filters.
      * GET /vkernel/audit  (loaded inside shell iframe via /shell/vkernel.audit)
-     * @GovernanceID SyR-PLAT-00.04
+     * @GovernanceID FR-PLAT-00.04
      */
     @GetMapping(value = "/vkernel/audit", produces = MediaType.TEXT_HTML_VALUE)
     public String auditPage() {
@@ -327,7 +327,7 @@ public class DashboardController {
     /**
      * vData / MDM — golden records browser (stakeholders, currencies, countries).
      * GET /vkernel/data  (loaded inside shell iframe via /shell/vkernel.data)
-     * @GovernanceID SyR-PLAT-00.03
+     * @GovernanceID FR-PLAT-00.03
      */
     @GetMapping(value = "/vkernel/data", produces = MediaType.TEXT_HTML_VALUE)
     public String dataPage() {
@@ -385,7 +385,7 @@ public class DashboardController {
     /**
      * vFlow / Automation — event subscription wiring and run history.
      * GET /vkernel/automation  (loaded inside shell iframe via /shell/vkernel.automation)
-     * @GovernanceID SyR-PLAT-00.03
+     * @GovernanceID FR-PLAT-00.03
      */
     @GetMapping(value = "/vkernel/automation", produces = MediaType.TEXT_HTML_VALUE)
     public String automationPage() {
@@ -464,7 +464,7 @@ public class DashboardController {
      * vMonitor — health dashboard, JVM metrics, Prometheus.
      * vMonitor — system health + app registry browser.
      * GET /vkernel/monitor  (loaded inside shell iframe via /shell/vkernel.monitor)
-     * @GovernanceID SyR-PLAT-00.04
+     * @GovernanceID FR-PLAT-00.04
      */
     @GetMapping(value = "/vkernel/monitor", produces = MediaType.TEXT_HTML_VALUE)
     public String monitorPage() {

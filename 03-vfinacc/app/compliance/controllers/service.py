@@ -15,7 +15,7 @@ from app.compliance.models.schema import ComplianceCheckRequest
 from app.ledger.controllers.service import get_ledger_entry
 
 
-# ===================== TAX & COMPLIANCE (SyR-FIN-04) =====================
+# ===================== TAX & COMPLIANCE (FR-FIN-04) =====================
 
 async def list_compliance_checks(db: AsyncSession, result_filter: str | None = None) -> list[ComplianceCheck]:
     stmt = select(ComplianceCheck).order_by(ComplianceCheck.created_at.desc())

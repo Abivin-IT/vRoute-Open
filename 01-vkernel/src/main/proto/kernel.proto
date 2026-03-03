@@ -1,6 +1,6 @@
 // =============================================================
 // kernel.proto — vKernel gRPC Service Definitions
-// GovernanceID: SyR-PLAT-05 (gRPC IPC)
+// GovernanceID: FR-PLAT-05 (gRPC IPC)
 // Step 6: Internal communications between vKernel and vApps.
 // =============================================================
 

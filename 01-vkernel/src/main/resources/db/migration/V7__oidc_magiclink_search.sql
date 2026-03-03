@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS kernel_magic_links (
 CREATE INDEX idx_magic_email ON kernel_magic_links(email);
 
 -- ---- g5_search: Full-Text Search materialized view ----
--- Unified search across all core entities (SyR-PLAT-02.02)
+-- Unified search across all core entities (FR-PLAT-02.02)
 CREATE TABLE IF NOT EXISTS kernel_search_index (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     entity_type     VARCHAR(30)  NOT NULL,         -- USER | STAKEHOLDER | APP | EVENT

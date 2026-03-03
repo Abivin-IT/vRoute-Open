@@ -16,11 +16,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Comprehensive functional tests for vKernel — SyR-PLAT-01 (IAM).
+ * Comprehensive functional tests for vKernel — FR-PLAT-01 (IAM).
  * Covers: register, login, JWT auth, refresh tokens, logout.
  * Test IDs mapped to vKernel PRD requirements.
  *
- * @GovernanceID TEST-SyR-PLAT-01
+ * @GovernanceID TEST-FR-PLAT-01
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -34,10 +34,10 @@ class IamAuthTests {
     static String accessToken;
     static String refreshToken;
 
-    // ── SyR-PLAT-01.1: User Registration ─────────────────────
+    // ── FR-PLAT-01.1: User Registration ─────────────────────
 
     @Test @Order(1)
-    @DisplayName("SyR-PLAT-01.1 — Register new user → 201 + token")
+    @DisplayName("FR-PLAT-01.1 — Register new user → 201 + token")
     void test_01_register() throws Exception {
         mvc.perform(post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -49,7 +49,7 @@ class IamAuthTests {
     }
 
     @Test @Order(2)
-    @DisplayName("SyR-PLAT-01.1 — Register duplicate email → 409")
+    @DisplayName("FR-PLAT-01.1 — Register duplicate email → 409")
     void test_02_register_duplicate() throws Exception {
         mvc.perform(post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +59,7 @@ class IamAuthTests {
     }
 
     @Test @Order(3)
-    @DisplayName("SyR-PLAT-01.1 — Register without email → 400")
+    @DisplayName("FR-PLAT-01.1 — Register without email → 400")
     void test_03_register_validation() throws Exception {
         mvc.perform(post("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -68,10 +68,10 @@ class IamAuthTests {
             .andExpect(jsonPath("$.error").value("VALIDATION_ERROR"));
     }
 
-    // ── SyR-PLAT-01.1: Login ─────────────────────────────────
+    // ── FR-PLAT-01.1: Login ─────────────────────────────────
 
     @Test @Order(10)
-    @DisplayName("SyR-PLAT-01.1 — Login with valid creds → access_token + refresh_token")
+    @DisplayName("FR-PLAT-01.1 — Login with valid creds → access_token + refresh_token")
     void test_10_login() throws Exception {
         MvcResult result = mvc.perform(post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -89,7 +89,7 @@ class IamAuthTests {
     }
 
     @Test @Order(11)
-    @DisplayName("SyR-PLAT-01.1 — Login with wrong password → 401")
+    @DisplayName("FR-PLAT-01.1 — Login with wrong password → 401")
     void test_11_login_bad_creds() throws Exception {
         mvc.perform(post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -98,17 +98,17 @@ class IamAuthTests {
             .andExpect(jsonPath("$.error").value("AUTH_FAILED"));
     }
 
-    // ── SyR-PLAT-01.0: JWT Protected Endpoints ─────────────────
+    // ── FR-PLAT-01.0: JWT Protected Endpoints ─────────────────
 
     @Test @Order(20)
-    @DisplayName("SyR-PLAT-01.0 — Access protected endpoint without JWT → 403")
+    @DisplayName("FR-PLAT-01.0 — Access protected endpoint without JWT → 403")
     void test_20_protected_no_token() throws Exception {
         mvc.perform(get("/api/v1/apps"))
             .andExpect(status().isForbidden());
     }
 
     @Test @Order(21)
-    @DisplayName("SyR-PLAT-01.0 — Access protected endpoint with valid JWT → 200")
+    @DisplayName("FR-PLAT-01.0 — Access protected endpoint with valid JWT → 200")
     void test_21_protected_with_token() throws Exception {
         mvc.perform(get("/api/v1/apps")
                 .header("Authorization", "Bearer " + accessToken))
@@ -116,10 +116,10 @@ class IamAuthTests {
             .andExpect(jsonPath("$.apps").isArray());
     }
 
-    // ── SyR-PLAT-01.2: Refresh Token Rotation ────────────────
+    // ── FR-PLAT-01.2: Refresh Token Rotation ────────────────
 
     @Test @Order(30)
-    @DisplayName("SyR-PLAT-01.2 — Refresh token rotation → new tokens")
+    @DisplayName("FR-PLAT-01.2 — Refresh token rotation → new tokens")
     void test_30_refresh_rotation() throws Exception {
         MvcResult result = mvc.perform(post("/api/v1/auth/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -144,7 +144,7 @@ class IamAuthTests {
     }
 
     @Test @Order(31)
-    @DisplayName("SyR-PLAT-01.2 — Refresh with missing token → 400")
+    @DisplayName("FR-PLAT-01.2 — Refresh with missing token → 400")
     void test_31_refresh_missing() throws Exception {
         mvc.perform(post("/api/v1/auth/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -154,7 +154,7 @@ class IamAuthTests {
     }
 
     @Test @Order(32)
-    @DisplayName("SyR-PLAT-01.2 — Refresh with invalid token → 401")
+    @DisplayName("FR-PLAT-01.2 — Refresh with invalid token → 401")
     void test_32_refresh_invalid() throws Exception {
         mvc.perform(post("/api/v1/auth/refresh")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -162,10 +162,10 @@ class IamAuthTests {
             .andExpect(status().isUnauthorized());
     }
 
-    // ── SyR-PLAT-01.2: Logout ────────────────────────────────
+    // ── FR-PLAT-01.2: Logout ────────────────────────────────
 
     @Test @Order(40)
-    @DisplayName("SyR-PLAT-01.2 — Logout revokes all refresh tokens")
+    @DisplayName("FR-PLAT-01.2 — Logout revokes all refresh tokens")
     void test_40_logout() throws Exception {
         // Login fresh to get a token
         MvcResult loginResult = mvc.perform(post("/api/v1/auth/login")

@@ -13,7 +13,7 @@ from app.reconciliation.models.entity import ReconciliationMatch
 from app.reconciliation.models.schema import ReconciliationRunRequest
 
 
-# ===================== RECONCILIATION (SyR-FIN-02) =====================
+# ===================== RECONCILIATION (FR-FIN-02) =====================
 
 async def list_reconciliation_matches(db: AsyncSession, match_type: str | None = None) -> list[ReconciliationMatch]:
     stmt = select(ReconciliationMatch).order_by(ReconciliationMatch.created_at.desc())

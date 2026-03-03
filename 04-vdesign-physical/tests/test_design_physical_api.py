@@ -1,6 +1,6 @@
 # =============================================================
 # vDesign Physical — Integration Tests
-# Covers SyR-PHY-00 through SyR-PHY-04 (25+ test cases).
+# Covers FR-PHY-00 through FR-PHY-04 (25+ test cases).
 # =============================================================
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ pytestmark = pytest.mark.asyncio
 _state: dict = {}
 
 
-# =========== GOLDEN SAMPLES (SyR-PHY-00) ===========
+# =========== GOLDEN SAMPLES (FR-PHY-00) ===========
 
 async def test_01_create_golden_sample(client: AsyncClient):
     r = await client.post("/api/v1/vdesign-physical/golden-samples", json={
@@ -91,7 +91,7 @@ async def test_07_cannot_compromise_again(client: AsyncClient):
     assert r.status_code == 400
 
 
-# =========== MATERIAL INBOX (SyR-PHY-01) ===========
+# =========== MATERIAL INBOX (FR-PHY-01) ===========
 
 async def test_10_ingest_material(client: AsyncClient):
     r = await client.post("/api/v1/vdesign-physical/materials", json={
@@ -143,7 +143,7 @@ async def test_15_cannot_scrap_again(client: AsyncClient):
     assert r.status_code == 400
 
 
-# =========== PROTOTYPES (SyR-PHY-02) ===========
+# =========== PROTOTYPES (FR-PHY-02) ===========
 
 async def test_20_create_prototype(client: AsyncClient):
     r = await client.post("/api/v1/vdesign-physical/prototypes", json={
@@ -185,7 +185,7 @@ async def test_24_cannot_retire_again(client: AsyncClient):
     assert r.status_code == 400
 
 
-# =========== LAB TESTS (SyR-PHY-03) ===========
+# =========== LAB TESTS (FR-PHY-03) ===========
 
 async def test_30_create_lab_test(client: AsyncClient):
     r = await client.post("/api/v1/vdesign-physical/lab-tests", json={
@@ -260,7 +260,7 @@ async def test_37_lab_test_summary(client: AsyncClient):
     assert "pass_rate_pct" in data
 
 
-# =========== HANDOVER KITS (SyR-PHY-04) ===========
+# =========== HANDOVER KITS (FR-PHY-04) ===========
 
 async def test_40_create_handover_kit(client: AsyncClient):
     r = await client.post("/api/v1/vdesign-physical/handover-kits", json={

@@ -10,8 +10,8 @@ import org.springframework.data.jpa.repository.Query;
 /**
  * Stakeholder — Golden Record for all external/internal parties.
  * Types: CUSTOMER, VENDOR, PARTNER, EMPLOYEE_REF.
- * Apps reference this via FK, never duplicate. (SyR-PLAT-02.00)
- * metadata (JSONB) allows dynamic field extension. (SyR-PLAT-02.01)
+ * Apps reference this via FK, never duplicate. (FR-PLAT-02.00)
+ * metadata (JSONB) allows dynamic field extension. (FR-PLAT-02.01)
  *
  * @GovernanceID 2.0.1
  */
@@ -44,7 +44,7 @@ public class StakeholderEntity {
 
     private String address;
 
-    /** JSONB — dynamic fields injected by vApps (SyR-PLAT-02.01) */
+    /** JSONB — dynamic fields injected by vApps (FR-PLAT-02.01) */
     @Column(columnDefinition = "jsonb default '{}'")
     private String metadata = "{}";
 

@@ -112,15 +112,15 @@ vMarketing Organization thực thi quy trình Marketing-to-Lead (M2L) chuyên s�
 
 ### 3.1. Requirements Traceability Matrix
 
-| Req ID         | Feature Name          | Source Policy         | Verification Method                        | Notes                                 |
-| -------------- | --------------------- | --------------------- | ------------------------------------------ | ------------------------------------- |
-| SyR-MKT-ORG-00 | Campaign Orchestrator | [M2L] 1. Coordination | System Test: triển khai đa kênh đồng thời  | Trung tâm điều phối Ads/Email/Content |
-| SyR-MKT-ORG-01 | Tracking Pixel        | [M2L] 2. Tracking     | UAT: ghi nhận event người dùng thực tế     | Thu thập dữ liệu hành vi              |
-| SyR-MKT-ORG-02 | Audience Segment      | [M2L] 3. Segment      | Logic Test: xác thực bộ lọc phân nhóm      | Phân nhóm khách hàng mục tiêu         |
-| SyR-MKT-ORG-03 | Content Asset         | [M2L] 4. Asset        | System Test: quản lý tài nguyên media      | Quản lý tài nguyên media/bài viết     |
-| SyR-MKT-ORG-04 | Lead Scorer           | [M2L] 5. Scoring      | Benchmark: đo độ chính xác AI Lead Grading | Chấm điểm Lead → Sales                |
+| Req ID        | Feature Name          | Source Policy         | Verification Method                        | Notes                                 |
+| ------------- | --------------------- | --------------------- | ------------------------------------------ | ------------------------------------- |
+| FR-MKT-ORG-00 | Campaign Orchestrator | [M2L] 1. Coordination | System Test: triển khai đa kênh đồng thời  | Trung tâm điều phối Ads/Email/Content |
+| FR-MKT-ORG-01 | Tracking Pixel        | [M2L] 2. Tracking     | UAT: ghi nhận event người dùng thực tế     | Thu thập dữ liệu hành vi              |
+| FR-MKT-ORG-02 | Audience Segment      | [M2L] 3. Segment      | Logic Test: xác thực bộ lọc phân nhóm      | Phân nhóm khách hàng mục tiêu         |
+| FR-MKT-ORG-03 | Content Asset         | [M2L] 4. Asset        | System Test: quản lý tài nguyên media      | Quản lý tài nguyên media/bài viết     |
+| FR-MKT-ORG-04 | Lead Scorer           | [M2L] 5. Scoring      | Benchmark: đo độ chính xác AI Lead Grading | Chấm điểm Lead → Sales                |
 
-### 3.2. [DF] SyR-MKT-ORG-00 | Campaign Orchestrator: Trung tâm điều phối đa kênh
+### 3.2. [DF] FR-MKT-ORG-00 | Campaign Orchestrator: Trung tâm điều phối đa kênh
 
 **Goal:** Trung tâm chỉ huy chiến lược ABM, điều phối các điểm chạm đa kênh (LinkedIn, Webinar, Direct Email, Sự kiện) để xây dựng và tối ưu hóa Pipeline Value.
 
@@ -155,7 +155,7 @@ vMarketing Organization thực thi quy trình Marketing-to-Lead (M2L) chuyên s�
 4. **vKernel AI ABM Optimizer:** Nhận diện tín hiệu mua hàng tập thể, dự báo Pipeline, đề xuất chiến thuật.
 5. **High-Value Actions:** Sync LinkedIn Sales Navigator, Account Drill-down chi tiết.
 
-### 3.3. [SyR-MKT-ORG-01] Tracking Pixel: Thu thập dữ liệu hành vi tổ chức
+### 3.3. [FR-MKT-ORG-01] Tracking Pixel: Thu thập dữ liệu hành vi tổ chức
 
 **Goal:** Nhận diện tổ chức ẩn danh (Anonymous Accounts) thông qua địa chỉ IP, theo dõi hành vi "Buying Committee" và thu thập Intent Signals.
 
@@ -193,7 +193,7 @@ vMarketing Organization thực thi quy trình Marketing-to-Lead (M2L) chuyên s�
 4. **vKernel AI Behavioral Audit:** Nhận diện Buying Committee, cảnh báo đối thủ đang "dò giá".
 5. **Data Backbone Integration:** Đầu vào sống cho Lead Scorer; khi chạm ngưỡng → thông báo vSales.
 
-### 3.4. [SyR-MKT-ORG-02] Audience Segment: Phân nhóm Tổ chức mục tiêu
+### 3.4. [FR-MKT-ORG-02] Audience Segment: Phân nhóm Tổ chức mục tiêu
 
 **Goal:** Tự động phân loại tổ chức vào phân khúc chiến lược dựa trên Firmographics và tín hiệu thị trường, phục vụ ABM và cá nhân hóa giải pháp theo ngành dọc.
 
@@ -231,7 +231,7 @@ vMarketing Organization thực thi quy trình Marketing-to-Lead (M2L) chuyên s�
 4. **vKernel AI Lookalike & Discovery:** Phân tích khách hàng thành công → quét market database → tìm "sinh đôi" chưa biết.
 5. **Buying Committee Identification:** Nhóm chức danh trong cùng 1 tổ chức (CEO Decision Maker, IT Influencer, End-user).
 
-### 3.5. [SyR-MKT-ORG-03] Content Asset: Quản lý tài nguyên chuyên sâu (Knowledge Hub)
+### 3.5. [FR-MKT-ORG-03] Content Asset: Quản lý tài nguyên chuyên sâu (Knowledge Hub)
 
 **Goal:** Quản trị và tối ưu hóa các tài nguyên nội dung giá trị cao (Expertise-driven), đảm bảo tính chính xác thông số kỹ thuật và pháp lý để nuôi dưỡng trust trong hành trình mua hàng dài hạn.
 
@@ -267,7 +267,7 @@ vMarketing Organization thực thi quy trình Marketing-to-Lead (M2L) chuyên s�
 4. **vKernel AI Content Audit:** Đo lường Read Time thực tế, phát hiện hot spot (trang nào được đọc lâu nhất), Compliance Check (ISO hết hạn → cảnh báo).
 5. **ABM Engagement Mapping:** Hiển thị KEY ACCOUNTS ENGAGED — xác nhận trend ngành.
 
-### 3.6. [SyR-MKT-ORG-04] Lead Scorer: Chấm điểm & Phân loại Tổ chức (Account Scoring)
+### 3.6. [FR-MKT-ORG-04] Lead Scorer: Chấm điểm & Phân loại Tổ chức (Account Scoring)
 
 **Goal:** Sử dụng vKernel AI để định lượng Account Readiness dựa trên Firmographics + Collective Intent, tự động phân loại và chuyển giao MQL cho Sales dự án.
 

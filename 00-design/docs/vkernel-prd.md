@@ -21,11 +21,11 @@
    - 2.2 [Architecture Explanation](#22-architecture-explanation)
 3. [System Requirements](#3-system-requirements)
    - 3.1 [Requirements Traceability Matrix](#31-requirements-traceability-matrix)
-   - 3.2 [SyR-PLAT-00 — The Dynamic App Engine](#32-syr-plat-00--the-dynamic-app-engine)
-   - 3.3 [SyR-PLAT-01 — Identity & Access Management (IAM)](#33-syr-plat-01--identity--access-management-iam)
-   - 3.4 [SyR-PLAT-02 — Universal Data Backbone](#34-syr-plat-02--universal-data-backbone)
-   - 3.5 [SyR-PLAT-03 — Inter-process Communication (IPC)](#35-syr-plat-03--inter-process-communication-ipc)
-   - 3.6 [SyR-PLAT-04 — Adaptive UI Shell](#36-syr-plat-04--adaptive-ui-shell)
+   - 3.2 [FR-PLAT-00 — The Dynamic App Engine](#32-syr-plat-00--the-dynamic-app-engine)
+   - 3.3 [FR-PLAT-01 — Identity & Access Management (IAM)](#33-syr-plat-01--identity--access-management-iam)
+   - 3.4 [FR-PLAT-02 — Universal Data Backbone](#34-syr-plat-02--universal-data-backbone)
+   - 3.5 [FR-PLAT-03 — Inter-process Communication (IPC)](#35-syr-plat-03--inter-process-communication-ipc)
+   - 3.6 [FR-PLAT-04 — Adaptive UI Shell](#36-syr-plat-04--adaptive-ui-shell)
 4. [Technical Specifications](#4-technical-specifications)
    - 4.1 [API Contracts (Core APIs)](#41-api-contracts-core-apis)
    - 4.2 [Manifest.json Definition](#42-manifestjson-definition)
@@ -128,14 +128,14 @@ To define the requirements for **vKernel**, the underlying operating system of t
 |  TIER 2: vKERNEL CORE PLATFORM (THE OS)                                                                    |
 |  +---------------------------+               +---------------------------+                                 |
 |  |   API Gateway / Router    |<--------------|      UI Shell Service     |                                 |
-|  |   (Traffic Controller)    |               |      (SyR-PLAT-04)        |                                 |
+|  |   (Traffic Controller)    |               |      (FR-PLAT-04)        |                                 |
 |  +-------------+-------------+               +---------------------------+                                 |
 |                +-------------------------+----------------------+----------------------+                   |
 |                | (2. Verify)             | (3. Route Req)       | (3. Route Req)       | (3. Route Req)    |
 |                v                         v                      v                      v                   |
 |  +-------------+-------------+  +------------------+   +------------------+   +------------------+         |
 |  | IAM Service (Security)    |  | Data Service     |   | Event & Workflow |   | App Engine Serv. |         |
-|  | (SyR-PLAT-01)             |  | (SyR-PLAT-02)    |   | Svc (SyR-PLAT-03)|   | (SyR-PLAT-00)    |         |
+|  | (FR-PLAT-01)             |  | (FR-PLAT-02)    |   | Svc (FR-PLAT-03)|   | (FR-PLAT-00)    |         |
 |  +-------------+-------------+  +--------+---------+   +---------+--------+   +---------+--------+         |
 |                | (4. Access)             |                       ^ (Support vFlow)      |                  |
 +----------------|-------------------------|-----------------------|----------------------|------------------+
@@ -189,32 +189,32 @@ Day la "trung tam dieu khien" bao gom cac dich vu he thong quan trong:
 
 ## 3. System Requirements
 
-We use the **1 Defining + 4 MECE Supporting** framework. Tracing Code: `SyR-PLAT-[GROUP]-[ID]`
+We use the **1 Defining + 4 MECE Supporting** framework. Tracing Code: `FR-PLAT-[GROUP]-[ID]`
 
 ### 3.1. Requirements Traceability Matrix
 
 | Req ID      | Requirement Name                        | Source Policy           | Verification Method                           | Notes                      |
 | ----------- | --------------------------------------- | ----------------------- | --------------------------------------------- | -------------------------- |
-| SyR-PLAT-00 | App Lifecycle                           | [WATER] 3.2 Code First  | System Test (Install/Uninstall)               | Core defining requirement  |
-| SyR-PLAT-01 | Unified IAM                             | [AIR] 3. Agent Identity | Security Test (Pen-test)                      | Security & SSO baseline    |
-| SyR-PLAT-02 | Data Backbone                           | [EARTH] 6. Database     | Data Integrity Check                          | No silos — critical        |
-| SyR-PLAT-03 | Event Bus & Automation                  | [WATER] 3. Process Arch | Integration Test                              | Automation foundation      |
-| SyR-PLAT-04 | Adaptive UI Shell (Micro-Frontend Host) | [AIR] 6. Standards      | UAT (User Acceptance)                         | 3-layer horizontal slicing |
+| FR-PLAT-00  | App Lifecycle                           | [WATER] 3.2 Code First  | System Test (Install/Uninstall)               | Core defining requirement  |
+| FR-PLAT-01  | Unified IAM                             | [AIR] 3. Agent Identity | Security Test (Pen-test)                      | Security & SSO baseline    |
+| FR-PLAT-02  | Data Backbone                           | [EARTH] 6. Database     | Data Integrity Check                          | No silos — critical        |
+| FR-PLAT-03  | Event Bus & Automation                  | [WATER] 3. Process Arch | Integration Test                              | Automation foundation      |
+| FR-PLAT-04  | Adaptive UI Shell (Micro-Frontend Host) | [AIR] 6. Standards      | UAT (User Acceptance)                         | 3-layer horizontal slicing |
 | NFR-PLAT-01 | Performance                             | —                       | Benchmark                                     | <10s install, <300ms query |
 | NFR-PLAT-02 | Reliability & Availability              | [WATER]                 | Chaos testing                                 | Zero-downtime              |
 | NFR-PLAT-03 | Security & Compliance                   | [WATER]                 | Pen-test + compliance check                   | —                          |
 | NFR-PLAT-04 | Scalability                             | —                       | Load test                                     |                            |
 | NFR-PLAT-05 | Data Isolation                          | [EARTH] 6 + [AIR] 3     | Security Audit + RLS Test + Cross-Tenant Test |                            |
 
-### 3.2. SyR-PLAT-00 | The Dynamic App Engine
+### 3.2. FR-PLAT-00 | The Dynamic App Engine
 
 **Goal:** Provide a complete ecosystem for installing, running, maintaining, and upgrading both Business Modules and the Core OS.
 
-| Req ID         | Component Name                               | Definition & Key Functions                                                                                                                                              |
-| -------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SyR-PLAT-00.00 | App Launcher (Trinh khoi chay Ung dung)      | Central Dashboard & Access Control: Provides a unified workspace. Automatically displays only the Apps a user is authorized to see based on their role.                 |
-| SyR-PLAT-00.01 | App Store (Cho Ung dung)                     | Trusted Corporate App Store: A "One-click" hub featuring verified Publishers and mandatory security scans. Automatically manages dependencies to prevent system errors. |
-| SyR-PLAT-00.02 | Installation Manager (Trinh Quan ly Cai dat) | Safe Upgrade & Recovery Engine: Ensures risk-free updates. Automatically creates "save points" for instant rollback and performs silent, zero-downtime upgrades.        |
+| Req ID        | Component Name                               | Definition & Key Functions                                                                                                                                              |
+| ------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-PLAT-00.00 | App Launcher (Trinh khoi chay Ung dung)      | Central Dashboard & Access Control: Provides a unified workspace. Automatically displays only the Apps a user is authorized to see based on their role.                 |
+| FR-PLAT-00.01 | App Store (Cho Ung dung)                     | Trusted Corporate App Store: A "One-click" hub featuring verified Publishers and mandatory security scans. Automatically manages dependencies to prevent system errors. |
+| FR-PLAT-00.02 | Installation Manager (Trinh Quan ly Cai dat) | Safe Upgrade & Recovery Engine: Ensures risk-free updates. Automatically creates "save points" for instant rollback and performs silent, zero-downtime upgrades.        |
 
 **Wireframes:**
 
@@ -267,7 +267,7 @@ App Store + Dependency Resolution Modal:
 |                                                                                                                       |
 | [ DEPENDENCY RESOLUTION POPUP ]                                                                                       |
 | +---------------------------------------------------------------------------------------------------------------+     |
-| | INSTALLATION MANAGER (SyR-PLAT-00.01)                                                                    [X] |     |
+| | INSTALLATION MANAGER (FR-PLAT-00.01)                                                                    [X] |     |
 | |                                                                                                               |     |
 | | WARNING: MISSING DEPENDENCY DETECTED                                                                          |     |
 | | You are trying to install "vSupport (v2.1)"                                                                   |     |
@@ -278,15 +278,15 @@ App Store + Dependency Resolution Modal:
 +-----------------------------------------------------------------------------------------------------------------------+
 ```
 
-### 3.3. SyR-PLAT-01 | Identity & Access Management (IAM)
+### 3.3. FR-PLAT-01 | Identity & Access Management (IAM)
 
 **Goal:** A single "Key" (User ID) opens all authorized "Doors" (Apps).
 
-| Req ID         | Component Name                   | Definition & Key Functions                                                                                                                                                     |
-| -------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| SyR-PLAT-01.00 | Unified Authentication (AuthN)   | Centralized Single Sign-On (SSO): A secure login gateway where users authenticate once to gain seamless access to all authorized Apps without repeated prompts.                |
-| SyR-PLAT-01.01 | Role-Based Authorization (AuthZ) | Global Role Governance (WHO Codes): Maintains a central registry of Roles (e.g., CEO, Manager) mapped strictly to Organization Policy, ensuring consistent access rights.      |
-| SyR-PLAT-01.02 | Dynamic Permission Injection     | Modular Capability Registration: Apps do not create users; they "inject" specific functional rights (e.g., "Approve Invoice") into the central AuthZ system upon installation. |
+| Req ID        | Component Name                   | Definition & Key Functions                                                                                                                                                     |
+| ------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| FR-PLAT-01.00 | Unified Authentication (AuthN)   | Centralized Single Sign-On (SSO): A secure login gateway where users authenticate once to gain seamless access to all authorized Apps without repeated prompts.                |
+| FR-PLAT-01.01 | Role-Based Authorization (AuthZ) | Global Role Governance (WHO Codes): Maintains a central registry of Roles (e.g., CEO, Manager) mapped strictly to Organization Policy, ensuring consistent access rights.      |
+| FR-PLAT-01.02 | Dynamic Permission Injection     | Modular Capability Registration: Apps do not create users; they "inject" specific functional rights (e.g., "Approve Invoice") into the central AuthZ system upon installation. |
 
 **Wireframe: Permission Matrix**
 
@@ -374,15 +374,15 @@ Wireframe Explanation:
 - **Business Verification:** Tax ID / VAT required for B2B KYC.
 - **Localization:** Country/Region auto-configures currency and accounting standards.
 
-### 3.4. SyR-PLAT-02 | Universal Data Backbone
+### 3.4. FR-PLAT-02 | Universal Data Backbone
 
 **Goal:** A shared database layer so Apps don't create data silos. "Company A" in Sales is the same "Company A" in Finance.
 
-| Req ID         | Component Name                         | Definition & Key Functions                                                                                                                                           |
-| -------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SyR-PLAT-02.00 | Core Entities & Stakeholder Management | The System shall own "Golden Records" for: Users, Stakeholders (managed by vStrategy), Currencies, Countries. Apps must reference via Foreign Keys, never duplicate. |
-| SyR-PLAT-02.01 | Dynamic JSONB Fields                   | Allow Apps to extend Core Entities using metadata (JSONB) column without altering schema. Example: vMarketing adds "facebook_url", vFinance adds "tax_code".         |
-| SyR-PLAT-02.02 | Universal Search                       | Index text data from all Apps into a central Search Engine (Postgres FTS) for global retrieval.                                                                      |
+| Req ID        | Component Name                         | Definition & Key Functions                                                                                                                                           |
+| ------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-PLAT-02.00 | Core Entities & Stakeholder Management | The System shall own "Golden Records" for: Users, Stakeholders (managed by vStrategy), Currencies, Countries. Apps must reference via Foreign Keys, never duplicate. |
+| FR-PLAT-02.01 | Dynamic JSONB Fields                   | Allow Apps to extend Core Entities using metadata (JSONB) column without altering schema. Example: vMarketing adds "facebook_url", vFinance adds "tax_code".         |
+| FR-PLAT-02.02 | Universal Search                       | Index text data from all Apps into a central Search Engine (Postgres FTS) for global retrieval.                                                                      |
 
 **Wireframe: Universal Search (Cmd+K)**
 
@@ -421,15 +421,15 @@ Wireframe Explanation:
 - **Visual Hierarchy:** App titles in dim, record names in bold.
 - **Keyboard Navigation:** Arrow keys + Enter for power users.
 
-### 3.5. SyR-PLAT-03 | Inter-process Communication (IPC)
+### 3.5. FR-PLAT-03 | Inter-process Communication (IPC)
 
 **Goal:** Apps must talk to each other to automate workflows. (Sales closes Deal → Finance creates Invoice).
 
-| Req ID         | Component Name      | Definition & Key Functions                                                                                                            |
-| -------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| SyR-PLAT-03.01 | Event Registry      | Maintain a registry of standard events (e.g., DOC_SIGNED, RECORD_CREATED). Apps publish events here.                                  |
-| SyR-PLAT-03.02 | Subscription Engine | Allow App A to subscribe to events from App B. When vSales publishes ORDER_CONFIRMED, vFinance automatically triggers CREATE_INVOICE. |
-| SyR-PLAT-03.03 | Audit Trail Logging | Record every IPC transaction with Timestamp, Source App, Target App, and Payload for debugging and audit (ISO 9001).                  |
+| Req ID        | Component Name      | Definition & Key Functions                                                                                                            |
+| ------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| FR-PLAT-03.01 | Event Registry      | Maintain a registry of standard events (e.g., DOC_SIGNED, RECORD_CREATED). Apps publish events here.                                  |
+| FR-PLAT-03.02 | Subscription Engine | Allow App A to subscribe to events from App B. When vSales publishes ORDER_CONFIRMED, vFinance automatically triggers CREATE_INVOICE. |
+| FR-PLAT-03.03 | Audit Trail Logging | Record every IPC transaction with Timestamp, Source App, Target App, and Payload for debugging and audit (ISO 9001).                  |
 
 **Wireframe: Workflow Automation Builder**
 
@@ -468,15 +468,15 @@ Wireframe Explanation:
 - **Data Inspector:** JSON payloads showing data flow between Apps.
 - **Toolbar:** Drag-and-drop tools (Trigger, Action, Logic, Timer).
 
-### 3.6. SyR-PLAT-04 | Adaptive UI Shell — Micro-Frontend Host
+### 3.6. FR-PLAT-04 | Adaptive UI Shell — Micro-Frontend Host
 
 **Goal:** Users feel they are using ONE software, not 12 different tools. The "Shell" wraps all Apps using a **3-layer horizontal slicing** layout.
 
-| Req ID         | Component Name     | Definition & Key Functions                                                                                                                                                                                                                                         |
-| -------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| SyR-PLAT-04.01 | Top Navigation Bar | Persistent horizontal bar. **Left:** Logo + brand. **Center:** Menu categories (Master Data · Transactions · Reporting · Configurations) — each category aggregates items from all installed Apps. **Right:** Status indicators, Notifications bell, User profile. |
-| SyR-PLAT-04.02 | Control Bar        | Context-sensitive toolbar below Top Nav. **Left:** CREATE button (primary action). **Center:** Entity name + Smart Search (Ctrl+K). **Right:** View Switcher — toggle between 7 view types (List, Kanban, Form, Calendar, Graph, Pivot, Map).                      |
-| SyR-PLAT-04.03 | View Display Area  | Dynamic rendering area occupying the main viewport. **Default:** List View with sortable columns. Supports 7 view types, each with 3 defining features. View state persists per-entity per-user. Content loaded from installed vApps via micro-frontend isolation. |
+| Req ID        | Component Name     | Definition & Key Functions                                                                                                                                                                                                                                         |
+| ------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| FR-PLAT-04.01 | Top Navigation Bar | Persistent horizontal bar. **Left:** Logo + brand. **Center:** Menu categories (Master Data · Transactions · Reporting · Configurations) — each category aggregates items from all installed Apps. **Right:** Status indicators, Notifications bell, User profile. |
+| FR-PLAT-04.02 | Control Bar        | Context-sensitive toolbar below Top Nav. **Left:** CREATE button (primary action). **Center:** Entity name + Smart Search (Ctrl+K). **Right:** View Switcher — toggle between 7 view types (List, Kanban, Form, Calendar, Graph, Pivot, Map).                      |
+| FR-PLAT-04.03 | Data View Area     | Dynamic rendering area occupying the main viewport. **Default:** List View with sortable columns. Supports 7 view types, each with 3 defining features. View state persists per-entity per-user. Content loaded from installed vApps via micro-frontend isolation. |
 
 #### Wireframe — 3-Layer Horizontal Slicing
 
@@ -493,7 +493,7 @@ Wireframe Explanation:
 │  ☐  SO-002             TechViet Ltd     $8,750      ○ Draft      2026-03-14    │
 │  ☐  SO-003             GreenCo          $23,100     ● Confirmed  2026-03-13    │
 │  ☐  SO-004             Mekong Corp      $5,200      ◐ Pending    2026-03-12    │
-│                                                                                  │  ← View Display Area
+│                                                                                  │  ← Data View Area
 │  ─────────────────────────────────────────────────────────────────────────       │
 │  ◄ 1  2  3  ... 12 ►        Showing 1-20 of 234 records                        │
 │                                                                                  │
@@ -518,7 +518,7 @@ Wireframe Explanation:
 
 ### 4.1. API Contracts (Core APIs)
 
-#### 4.1.1. App Lifecycle API (SyR-PLAT-00)
+#### 4.1.1. App Lifecycle API (FR-PLAT-00)
 
 ```
 POST /api/v1/apps/install — Install a new Business App
@@ -550,7 +550,7 @@ Responses:
     }
 ```
 
-#### 4.1.2. Permission Injection API (SyR-PLAT-01)
+#### 4.1.2. Permission Injection API (FR-PLAT-01)
 
 ```
 POST /api/v1/iam/permissions/inject — Inject new permissions from an App into AuthZ System
@@ -591,7 +591,7 @@ Responses:
     }
 ```
 
-#### 4.1.3. Data Entity Extension API (SyR-PLAT-02)
+#### 4.1.3. Data Entity Extension API (FR-PLAT-02)
 
 ```
 PATCH /api/v1/data/entities/company/{id}/extend — Extend a Core Entity with custom fields
@@ -631,7 +631,7 @@ Responses:
     }
 ```
 
-#### 4.1.4. Event Publishing API (SyR-PLAT-03)
+#### 4.1.4. Event Publishing API (FR-PLAT-03)
 
 ```
 POST /api/v1/events/publish — Publish an event to the Event Bus
@@ -667,7 +667,7 @@ Responses:
     }
 ```
 
-### 4.2. Manifest.json Definition (SyR-PLAT-00)
+### 4.2. Manifest.json Definition (FR-PLAT-00)
 
 Required structure for all vApps:
 
@@ -880,7 +880,7 @@ Expose Prometheus metrics: `install_duration_seconds`, `cross_query_latency_ms`,
 
 Acceptance Criteria dang **Gherkin** (Given-When-Then), viet theo chuan BDD (Behavior-Driven Development).
 
-### SyR-PLAT-00: Dynamic App Engine
+### FR-PLAT-00: Dynamic App Engine
 
 ```gherkin
 Feature: App Manifest Parsing
@@ -933,7 +933,7 @@ Feature: Version Control & Rollback
     And suggests migration path or cancel
 ```
 
-### SyR-PLAT-01: Unified IAM
+### FR-PLAT-01: Unified IAM
 
 ```gherkin
 Feature: Centralized AuthN
@@ -972,7 +972,7 @@ Feature: Permission Injection
     And roles retain only core permissions
 ```
 
-### SyR-PLAT-02: Data Backbone
+### FR-PLAT-02: Data Backbone
 
 ```gherkin
 Feature: Core Entities
@@ -1004,7 +1004,7 @@ Feature: Universal Search
     And search time < 500ms
 ```
 
-### SyR-PLAT-03: IPC (Event Bus)
+### FR-PLAT-03: IPC (Event Bus)
 
 ```gherkin
 Feature: Event Registry
@@ -1031,7 +1031,7 @@ Feature: Audit Trail Logging
     And log is immutable and queryable by admin
 ```
 
-### SyR-PLAT-04: Adaptive UI Shell — Micro-Frontend Host
+### FR-PLAT-04: Adaptive UI Shell — Micro-Frontend Host
 
 ```gherkin
 Feature: Top Navigation Bar
@@ -1045,13 +1045,13 @@ Feature: Control Bar
   Scenario: View Switcher toggles between view types
     Given user is on Sales Orders (List View)
     When user clicks "Kanban" in the View Switcher
-    Then the View Display Area renders Kanban cards grouped by status
+    Then the Data View Area renders Kanban cards grouped by status
     And the selected view persists for this entity on next visit
 
-Feature: View Display Area
+Feature: Data View Area
   Scenario: Default List View with sorting
     Given user navigates to any entity (e.g., Invoices)
-    When the View Display Area loads
+    When the Data View Area loads
     Then records are shown in List View by default with sortable columns
     And user can select multiple records for bulk actions
 ```

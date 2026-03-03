@@ -53,11 +53,11 @@
 vRoute-Open/
 ├── 00-design/                        # Design artifacts
 │   ├── docs/                         #   PRD documents
-│   │   ├── vkernel-prd.md            #     Platform requirements (SyR-PLAT-00→05)
-│   │   ├── vstrategy-prd.md          #     Strategy requirements (SyR-STR-00→04)
-│       ├── vfinacc-prd.md            #     Finance requirements (SyR-FIN-00→04)
-│       ├── vdesign-physical-prd.md   #     Physical design requirements (SyR-PHY-00→04)
-│       └── vmarketing-org-prd.md     #     Marketing requirements (SyR-MKT-ORG-00→04)
+│   │   ├── vkernel-prd.md            #     Platform requirements (FR-PLAT-00→05)
+│   │   ├── vstrategy-prd.md          #     Strategy requirements (FR-STR-00→04)
+│       ├── vfinacc-prd.md            #     Finance requirements (FR-FIN-00→04)
+│       ├── vdesign-physical-prd.md   #     Physical design requirements (FR-PHY-00→04)
+│       └── vmarketing-org-prd.md     #     Marketing requirements (FR-MKT-ORG-00→04)
 │   └── sheets/                       #   Cross-app data tables & contracts
 │       ├── api-contract-summary.md   #     103 REST endpoints (all 5 apps)
 │       ├── acceptance-criteria.md    #     36 Gherkin scenarios (all 5 apps)
@@ -71,12 +71,12 @@ vRoute-Open/
 │   ├── pom.xml
 │   ├── Dockerfile
 │   └── src/main/java/com/abivin/vkernel/
-│       ├── g0_engine/                #   SyR-PLAT-00: App Engine
-│       ├── g1_iam/                   #   SyR-PLAT-01: IAM (JWT + OIDC + Magic Link)
-│       ├── g2_data/                  #   SyR-PLAT-02: Data Backbone + JSONB
-│       ├── g3_event/                 #   SyR-PLAT-03: Event Bus & Pub/Sub
-│       ├── g4_grpc/                  #   SyR-PLAT-04: gRPC IPC (port 9090)
-│       └── g5_search/               #   SyR-PLAT-02.02: Universal Search (FTS)
+│       ├── g0_engine/                #   FR-PLAT-00: App Engine
+│       ├── g1_iam/                   #   FR-PLAT-01: IAM (JWT + OIDC + Magic Link)
+│       ├── g2_data/                  #   FR-PLAT-02: Data Backbone + JSONB
+│       ├── g3_event/                 #   FR-PLAT-03: Event Bus & Pub/Sub
+│       ├── g4_grpc/                  #   FR-PLAT-04: gRPC IPC (port 9090)
+│       └── g5_search/               #   FR-PLAT-02.02: Universal Search (FTS)
 ├── 02-vstrategy/                     # vApp: S2P2R Strategy (Python 3.12 / FastAPI)
 │   ├── app/                          #   FastAPI application
 │   ├── frontend/                     #   TypeScript frontend
@@ -119,14 +119,14 @@ vRoute-Open/
 
 ## Governance Numbering
 
-| Package     | SyR Mapping    | Description                       |
-| ----------- | -------------- | --------------------------------- |
-| `g0_engine` | SyR-PLAT-00    | App Engine (Install/Lifecycle)    |
-| `g1_iam`    | SyR-PLAT-01    | IAM (JWT + OIDC SSO + Magic Link) |
-| `g2_data`   | SyR-PLAT-02    | Data Backbone + JSONB ext         |
-| `g3_event`  | SyR-PLAT-03    | Event Bus & Pub/Sub               |
-| `g4_grpc`   | SyR-PLAT-04    | gRPC Internal IPC                 |
-| `g5_search` | SyR-PLAT-02.02 | Universal Search (FTS)            |
+| Package     | FR Mapping    | Description                       |
+| ----------- | ------------- | --------------------------------- |
+| `g0_engine` | FR-PLAT-00    | App Engine (Install/Lifecycle)    |
+| `g1_iam`    | FR-PLAT-01    | IAM (JWT + OIDC SSO + Magic Link) |
+| `g2_data`   | FR-PLAT-02    | Data Backbone + JSONB ext         |
+| `g3_event`  | FR-PLAT-03    | Event Bus & Pub/Sub               |
+| `g4_grpc`   | FR-PLAT-04    | gRPC Internal IPC                 |
+| `g5_search` | FR-PLAT-02.02 | Universal Search (FTS)            |
 
 **Java naming rule**: Tên file CamelCase chuẩn. Mỗi class BẮT BUỘC có `@GovernanceID x.y.z` trong Javadoc.
 

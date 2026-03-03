@@ -15,7 +15,7 @@ from app.ledger.models.entity import LedgerEntry
 from app.ledger.models.schema import LedgerEntryCreate, LedgerEntryUpdate
 
 
-# ===================== LEDGER ENTRIES (SyR-FIN-00) =====================
+# ===================== LEDGER ENTRIES (FR-FIN-00) =====================
 
 async def list_ledger_entries(db: AsyncSession, status: str | None = None) -> list[LedgerEntry]:
     stmt = select(LedgerEntry).order_by(LedgerEntry.created_at.desc())

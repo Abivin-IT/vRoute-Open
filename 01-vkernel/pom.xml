@@ -140,7 +140,7 @@
             <version>1.3.2</version>
         </dependency>
 
-        <!-- Prometheus metrics (Backlog: SyR-PLAT-OBS) -->
+        <!-- Prometheus metrics (Backlog: FR-PLAT-OBS) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>

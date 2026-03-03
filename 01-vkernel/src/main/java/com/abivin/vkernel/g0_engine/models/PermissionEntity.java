@@ -9,7 +9,7 @@ import java.util.UUID;
 
 /**
  * Permission registry — stores permissions injected by Apps at install time.
- * SyR-PLAT-01.02: Dynamic Permission Injection.
+ * FR-PLAT-01.02: Dynamic Permission Injection.
  * Pattern: [domain].[resource].[action] e.g. "finance.invoice.approve"
  *
  * @GovernanceID 1.2.0

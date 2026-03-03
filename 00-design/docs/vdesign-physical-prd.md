@@ -119,15 +119,15 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 
 ### 3.1. Requirements Traceability Matrix
 
-| Req ID     | Feature Name        | Physical Objective                | Verification Method      |
-| ---------- | ------------------- | --------------------------------- | ------------------------ |
-| SyR-PHY-00 | Spec Master (DF)    | Lưu trữ mẫu chuẩn (Golden Sample) | Metrology Scan (CMM)     |
-| SyR-PHY-01 | Idea Inbox          | Nhập kho mẫu vật liệu thô         | Visual Inspection        |
-| SyR-PHY-02 | Version Control     | Quản lý các đời Mock-up           | RFID Tracking            |
-| SyR-PHY-03 | Feasibility Checker | Kiểm tra độ bền vật lý            | Stress/Drop Testing      |
-| SyR-PHY-04 | Handover Kit        | Bàn giao khuôn/đồ gá              | Physical Inventory Check |
+| Req ID    | Feature Name        | Physical Objective                | Verification Method      |
+| --------- | ------------------- | --------------------------------- | ------------------------ |
+| FR-PHY-00 | Spec Master (DF)    | Lưu trữ mẫu chuẩn (Golden Sample) | Metrology Scan (CMM)     |
+| FR-PHY-01 | Idea Inbox          | Nhập kho mẫu vật liệu thô         | Visual Inspection        |
+| FR-PHY-02 | Version Control     | Quản lý các đời Mock-up           | RFID Tracking            |
+| FR-PHY-03 | Feasibility Checker | Kiểm tra độ bền vật lý            | Stress/Drop Testing      |
+| FR-PHY-04 | Handover Kit        | Bàn giao khuôn/đồ gá              | Physical Inventory Check |
 
-### 3.2. [DF] SyR-PHY-00 | Spec Master: Kho lưu trữ "Single Source of Truth" vật lý
+### 3.2. [DF] FR-PHY-00 | Spec Master: Kho lưu trữ "Single Source of Truth" vật lý
 
 **Goal:** Quản lý và bảo quản các mẫu vật lý chuẩn (Golden Samples) và mẫu tham chiếu (Reference Samples). Đây là bằng chứng vật chất duy nhất để giải quyết tranh chấp về chất lượng.
 
@@ -161,7 +161,7 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 5. **Physical Integrity Audit:** Quản lý niêm phong (Sealing), theo dõi hạn sử dụng mẫu chuẩn (Lifecycle), phát hiện mở dấu niêm phong trái phép → "Compromised".
 6. **Action Footer:** Break Seal (cần phê duyệt), Check Out (mượn mẫu ra khỏi kho có ghi nhận).
 
-### 3.3. [SyR-PHY-01] Idea Inbox: Phễu thu thập mẫu vật lý
+### 3.3. [FR-PHY-01] Idea Inbox: Phễu thu thập mẫu vật lý
 
 **Goal:** Tiếp nhận và số hóa thông tin ban đầu của các mẫu vật liệu thô (vải, nhựa, kim loại) hoặc sản phẩm đối thủ từ thị trường.
 
@@ -193,7 +193,7 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 4. **vKernel Sensor Input:** Tự động hóa — Spectrometer trả mã Pantone chính xác, Hardness Test trả thang Mohs.
 5. **Footer Actions:** Print QR/RFID Tag → gán định danh cho vật thể; Link to Digital Idea → liên kết vật chất ↔ ý tưởng số.
 
-### 3.4. [SyR-PHY-02] Version Control: Quản lý version mẫu thử (Mock-ups)
+### 3.4. [FR-PHY-02] Version Control: Quản lý version mẫu thử (Mock-ups)
 
 **Goal:** Quản lý các phiên bản vật lý (Mock-up V1, V2, V3). Đảm bảo không nhầm lẫn mẫu cũ (đã hủy) và mẫu mới (đang duyệt) trong quá trình cầm nắm, thử nghiệm.
 
@@ -224,7 +224,7 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 3. **Convergence Check:** Tự động so sánh con số thực tế vs CAD (weight discrepancy 7%), RFID tracking qua các cổng từ.
 4. **Footer Actions:** Mark Obsolete (dán tem SCRAPPED), Locate Asset (Find My Prototype — kích hoạt RFID), Log Feedback (đồng bộ ghi chú về team Design).
 
-### 3.5. [SyR-PHY-03] Feasibility Checker: Quy trình duyệt tính khả thi (Lab Test)
+### 3.5. [FR-PHY-03] Feasibility Checker: Quy trình duyệt tính khả thi (Lab Test)
 
 **Goal:** Thực hiện các bài kiểm tra vật lý (Stress Test, Thermal, Waterproof) để xác nhận thiết kế có khả thi trong điều kiện thực tế.
 
@@ -256,7 +256,7 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 3. **Lab Report Insights:** Failure Analysis tự động (gap 0.15mm vs spec 0.05mm), Recommendation → feed back to Digital Design.
 4. **Footer Actions:** Re-run Test, Attach Photo (bằng chứng), Certify Result, Send to Design (đồng bộ feedback).
 
-### 3.6. [SyR-PHY-04] Handover Kit: Đóng gói tài liệu & Công cụ (Tooling)
+### 3.6. [FR-PHY-04] Handover Kit: Đóng gói tài liệu & Công cụ (Tooling)
 
 **Goal:** Đóng gói các vật thể vật lý cần thiết (Đồ gá, Khuôn mẫu, Mẫu đối chứng màu sắc) để chuyển giao (Shipment) sang nhà máy sản xuất (vBuild).
 
@@ -370,7 +370,7 @@ vDesign Physical là phân hệ quản lý các thực thể hữu hình trong q
 
 | Req ID     | Scenario                  | Gherkin Steps                                                                                                                                        |
 | ---------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SyR-PHY-00 | Xác nhận độ hội tụ vật lý | **Given** mẫu thử CNC vừa được quét CMM. **When** hệ thống so sánh với Digital Twin. **Then** Convergence % hiển thị chính xác trong < 2s.           |
-| SyR-PHY-04 | Bàn giao Handover Kit     | **Given** 12 hạng mục đã niêm phong + QR. **When** bấm DISPATCH và xe tải rời kho. **Then** Event `TOOLING_DISPATCHED` gửi sang vBuild ngay lập tức. |
+| FR-PHY-00  | Xác nhận độ hội tụ vật lý | **Given** mẫu thử CNC vừa được quét CMM. **When** hệ thống so sánh với Digital Twin. **Then** Convergence % hiển thị chính xác trong < 2s.           |
+| FR-PHY-04  | Bàn giao Handover Kit     | **Given** 12 hạng mục đã niêm phong + QR. **When** bấm DISPATCH và xe tải rời kho. **Then** Event `TOOLING_DISPATCHED` gửi sang vBuild ngay lập tức. |
 | NFR-PHY-01 | Cảnh báo sai lệch Spec    | **Given** PROTO-V2.1-A đang duyệt. **When** trọng lượng lệch > 5% so với CAD. **Then** tự động phát `SPEC_DRIFT_DETECTED` tới Team Design.           |
 | NFR-PHY-00 | Bảo vệ niêm phong số      | **Given** Golden Sample đã SEALED. **When** user không có quyền truy cập Metrology Report. **Then** chặn + ghi nhật ký vi phạm an ninh.              |

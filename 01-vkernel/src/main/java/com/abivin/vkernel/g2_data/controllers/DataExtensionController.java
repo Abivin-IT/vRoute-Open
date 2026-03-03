@@ -14,7 +14,7 @@ import java.util.*;
 
 /**
  * Data Extension API — allows vApps to extend Core Entities
- * with custom JSONB fields without altering DB schema. (SyR-PLAT-02.01)
+ * with custom JSONB fields without altering DB schema. (FR-PLAT-02.01)
  * <p>
  * Supported entity types: stakeholder, tenant.
  * <p>
@@ -44,7 +44,7 @@ public class DataExtensionController {
         this.objectMapper = objectMapper;
     }
 
-    // ===== JSONB Extension (SyR-PLAT-02.01) =====
+    // ===== JSONB Extension (FR-PLAT-02.01) =====
 
     /**
      * Extend a Core Entity with custom fields via JSONB merge.

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * App Lifecycle engine — install, uninstall, dependency check,
  * permission injection. Replaces all hardcoded stubs in AppRegistryController.
- * SyR-PLAT-00.01 + SyR-PLAT-00.02 + SyR-PLAT-01.02.
+ * FR-PLAT-00.01 + FR-PLAT-00.02 + FR-PLAT-01.02.
  *
  * @GovernanceID 0.3.0
  */
@@ -96,7 +96,7 @@ public class AppLifecycleService {
                 manifest.app.version(), icon, manifestJson, installedBy);
         entity = appRepo.save(entity);
 
-        // 6. Inject permissions (SyR-PLAT-01.02)
+        // 6. Inject permissions (FR-PLAT-01.02)
         if (manifest.permissions != null) {
             for (var perm : manifest.permissions) {
                 if (permRepo.existsByPermissionCode(perm.code())) continue; // idempotent
@@ -105,7 +105,7 @@ public class AppLifecycleService {
             }
         }
 
-        // 7. Auto-subscribe to declared events (SyR-PLAT-03.02)
+        // 7. Auto-subscribe to declared events (FR-PLAT-03.02)
         if (manifest.events != null && manifest.events.subscribed() != null) {
             for (String evtType : manifest.events.subscribed()) {
                 eventBus.subscribe(appId, evtType);

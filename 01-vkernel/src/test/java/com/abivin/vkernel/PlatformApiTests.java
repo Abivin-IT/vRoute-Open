@@ -17,10 +17,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Comprehensive functional tests for vKernel — SyR-PLAT-00 (App Engine),
- * SyR-PLAT-02 (Data Backbone), SyR-PLAT-03 (Event Bus).
+ * Comprehensive functional tests for vKernel — FR-PLAT-00 (App Engine),
+ * FR-PLAT-02 (Data Backbone), FR-PLAT-03 (Event Bus).
  *
- * @GovernanceID TEST-SyR-PLAT-00-02-03
+ * @GovernanceID TEST-FR-PLAT-00-02-03
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -51,11 +51,11 @@ class PlatformApiTests {
     }
 
     // ══════════════════════════════════════════════════════════
-    // SyR-PLAT-00: App Engine
+    // FR-PLAT-00: App Engine
     // ══════════════════════════════════════════════════════════
 
     @Test @Order(1)
-    @DisplayName("SyR-PLAT-00.0 — List installed apps → 200 with count + apps array")
+    @DisplayName("FR-PLAT-00.0 — List installed apps → 200 with count + apps array")
     void test_00_list_apps() throws Exception {
         mvc.perform(get("/api/v1/apps")
                 .header("Authorization", "Bearer " + token))
@@ -65,7 +65,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(2)
-    @DisplayName("SyR-PLAT-00.3 — Install app from inline manifest → 201")
+    @DisplayName("FR-PLAT-00.3 — Install app from inline manifest → 201")
     void test_00_install_app() throws Exception {
         String manifest = """
             {
@@ -96,7 +96,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(3)
-    @DisplayName("SyR-PLAT-00.4 — List permissions after install → contains test:read")
+    @DisplayName("FR-PLAT-00.4 — List permissions after install → contains test:read")
     void test_00_list_permissions() throws Exception {
         mvc.perform(get("/api/v1/apps/permissions")
                 .header("Authorization", "Bearer " + token)
@@ -107,7 +107,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(4)
-    @DisplayName("SyR-PLAT-00.3 — Uninstall app → 200")
+    @DisplayName("FR-PLAT-00.3 — Uninstall app → 200")
     void test_00_uninstall_app() throws Exception {
         mvc.perform(delete("/api/v1/apps/com.test.testapp")
                 .header("Authorization", "Bearer " + token))
@@ -116,11 +116,11 @@ class PlatformApiTests {
     }
 
     // ══════════════════════════════════════════════════════════
-    // SyR-PLAT-02: Data Backbone
+    // FR-PLAT-02: Data Backbone
     // ══════════════════════════════════════════════════════════
 
     @Test @Order(10)
-    @DisplayName("SyR-PLAT-02.2 — Get currencies → returns array")
+    @DisplayName("FR-PLAT-02.2 — Get currencies → returns array")
     void test_02_currencies() throws Exception {
         mvc.perform(get("/api/v1/data/currencies")
                 .header("Authorization", "Bearer " + token))
@@ -129,7 +129,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(11)
-    @DisplayName("SyR-PLAT-02.2 — Get countries → returns array")
+    @DisplayName("FR-PLAT-02.2 — Get countries → returns array")
     void test_02_countries() throws Exception {
         mvc.perform(get("/api/v1/data/countries")
                 .header("Authorization", "Bearer " + token))
@@ -138,11 +138,11 @@ class PlatformApiTests {
     }
 
     // ══════════════════════════════════════════════════════════
-    // SyR-PLAT-03: Event Bus
+    // FR-PLAT-03: Event Bus
     // ══════════════════════════════════════════════════════════
 
     @Test @Order(20)
-    @DisplayName("SyR-PLAT-03.1 — Subscribe to event → 201")
+    @DisplayName("FR-PLAT-03.1 — Subscribe to event → 201")
     void test_03_subscribe() throws Exception {
         mvc.perform(post("/api/v1/events/subscribe")
                 .header("Authorization", "Bearer " + token)
@@ -154,7 +154,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(21)
-    @DisplayName("SyR-PLAT-03.0 — Publish event → 202 Accepted with event_id")
+    @DisplayName("FR-PLAT-03.0 — Publish event → 202 Accepted with event_id")
     void test_03_publish() throws Exception {
         mvc.perform(post("/api/v1/events/publish")
                 .header("Authorization", "Bearer " + token)
@@ -169,7 +169,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(22)
-    @DisplayName("SyR-PLAT-03.0 — Publish without event_type → 400")
+    @DisplayName("FR-PLAT-03.0 — Publish without event_type → 400")
     void test_03_publish_validation() throws Exception {
         mvc.perform(post("/api/v1/events/publish")
                 .header("Authorization", "Bearer " + token)
@@ -180,7 +180,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(23)
-    @DisplayName("SyR-PLAT-03.2 — Get subscriptions → contains test-app → ORDER_CONFIRMED")
+    @DisplayName("FR-PLAT-03.2 — Get subscriptions → contains test-app → ORDER_CONFIRMED")
     void test_03_subscriptions() throws Exception {
         mvc.perform(get("/api/v1/events/subscriptions")
                 .header("Authorization", "Bearer " + token)
@@ -190,7 +190,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(24)
-    @DisplayName("SyR-PLAT-03.2 — Get audit log → has published events")
+    @DisplayName("FR-PLAT-03.2 — Get audit log → has published events")
     void test_03_audit_log() throws Exception {
         mvc.perform(get("/api/v1/events/log")
                 .header("Authorization", "Bearer " + token))
@@ -199,11 +199,11 @@ class PlatformApiTests {
     }
 
     // ══════════════════════════════════════════════════════════
-    // SyR-PLAT-05: Observability (public endpoints)
+    // FR-PLAT-05: Observability (public endpoints)
     // ══════════════════════════════════════════════════════════
 
     @Test @Order(50)
-    @DisplayName("SyR-PLAT-05.0 — Health endpoint → UP")
+    @DisplayName("FR-PLAT-05.0 — Health endpoint → UP")
     void test_05_health() throws Exception {
         mvc.perform(get("/actuator/health"))
             .andExpect(status().isOk())
@@ -211,7 +211,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(51)
-    @DisplayName("SyR-PLAT-05.1 — Prometheus endpoint → text/plain metrics")
+    @DisplayName("FR-PLAT-05.1 — Prometheus endpoint → text/plain metrics")
     void test_05_prometheus() throws Exception {
         mvc.perform(get("/actuator/prometheus"))
             .andExpect(status().isOk())
@@ -219,18 +219,18 @@ class PlatformApiTests {
     }
 
     @Test @Order(52)
-    @DisplayName("SyR-PLAT-05.0 — Info endpoint → 200")
+    @DisplayName("FR-PLAT-05.0 — Info endpoint → 200")
     void test_05_info() throws Exception {
         mvc.perform(get("/actuator/info"))
             .andExpect(status().isOk());
     }
 
     // ══════════════════════════════════════════════════════════
-    // SyR-PLAT System App Pages (HTML) — served at /vkernel/*
+    // FR-PLAT System App Pages (HTML) — served at /vkernel/*
     // ══════════════════════════════════════════════════════════
 
     @Test @Order(60)
-    @DisplayName("SyR-PLAT-00.01 — App Store page → 200 + HTML with App Store title")
+    @DisplayName("FR-PLAT-00.01 — App Store page → 200 + HTML with App Store title")
     void test_dashboard_appstore() throws Exception {
         mvc.perform(get("/vkernel/appstore"))
             .andExpect(status().isOk())
@@ -240,7 +240,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(61)
-    @DisplayName("SyR-PLAT-00.02 — Settings/IAM page → 200 + permission matrix")
+    @DisplayName("FR-PLAT-00.02 — Settings/IAM page → 200 + permission matrix")
     void test_dashboard_settings() throws Exception {
         mvc.perform(get("/vkernel/settings"))
             .andExpect(status().isOk())
@@ -250,7 +250,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(62)
-    @DisplayName("SyR-PLAT-00.04 — vAudit page → 200 + audit log table")
+    @DisplayName("FR-PLAT-00.04 — vAudit page → 200 + audit log table")
     void test_dashboard_audit() throws Exception {
         mvc.perform(get("/vkernel/audit"))
             .andExpect(status().isOk())
@@ -259,7 +259,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(63)
-    @DisplayName("SyR-PLAT-00.03 — vData/MDM page → 200 + golden records browser")
+    @DisplayName("FR-PLAT-00.03 — vData/MDM page → 200 + golden records browser")
     void test_dashboard_data() throws Exception {
         mvc.perform(get("/vkernel/data"))
             .andExpect(status().isOk())
@@ -269,7 +269,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(64)
-    @DisplayName("SyR-PLAT-00.03 — vFlow/Automation page → 200 + subscription wiring")
+    @DisplayName("FR-PLAT-00.03 — vFlow/Automation page → 200 + subscription wiring")
     void test_dashboard_automation() throws Exception {
         mvc.perform(get("/vkernel/automation"))
             .andExpect(status().isOk())
@@ -279,7 +279,7 @@ class PlatformApiTests {
     }
 
     @Test @Order(65)
-    @DisplayName("SyR-PLAT-00.04 — vMonitor page → 200 + health dashboard")
+    @DisplayName("FR-PLAT-00.04 — vMonitor page → 200 + health dashboard")
     void test_dashboard_monitor() throws Exception {
         mvc.perform(get("/vkernel/monitor"))
             .andExpect(status().isOk())

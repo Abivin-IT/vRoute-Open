@@ -24,11 +24,11 @@
 
 ## Observability Metrics (Prometheus)
 
-| Metric Name                    | Type      | Source                       | Scope            |
-| ------------------------------ | --------- | ---------------------------- | ---------------- |
-| `install_duration_seconds`     | Histogram | App Engine (SyR-PLAT-00)     | Platform         |
-| `cross_query_latency_ms`       | Histogram | Data Service (SyR-PLAT-02)   | Platform         |
-| `event_pubsub_success_rate`    | Gauge     | Event Bus (SyR-PLAT-03)      | Platform         |
-| `reconciliation_match_rate`    | Gauge     | Reconciliation (SyR-FIN-02)  | vFinacc          |
-| `convergence_scan_duration_ms` | Histogram | Spec Master (SyR-PHY-00)     | vDesign Physical |
-| `lead_score_accuracy_pct`      | Gauge     | Lead Scorer (SyR-MKT-ORG-04) | vMarketing Org   |
+| Metric Name                    | Type      | Source                      | Scope            |
+| ------------------------------ | --------- | --------------------------- | ---------------- |
+| `install_duration_seconds`     | Histogram | App Engine (FR-PLAT-00)     | Platform         |
+| `cross_query_latency_ms`       | Histogram | Data Service (FR-PLAT-02)   | Platform         |
+| `event_pubsub_success_rate`    | Gauge     | Event Bus (FR-PLAT-03)      | Platform         |
+| `reconciliation_match_rate`    | Gauge     | Reconciliation (FR-FIN-02)  | vFinacc          |
+| `convergence_scan_duration_ms` | Histogram | Spec Master (FR-PHY-00)     | vDesign Physical |
+| `lead_score_accuracy_pct`      | Gauge     | Lead Scorer (FR-MKT-ORG-04) | vMarketing Org   |

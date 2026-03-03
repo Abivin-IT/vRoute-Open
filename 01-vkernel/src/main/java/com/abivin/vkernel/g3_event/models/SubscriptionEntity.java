@@ -9,7 +9,7 @@ import java.util.UUID;
 
 /**
  * Subscription registry — which app listens to which event type.
- * SyR-PLAT-03.02: Pub/Sub subscription engine.
+ * FR-PLAT-03.02: Pub/Sub subscription engine.
  *
  * @GovernanceID 3.0.1
  */

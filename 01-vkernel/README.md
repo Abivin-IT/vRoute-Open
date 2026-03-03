@@ -7,16 +7,16 @@
 
 ## What vKernel Does
 
-| Module        | Package                   | SyR ID         | Description                                                                        |
-| ------------- | ------------------------- | -------------- | ---------------------------------------------------------------------------------- |
-| App Engine    | `g0_engine`               | SyR-PLAT-00    | Install/uninstall vApps, manifest parsing, dependency resolution                   |
-| IAM / Auth    | `g1_iam`                  | SyR-PLAT-01    | JWT, refresh tokens, OIDC SSO (Google/Microsoft/GitHub), Magic Link, rate limiting |
-| Data Backbone | `g2_data`                 | SyR-PLAT-02    | Core entities (Tenant, Stakeholder, Currency, Country), JSONB extension            |
-| Event Bus     | `g3_event`                | SyR-PLAT-03    | Pub/Sub event publishing, subscriptions, audit log                                 |
-| gRPC IPC      | `g4_grpc`                 | SyR-PLAT-04    | Internal RPC for vApps (Ping, PublishEvent, GetInstalledApps)                      |
-| Search        | `g5_search`               | SyR-PLAT-02.02 | PostgreSQL FTS with tsvector + GIN index                                           |
-| API Gateway   | Spring Cloud              | —              | Routes `/api/v1/{vapp}/**` and `/{vapp}/**` to backend services                    |
-| UI Shell      | `AdaptiveShellController` | —              | Micro-frontend host, iframe isolation, Ctrl+K search                               |
+| Module        | Package                   | FR ID         | Description                                                                        |
+| ------------- | ------------------------- | ------------- | ---------------------------------------------------------------------------------- |
+| App Engine    | `g0_engine`               | FR-PLAT-00    | Install/uninstall vApps, manifest parsing, dependency resolution                   |
+| IAM / Auth    | `g1_iam`                  | FR-PLAT-01    | JWT, refresh tokens, OIDC SSO (Google/Microsoft/GitHub), Magic Link, rate limiting |
+| Data Backbone | `g2_data`                 | FR-PLAT-02    | Core entities (Tenant, Stakeholder, Currency, Country), JSONB extension            |
+| Event Bus     | `g3_event`                | FR-PLAT-03    | Pub/Sub event publishing, subscriptions, audit log                                 |
+| gRPC IPC      | `g4_grpc`                 | FR-PLAT-04    | Internal RPC for vApps (Ping, PublishEvent, GetInstalledApps)                      |
+| Search        | `g5_search`               | FR-PLAT-02.02 | PostgreSQL FTS with tsvector + GIN index                                           |
+| API Gateway   | Spring Cloud              | —             | Routes `/api/v1/{vapp}/**` and `/{vapp}/**` to backend services                    |
+| UI Shell      | `AdaptiveShellController` | —             | Micro-frontend host, iframe isolation, Ctrl+K search                               |
 
 ## Gateway Routes → vApps
 

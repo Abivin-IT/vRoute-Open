@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Event Bus REST API — publish, subscribe, audit trail.
- * SyR-PLAT-03: Inter-process communication.
+ * FR-PLAT-03: Inter-process communication.
  *
  * @GovernanceID 3.2.0
  */
@@ -109,7 +109,7 @@ public class EventBusController {
     }
 
     /**
-     * Audit trail — paginated event log (SyR-PLAT-03.03).
+     * Audit trail — paginated event log (FR-PLAT-03.03).
      * GET /api/v1/events/log?page=0&size=20&sourceApp=vsales
      */
     @GetMapping("/log")

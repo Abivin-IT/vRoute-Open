@@ -19,7 +19,7 @@ import java.util.List;
  * - GET /shell           → Main shell with app-switcher sidebar
  * - GET /shell/{appId}   → Shell with specific app pre-selected
  *
- * @GovernanceID 4.0.0 (SyR-PLAT-04: Adaptive UI Shell)
+ * @GovernanceID 4.0.0 (FR-PLAT-04: Adaptive UI Shell)
  */
 @RestController
 public class AdaptiveShellController {

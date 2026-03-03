@@ -114,9 +114,9 @@ cd 01-vkernel && mvn test
 vRoute-Open/
 ├── 00-design/                    # Design artifacts
 │   ├── docs/                     #   PRD documents
-│   │   ├── vkernel-prd.md        #     Platform requirements (SyR-PLAT-00→05)
-│   │   ├── vstrategy-prd.md      #     Strategy requirements (SyR-STR-00→04)
-│   │   └── vfinacc-prd.md        #     Finance requirements (SyR-FIN-00→04)
+│   │   ├── vkernel-prd.md        #     Platform requirements (FR-PLAT-00→05)
+│   │   ├── vstrategy-prd.md      #     Strategy requirements (FR-STR-00→04)
+│   │   └── vfinacc-prd.md        #     Finance requirements (FR-FIN-00→04)
 │   └── sheets/                   #   Data tables & contracts
 │       ├── api-contract-summary.md
 │       ├── acceptance-criteria.md
@@ -126,12 +126,12 @@ vRoute-Open/
 │   ├── pom.xml
 │   ├── Dockerfile
 │   └── src/main/java/com/abivin/vkernel/
-│       ├── g0_engine/            #   App Engine (SyR-PLAT-00)
-│       ├── g1_iam/               #   IAM (SyR-PLAT-01)
-│       ├── g2_data/              #   Data Backbone (SyR-PLAT-02)
-│       ├── g3_event/             #   Event Bus (SyR-PLAT-03)
-│       ├── g4_grpc/              #   gRPC IPC (SyR-PLAT-04)
-│       └── g5_search/            #   Universal Search (SyR-PLAT-02.02)
+│       ├── g0_engine/            #   App Engine (FR-PLAT-00)
+│       ├── g1_iam/               #   IAM (FR-PLAT-01)
+│       ├── g2_data/              #   Data Backbone (FR-PLAT-02)
+│       ├── g3_event/             #   Event Bus (FR-PLAT-03)
+│       ├── g4_grpc/              #   gRPC IPC (FR-PLAT-04)
+│       └── g5_search/            #   Universal Search (FR-PLAT-02.02)
 ├── 02-vstrategy/                 # vApp: Strategy (Python 3.12 / FastAPI)
 │   ├── app/                      #   FastAPI application
 │   ├── frontend/                 #   TypeScript frontend

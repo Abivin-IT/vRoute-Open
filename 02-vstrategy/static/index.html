@@ -311,45 +311,61 @@
           {
             id: "plans",
             label: "Strategic Plans",
-            hint: "CRUD · Period, Baseline, MECE",
+            hint: "FR-STR-01 · Baseline, Objectives, Period",
+          },
+          {
+            id: "mece",
+            label: "MECE Framework",
+            hint: "FR-STR-02 · Gap Analysis, 4 Options, Decision Log",
           },
         ],
         transactions: [
           {
             id: "alignment",
             label: "Alignment Tree",
-            hint: "Vision → BSC → OKR → Initiative → Task",
+            hint: "FR-STR-00 · Vision → BSC → OKR → Initiative → Task",
+          },
+          {
+            id: "sop",
+            label: "S&OP Resource Allocation",
+            hint: "FR-STR-03 · 68/27/5 GROW/RUN/TRANSFORM/GIVE",
           },
         ],
         reporting: [
           {
             id: "scorecard",
             label: "BSC Scorecard",
-            hint: "Balanced Scorecard metrics",
-          },
-          {
-            id: "sop",
-            label: "S&OP Validation",
-            hint: "68/27/5 resource allocation",
+            hint: "FR-STR-04 · 4-Perspective traffic light",
           },
           {
             id: "signals",
             label: "Pivot Signals",
-            hint: "Threshold-based triggers",
+            hint: "FR-STR-04 · Runway <6mo, Revenue drop >20%",
+          },
+          {
+            id: "variance",
+            label: "Variance Analysis",
+            hint: "FR-STR-04 · Actual vs Plan comparison",
           },
         ],
         configurations: [
           {
-            id: "mece",
-            label: "MECE Framework",
-            hint: "Strategic options & decision log",
+            id: "sop-config",
+            label: "S&OP Config",
+            hint: "68/27/5 ratio, tolerance %",
+          },
+          {
+            id: "signal-rules",
+            label: "Signal Rules",
+            hint: "Threshold rules · RUNWAY / GROWTH",
           },
         ],
       };
       window.__VR_CONTROL__ = {
         entity: "Strategic Plans",
         views: ["☰ List", "🌳 Tree", "📊 Scorecard"],
-        entitySlot: '<select class="vr-entity-select" id="planSelect"><option>Loading…</option></select>',
+        entitySlot:
+          '<select class="vr-entity-select" id="planSelect"><option>Loading…</option></select>',
       };
     </script>
     <script src="/ui/app-layout.js"></script>

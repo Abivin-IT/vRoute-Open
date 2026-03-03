@@ -14,7 +14,7 @@ from app.transaction.models.entity import Transaction
 from app.transaction.models.schema import TransactionCreate
 
 
-# ===================== TRANSACTIONS (SyR-FIN-01) =====================
+# ===================== TRANSACTIONS (FR-FIN-01) =====================
 
 async def list_transactions(db: AsyncSession, status: str | None = None) -> list[Transaction]:
     stmt = select(Transaction).order_by(Transaction.created_at.desc())

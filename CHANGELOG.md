@@ -75,9 +75,9 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 
 ## [1.8.0] — 2026-03-02
 
-### Added — 6 vKernel System App Pages (SyR-PLAT-00.01→00.04)
+### Added — 6 vKernel System App Pages (FR-PLAT-00.01→00.04)
 
-**App Store (`/dashboard/appstore`) — SyR-PLAT-00.01**
+**App Store (`/dashboard/appstore`) — FR-PLAT-00.01**
 
 - Tab UI: EXPLORE / INSTALLED / UPDATES
 - 4 industry bundle cards (Logistics, Manufacturing, Retail, Healthcare) with INSTALL BUNDLE buttons
@@ -86,7 +86,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 - Dependency Resolution Modal overlay for bundle installs
 - Dynamic status badges from `AppRegistryEntity`
 
-**Settings / IAM (`/dashboard/settings`) — SyR-PLAT-00.02**
+**Settings / IAM (`/dashboard/settings`) — FR-PLAT-00.02**
 
 - CRUDIEA permission matrix: C/R/U/D/L/I/E/A columns × CEO/CAO/FAM/ITM/BDM/HRM role rows
 - Live permissions from `PermissionEntity.Repository.findByActiveTrue()`
@@ -94,14 +94,14 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 - General Config tab: SSO, tenant, notifications, backup configuration cards
 - Tenant name from `TenantEntity`
 
-**vAudit (`/dashboard/audit`) — SyR-PLAT-00.04**
+**vAudit (`/dashboard/audit`) — FR-PLAT-00.04**
 
 - Immutable event audit log with stats: Total Events, Published, Failed, Source Apps
 - Filter bar: search by event type, filter by source app, filter by status
 - Expandable detail rows: full correlation ID, event ID, JSONB payload viewer
 - Data from `EventBusService.getAuditLog()` (last 100 events)
 
-**vData / MDM (`/dashboard/data`) — SyR-PLAT-00.03**
+**vData / MDM (`/dashboard/data`) — FR-PLAT-00.03**
 
 - Golden Records browser with stats: Total Records, Stakeholders, Currencies, Countries
 - Tab UI: STAKEHOLDERS / CURRENCIES / COUNTRIES / JSONB EXTENSIONS
@@ -109,7 +109,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 - JSONB extension viewer with example payload documentation
 - Data from `StakeholderEntity`, `CurrencyEntity`, `CountryEntity` repositories
 
-**vFlow / Automation (`/dashboard/automation`) — SyR-PLAT-00.03**
+**vFlow / Automation (`/dashboard/automation`) — FR-PLAT-00.03**
 
 - Stats: Active Subscriptions, Event Types Wired, Subscriber Apps, Events Processed (24h)
 - Flow Canvas: visual trigger→filter→action representation of EventBus subscriptions
@@ -117,7 +117,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 - Run History tab: recent event processing log
 - Data from `SubscriptionEntity.Repository` + `EventBusService`
 
-**vMonitor / Health (`/dashboard/monitor`) — SyR-PLAT-00.04**
+**vMonitor / Health (`/dashboard/monitor`) — FR-PLAT-00.04**
 
 - Health grid: Platform Status, Uptime, Database, Disk Space (live from `/actuator/health`)
 - App Health tab: installed apps with health check status
@@ -174,7 +174,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 - Business logic `service.py`: Spec Master Vault (seal/activation/convergence %), Material Ingestion (LIMS + sensor data), Prototype Version Control (RFID location tracking), Lab Feasibility Checker (stress-test execution + failure analysis), Handover Kit workflow (packing + dispatch)
 - 26 REST endpoints at `/api/v1/vdesign-physical` — Golden Samples CRUD, Materials, Prototypes, Lab Tests with summary, Handover Kits, Health
 - Alembic migration `0001_vdesign_physical_init.py` — 5 tables + indexes + seed data (demo golden samples, materials, prototypes, lab tests, handover kits)
-- 35 integration tests (pytest-asyncio + httpx + aiosqlite) — all SyR-PHY-00→04 requirements covered
+- 35 integration tests (pytest-asyncio + httpx + aiosqlite) — all FR-PHY-00→04 requirements covered
 - Dark-themed HTML dashboard (`static/index.html`) — all 5 domain cards
 - TypeScript frontend (`frontend/`): `types.ts`, `api.ts`, `renderers.ts`, `main.ts` + IIFE bundler
 - `Dockerfile` — 2-stage: Node 20-alpine (TS build) + Python 3.12-slim (runtime), port 8083
@@ -187,7 +187,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 - Business logic `service.py`: ABM Campaign Orchestrator, Tracking Pixel (collective behavior scoring, high-value action detection), Audience Segment engine (firmographic/technographic tiering), Content Asset Hub (gated content + compliance audit), Lead Scorer (ωf·Firmographics + ωi·ΣIntent, BANT mapping, auto-handover trigger)
 - 27 REST endpoints at `/api/v1/vmarketing-org` — Campaigns CRUD, Tracking Events with intent summary, Segments, Content Assets, Lead Scores, Health
 - Alembic migration `0001_vmarketing_org_init.py` — 5 tables + indexes + seed data (demo campaigns, events, segments, assets, lead scores)
-- 28 integration tests (pytest-asyncio + httpx + aiosqlite) — all SyR-MKT-ORG-00→04 requirements covered
+- 28 integration tests (pytest-asyncio + httpx + aiosqlite) — all FR-MKT-ORG-00→04 requirements covered
 - Dark-themed HTML dashboard (`static/index.html`) — all 5 domain cards
 - TypeScript frontend (`frontend/`): `types.ts`, `api.ts`, `renderers.ts`, `main.ts` + IIFE bundler
 - `Dockerfile` — 2-stage: Node 20-alpine (TS build) + Python 3.12-slim (runtime), port 8084
@@ -208,8 +208,8 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 
 ### Added — PRDs & Build Plan for 2 New vApps
 
-- **vDesign Physical PRD** (`00-design/docs/vdesign-physical-prd.md`) — Physical Layer module for Idea-to-Spec: Spec Master (Golden Sample Vault), Idea Inbox (Material Ingestion), Version Control (Prototype Tracker), Feasibility Checker (Lab Stress Test), Handover Kit (Tooling Shipment). 5 SyRs (SyR-PHY-00 through SyR-PHY-04), 5 NFRs, manifest sample, 4 Gherkin acceptance criteria.
-- **vMarketing Organization PRD** (`00-design/docs/vmarketing-org-prd.md`) — M2L ABM Engine: Campaign Orchestrator, Tracking Pixel (IP-to-Company Intent Sensing), Audience Segment (Firmographic/Technographic), Content Asset (Knowledge Hub), Lead Scorer (Account Qualification + Auto-Handover). 5 SyRs (SyR-MKT-ORG-00 through SyR-MKT-ORG-04), 5 NFRs, manifest sample, 3 Gherkin scenarios.
+- **vDesign Physical PRD** (`00-design/docs/vdesign-physical-prd.md`) — Physical Layer module for Idea-to-Spec: Spec Master (Golden Sample Vault), Idea Inbox (Material Ingestion), Version Control (Prototype Tracker), Feasibility Checker (Lab Stress Test), Handover Kit (Tooling Shipment). 5 FRs (FR-PHY-00 through FR-PHY-04), 5 NFRs, manifest sample, 4 Gherkin acceptance criteria.
+- **vMarketing Organization PRD** (`00-design/docs/vmarketing-org-prd.md`) — M2L ABM Engine: Campaign Orchestrator, Tracking Pixel (IP-to-Company Intent Sensing), Audience Segment (Firmographic/Technographic), Content Asset (Knowledge Hub), Lead Scorer (Account Qualification + Auto-Handover). 5 FRs (FR-MKT-ORG-00 through FR-MKT-ORG-04), 5 NFRs, manifest sample, 3 Gherkin scenarios.
 - **TODO Steps 10 & 11** — Detailed build plans: Step 10 = vDesign Physical (port 8083, `04-vdesign-physical/`), Step 11 = vMarketing Organization (port 8084, `05-vmarketing-org/`).
 
 ---
@@ -264,7 +264,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 
 ## [1.4.0] — 2026-03-12
 
-### Added — vFinacc: vFinance R2R Module (SyR-FIN-00 through SyR-FIN-04)
+### Added — vFinacc: vFinance R2R Module (FR-FIN-00 through FR-FIN-04)
 
 **PRD & Design Sheets**
 
@@ -293,7 +293,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 
 **Testing**
 
-- `vfinacc/tests/test_finance_api.py` — 25 integration tests (pytest-asyncio + httpx + SQLite in-memory) covering all 5 SyR-FIN requirements: Ledger (7), Transactions (3), Reconciliation (5), Cost Centers (6), Compliance (6), Health (1)
+- `vfinacc/tests/test_finance_api.py` — 25 integration tests (pytest-asyncio + httpx + SQLite in-memory) covering all 5 FR-FIN requirements: Ledger (7), Transactions (3), Reconciliation (5), Cost Centers (6), Compliance (6), Health (1)
 
 **UI**
 
@@ -318,7 +318,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 
 ### Added — OIDC SSO + Magic Link + Universal Search + UI Shell + Helm
 
-**OIDC/OAuth2 SSO (SyR-PLAT-01 complete)**
+**OIDC/OAuth2 SSO (FR-PLAT-01 complete)**
 
 - `V7__oidc_magiclink_search.sql` — Flyway migration: `kernel_oidc_accounts`, `kernel_magic_links`, `kernel_search_index` tables + tsvector trigger
 - `OidcAccountEntity.java` — `@GovernanceID 1.6.0` — Linked OIDC accounts (Google/Microsoft/GitHub), JSONB raw claims
@@ -329,12 +329,12 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 - `MagicLinkEntity.java` — `@GovernanceID 1.7.0` — Magic link tokens with SHA-256 hash, 15-minute TTL
 - `MagicLinkController.java` — `@GovernanceID 1.7.1` — `POST /api/v1/auth/magic-link` (generate link), `GET /api/v1/auth/magic-link/verify` (verify → JWT)
 
-**Universal Search (SyR-PLAT-02.02)**
+**Universal Search (FR-PLAT-02.02)**
 
 - `SearchIndexEntity.java` — `@GovernanceID 5.0.0` — Unified search index entity (tsvector on PostgreSQL, LIKE fallback on H2)
 - `SearchController.java` — `@GovernanceID 5.1.0` — `GET /api/v1/search?q=...&type=...&limit=...` (FTS with ranking), `POST /api/v1/search/index` (manual indexing)
 
-**Adaptive UI Shell (SyR-PLAT-04)**
+**Adaptive UI Shell (FR-PLAT-04)**
 
 - `AdaptiveShellController.java` — `@GovernanceID 4.0.0` — Micro-frontend host: `GET /shell` (app launcher), `GET /shell/{appId}` (iframe isolation per vApp), sidebar nav, Ctrl+K search integration
 
@@ -432,7 +432,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 
 ## [1.0.0] — 2026-03-02
 
-### Added — Step 5: vStrategy vApp (SyR-STR-00 through SyR-STR-04)
+### Added — Step 5: vStrategy vApp (FR-STR-00 through FR-STR-04)
 
 **vStrategy — S2P2R Strategy Execution Module** (`vstrategy/`):
 
@@ -465,7 +465,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 
 ## [0.4.0] — 2026-03-02
 
-### Added — Step 4: App Engine Full (SyR-PLAT-00)
+### Added — Step 4: App Engine Full (FR-PLAT-00)
 
 **Flyway:**
 
@@ -483,7 +483,7 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 
 ## [0.3.0] — 2026-03-02
 
-### Added — Step 3: Event Bus (SyR-PLAT-03)
+### Added — Step 3: Event Bus (FR-PLAT-03)
 
 **Flyway:**
 
@@ -506,14 +506,14 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 
 ## [0.2.0] — 2026-03-02
 
-### Added — Step 2: Data Backbone + Core Entities (SyR-PLAT-02)
+### Added — Step 2: Data Backbone + Core Entities (FR-PLAT-02)
 
 **Flyway Schema Migrations:**
 
 - `V1__init_schema.sql` — DDL for all tables: `kernel_users`, `kernel_tenants`, `kernel_stakeholders`, `kernel_currencies`, `kernel_countries`. GIN indexes on JSONB + full-text search.
 - `V2__seed_data.sql` — Seed: 8 currencies (VND, USD, EUR, JPY, CNY, KRW, THB, SGD), 8 countries (VN, US, SG, JP, KR, CN, TH, DE), default tenant.
 
-**g2_data (SyR-PLAT-02 — Data Backbone):**
+**g2_data (FR-PLAT-02 — Data Backbone):**
 
 - `TenantEntity.java` — `@GovernanceID 2.0.0` — `kernel_tenants` table + JSONB metadata
 - `StakeholderEntity.java` — `@GovernanceID 2.0.1` — Golden Records (CUSTOMER/VENDOR/PARTNER) + JSONB + native JSONB query
@@ -544,14 +544,14 @@ Flattened `00-design/sheets/` from per-app subfolders to unified cross-app summa
 
 - `VKernelApplication.java` — `@GovernanceID 0.0.0-BOOT` — Entry point
 
-**g1_iam (SyR-PLAT-01 — Identity & Access Management):**
+**g1_iam (FR-PLAT-01 — Identity & Access Management):**
 
 - `SecurityConfig.java` — `@GovernanceID 1.0.0` — JWT stateless filter, BCrypt encoder, public auth routes
 - `AuthController.java` — `@GovernanceID 1.0.1` — POST `/api/v1/auth/register`, POST `/api/v1/auth/login`
 - `JwtProvider.java` — `@GovernanceID 1.0.2` — Token generation/validation (HMAC-SHA)
 - `UserEntity.java` — `@GovernanceID 1.1.0` — `kernel_users` table + co-located Repository interface
 
-**g0_engine (SyR-PLAT-00 — App Lifecycle):**
+**g0_engine (FR-PLAT-00 — App Lifecycle):**
 
 - `AppRegistryController.java` — `@GovernanceID 0.0.0` — GET `/api/v1/apps`, POST `/api/v1/apps/install` (stub)
 

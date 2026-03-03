@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS kernel_tenants (
     updated_at      TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
--- ---- g2_data: stakeholders (Golden Records — SyR-PLAT-02.00) ----
+-- ---- g2_data: stakeholders (Golden Records — FR-PLAT-02.00) ----
 CREATE TABLE IF NOT EXISTS kernel_stakeholders (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id       UUID         NOT NULL REFERENCES kernel_tenants(id),

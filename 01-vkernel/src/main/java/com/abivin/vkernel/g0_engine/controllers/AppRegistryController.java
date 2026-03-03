@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * App Lifecycle REST API — DB-backed.
- * SyR-PLAT-00 (Dynamic App Engine).
+ * FR-PLAT-00 (Dynamic App Engine).
  * <p>
  * GET    /api/v1/apps              → List installed (ACTIVE) apps
  * POST   /api/v1/apps/install      → Install app from manifest_url

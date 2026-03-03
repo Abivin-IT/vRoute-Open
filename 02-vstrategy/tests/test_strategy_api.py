@@ -1,6 +1,6 @@
 # =============================================================
 # vStrategy — Integration Tests
-# Covers SyR-STR-00 through SyR-STR-04 (20 test cases).
+# Covers FR-STR-00 through FR-STR-04 (20 test cases).
 # =============================================================
 from __future__ import annotations
 
@@ -146,7 +146,7 @@ async def test_17_get_tree_returns_all_nodes(client: AsyncClient):
     assert r.json()["count"] >= 7
 
 
-# =========== STATUS PROPAGATION (SyR-STR-00) ===========
+# =========== STATUS PROPAGATION (FR-STR-00) ===========
 
 async def test_20_update_task_to_red_then_propagate(client: AsyncClient):
     # Update task progress to 20% (RED)
@@ -167,7 +167,7 @@ async def test_20_update_task_to_red_then_propagate(client: AsyncClient):
     assert p01["status"] == "RED"
 
 
-# =========== SCORECARD (SyR-STR-04) ===========
+# =========== SCORECARD (FR-STR-04) ===========
 
 async def test_30_scorecard_returns_bsc_perspectives(client: AsyncClient):
     r = await client.get(f"/api/v1/vstrategy/plans/{_state['plan_id']}/scorecard")
@@ -177,7 +177,7 @@ async def test_30_scorecard_returns_bsc_perspectives(client: AsyncClient):
     assert "overall_status" in data
 
 
-# =========== S&OP 68/27/5 VALIDATION (SyR-STR-03) ===========
+# =========== S&OP 68/27/5 VALIDATION (FR-STR-03) ===========
 
 async def test_40_sop_validation_checks_allocation(client: AsyncClient):
     r = await client.get(f"/api/v1/vstrategy/plans/{_state['plan_id']}/sop/validate")
@@ -193,7 +193,7 @@ async def test_40_sop_validation_checks_allocation(client: AsyncClient):
     assert "GIVE" in categories
 
 
-# =========== PIVOT SIGNALS (SyR-STR-04) ===========
+# =========== PIVOT SIGNALS (FR-STR-04) ===========
 
 async def test_50_pivot_signal_safe_zone(client: AsyncClient):
     r = await client.post(f"/api/v1/vstrategy/plans/{_state['plan_id']}/signals/check", json={

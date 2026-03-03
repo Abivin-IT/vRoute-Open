@@ -12,7 +12,7 @@ from app.cost_center.models.entity import CostAllocation
 from app.cost_center.models.schema import CostAllocationCreate
 
 
-# ===================== COST CENTER MANAGEMENT (SyR-FIN-03) =====================
+# ===================== COST CENTER MANAGEMENT (FR-FIN-03) =====================
 
 async def list_cost_allocations(db: AsyncSession, category: str | None = None) -> list[CostAllocation]:
     stmt = select(CostAllocation).order_by(CostAllocation.created_at.desc())

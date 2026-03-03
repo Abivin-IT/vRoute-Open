@@ -1,10 +1,10 @@
 -- =============================================================
 -- V3__event_tables.sql — Event Bus & Audit Trail
--- GovernanceID: 3.0.0-SCHEMA  (SyR-PLAT-03)
+-- GovernanceID: 3.0.0-SCHEMA  (FR-PLAT-03)
 -- Append-only event log + subscription registry
 -- =============================================================
 
--- ---- Immutable event log (SyR-PLAT-03.03 Audit Trail) ----
+-- ---- Immutable event log (FR-PLAT-03.03 Audit Trail) ----
 CREATE TABLE IF NOT EXISTS kernel_event_log (
     id               UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
     event_type       VARCHAR(100) NOT NULL,              -- e.g. SALES_ORDER_CONFIRMED
@@ -24,7 +24,7 @@ CREATE INDEX idx_event_log_corr      ON kernel_event_log(correlation_id);
 CREATE INDEX idx_event_log_created   ON kernel_event_log(created_at DESC);
 CREATE INDEX idx_event_log_payload   ON kernel_event_log USING gin(payload);
 
--- ---- Subscription registry (SyR-PLAT-03.02) ----
+-- ---- Subscription registry (FR-PLAT-03.02) ----
 CREATE TABLE IF NOT EXISTS kernel_event_subscriptions (
     id               UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
     subscriber_app   VARCHAR(100) NOT NULL,

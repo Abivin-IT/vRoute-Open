@@ -57,15 +57,15 @@ vFinance thực thi quy trình Record-to-Report (R2R), đảm bảo sức khỏe
 
 ### 3.1. Requirements Traceability Matrix
 
-| Req ID     | Requirement Name       | Source Policy                      | Priority |
-| ---------- | ---------------------- | ---------------------------------- | -------- |
-| SyR-FIN-00 | Continuous Ledger (DF) | R2R Policy - Real-time Reporting   | Must     |
-| SyR-FIN-01 | Transaction Ingestor   | R2R Policy - Auto Data Entry       | Must     |
-| SyR-FIN-02 | Reconciliation Engine  | R2R Policy - 3-Way Matching        | Must     |
-| SyR-FIN-03 | Cost Center Manager    | R2R Policy - Automated Allocation  | Must     |
-| SyR-FIN-04 | Tax & Compliance Guard | R2R Policy - Regulatory Compliance | Must     |
+| Req ID    | Requirement Name       | Source Policy                      | Priority |
+| --------- | ---------------------- | ---------------------------------- | -------- |
+| FR-FIN-00 | Continuous Ledger (DF) | R2R Policy - Real-time Reporting   | Must     |
+| FR-FIN-01 | Transaction Ingestor   | R2R Policy - Auto Data Entry       | Must     |
+| FR-FIN-02 | Reconciliation Engine  | R2R Policy - 3-Way Matching        | Must     |
+| FR-FIN-03 | Cost Center Manager    | R2R Policy - Automated Allocation  | Must     |
+| FR-FIN-04 | Tax & Compliance Guard | R2R Policy - Regulatory Compliance | Must     |
 
-### 3.2. [DF] SyR-FIN-00: Continuous Ledger Engine
+### 3.2. [DF] FR-FIN-00: Continuous Ledger Engine
 
 **Goal:** Xây dựng Sổ cái liên tục: Transaction → Journal Entry → General Ledger → Financial Reports.
 
@@ -73,28 +73,28 @@ vFinance thực thi quy trình Record-to-Report (R2R), đảm bảo sức khỏe
 - Thay đổi trạng thái (ví dụ: Giao dịch bị Flag) phải kích hoạt sự kiện `STATUS_CHANGED` lan truyền ngược lên báo cáo tổng hợp.
 - Dashboard hiển thị % hoàn thành đối soát, góc nhìn tài chính, tín hiệu Pivot chiến lược.
 
-### 3.3. [SR-01] SyR-FIN-01: Transaction Ingestor Engine
+### 3.3. [SR-01] FR-FIN-01: Transaction Ingestor Engine
 
 **Goal:** Cổng tiếp nhận dữ liệu từ External API (Bank) → Raw Transaction → Data Buffer → Draft Entry.
 
 - Kích hoạt thu thập baseline theo lịch trình (Scheduled) hoặc khi Runway < 6 tháng.
 - Dashboard hiển thị trạng thái kết nối các cảm biến dữ liệu, cảnh báo mất kết nối.
 
-### 3.4. [SR-02] SyR-FIN-02: AI-Powered Reconciliation Engine
+### 3.4. [SR-02] FR-FIN-02: AI-Powered Reconciliation Engine
 
 **Goal:** Đối soát 3 chiều: Purchase Order (P1) → Goods Receipt Note (P2) → Invoice (P3).
 
 - Khi phát hiện sai lệch (Gap), hệ thống tự động đề xuất 4 phương án MECE.
 - Dashboard hiển thị tỷ lệ đối soát tự động thành công và phân tích khoảng cách.
 
-### 3.5. [SR-03] SyR-FIN-03: Cost Center Manager
+### 3.5. [SR-03] FR-FIN-03: Cost Center Manager
 
 **Goal:** Thực thi phân bổ chi phí theo GROW (68%), RUN (27%), TRANSFORM (5%), GIVE (~0.1%).
 
 - Mọi khoản chi được phê duyệt phải tự động trừ vào ngân sách Cost Center tương ứng.
 - Dashboard hiển thị Master Allocation Matrix, so sánh chi tiêu thực tế với định mức.
 
-### 3.6. [SR-04] SyR-FIN-04: Tax & Compliance Guard
+### 3.6. [SR-04] FR-FIN-04: Tax & Compliance Guard
 
 **Goal:** Transaction Stream → Compliance Rule → Tax Accrual → Variance Report.
 

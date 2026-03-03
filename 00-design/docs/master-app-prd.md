@@ -48,7 +48,7 @@ This document defines the **Master App Template** — the standard structure, fe
 
 ## 3. Product Overview
 
-Every Business App in vRoute is a **vApp** that runs inside the vKernel Adaptive UI Shell (SyR-PLAT-04). The Master App Template defines the 5 standard functional modules and 5 quality attributes that form the common foundation.
+Every Business App in vRoute is a **vApp** that runs inside the vKernel Adaptive UI Shell (FR-PLAT-04). The Master App Template defines the 5 standard functional modules and 5 quality attributes that form the common foundation.
 
 ### Architecture Position
 
@@ -68,7 +68,7 @@ Every Business App in vRoute is a **vApp** that runs inside the vKernel Adaptive
 │  └──────────┘ └──────────┘ └──────────┘ └──────┘ └──────┘  │
 ├─────────────────────────────────────────────────────────────┤
 │         Domain-Specific PRDs (vstrategy, vfinacc, …)        │
-│  SyR-STR-00…04 │ SyR-FIN-00…04 │ SyR-PHY-00…04 │ …       │
+│  FR-STR-00…04 │ FR-FIN-00…04 │ FR-PHY-00…04 │ …       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -157,16 +157,16 @@ Every vApp follows the same directory pattern:
 
 ### 4.2. FR-APP-01 | Master Data Management
 
-**Purpose:** Manage reference/master data entities that the core transactions depend on. Master data is shared across the app and potentially across apps via the Data Backbone (SyR-PLAT-02).
+**Purpose:** Manage reference/master data entities that the core transactions depend on. Master data is shared across the app and potentially across apps via the Data Backbone (FR-PLAT-02).
 
-| Capability          | Description                                                                |
-| ------------------- | -------------------------------------------------------------------------- |
-| CRUD Master Records | Standard create/read/update/archive for reference entities                 |
-| Bulk Operations     | Select-all → bulk update, bulk archive, bulk export                        |
-| Data Validation     | Enforce unique constraints, format rules, mandatory fields                 |
-| JSONB Extension     | Support dynamic custom fields via `metadata` JSONB column (SyR-PLAT-02.01) |
-| Cross-App Sharing   | Publish master data to Data Backbone for other apps to consume             |
-| Import/Merge        | Deduplicate on import; merge duplicate records with conflict resolution    |
+| Capability          | Description                                                               |
+| ------------------- | ------------------------------------------------------------------------- |
+| CRUD Master Records | Standard create/read/update/archive for reference entities                |
+| Bulk Operations     | Select-all → bulk update, bulk archive, bulk export                       |
+| Data Validation     | Enforce unique constraints, format rules, mandatory fields                |
+| JSONB Extension     | Support dynamic custom fields via `metadata` JSONB column (FR-PLAT-02.01) |
+| Cross-App Sharing   | Publish master data to Data Backbone for other apps to consume            |
+| Import/Merge        | Deduplicate on import; merge duplicate records with conflict resolution   |
 
 #### Wireframe — List View with Bulk Actions (Master Data)
 
@@ -195,7 +195,7 @@ Every vApp follows the same directory pattern:
 
 ### 4.3. FR-APP-02 | Inter-App Automation
 
-**Purpose:** Define event-driven automation rules that connect this app to other apps via the Event Bus (SyR-PLAT-03). Each app must both **publish** events when key state changes occur and **subscribe** to events from other apps to trigger automated actions.
+**Purpose:** Define event-driven automation rules that connect this app to other apps via the Event Bus (FR-PLAT-03). Each app must both **publish** events when key state changes occur and **subscribe** to events from other apps to trigger automated actions.
 
 | Capability                | Description                                                                        |
 | ------------------------- | ---------------------------------------------------------------------------------- |
@@ -493,12 +493,12 @@ Before a new vApp can be deployed to production:
 
 ### A. Mapping to Existing Apps
 
-| App              | FR-APP-00 (Core Txn)        | FR-APP-01 (Master Data) | FR-APP-02 (Automation)   | FR-APP-03 (Reporting) | FR-APP-04 (Config)     |
-| ---------------- | --------------------------- | ----------------------- | ------------------------ | --------------------- | ---------------------- |
-| vStrategy        | Plans (SyR-STR-00)          | Alignment Tree          | PLAN_APPROVED event      | BSC Scorecard         | S&OP Config            |
-| vFinacc          | Ledger Entries (SyR-FIN-00) | Chart of Accounts       | ORDER→INVOICE automation | P&L / Balance Sheet   | Tax & Compliance rules |
-| vDesign Physical | Golden Samples (SyR-PHY-00) | Materials Inbox         | TOOLING_DISPATCHED event | Lab Test Reports      | Spec Tolerance Config  |
-| vMarketing Org   | Campaigns (SyR-MKT-ORG-00)  | Audience Segments       | INTENT_HOT_SIGNAL event  | Campaign Analytics    | Scoring Thresholds     |
+| App              | FR-APP-00 (Core Txn)       | FR-APP-01 (Master Data) | FR-APP-02 (Automation)   | FR-APP-03 (Reporting) | FR-APP-04 (Config)     |
+| ---------------- | -------------------------- | ----------------------- | ------------------------ | --------------------- | ---------------------- |
+| vStrategy        | Plans (FR-STR-00)          | Alignment Tree          | PLAN_APPROVED event      | BSC Scorecard         | S&OP Config            |
+| vFinacc          | Ledger Entries (FR-FIN-00) | Chart of Accounts       | ORDER→INVOICE automation | P&L / Balance Sheet   | Tax & Compliance rules |
+| vDesign Physical | Golden Samples (FR-PHY-00) | Materials Inbox         | TOOLING_DISPATCHED event | Lab Test Reports      | Spec Tolerance Config  |
+| vMarketing Org   | Campaigns (FR-MKT-ORG-00)  | Audience Segments       | INTENT_HOT_SIGNAL event  | Campaign Analytics    | Scoring Thresholds     |
 
 ### B. View Type Reference
 

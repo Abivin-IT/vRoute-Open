@@ -1,6 +1,6 @@
 // =============================================================
 // kernel.proto — vKernel gRPC Service Definitions
-// GovernanceID: SyR-PLAT-05 (gRPC IPC)
+// GovernanceID: FR-PLAT-05 (gRPC IPC)
 // Shared proto: source of truth in vkernel/src/main/proto/kernel.proto
 // Copy maintained here for Python stub generation during Docker build.
 // =============================================================
