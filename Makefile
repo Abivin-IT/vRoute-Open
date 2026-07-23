@@ -9,10 +9,9 @@
 #   make up             -> Start platform in background
 #   make down           -> Stop platform
 #   make logs           -> Tail service logs
-#   make test           -> Run all tests (vKernel + vStrategy + vFinacc)
+#   make test           -> Run all tests (vKernel + vStrategy)
 #   make test-kernel    -> Run only vKernel tests (JUnit 5)
 #   make test-strategy  -> Run only vStrategy tests (pytest)
-#   make test-finacc    -> Run only vFinacc tests (pytest)
 #   make clean          -> Delete build artifacts
 #   make clean-docker   -> Wipe Docker volumes & layers
 #   make security       -> Full DevSecOps pipeline
@@ -32,9 +31,6 @@ SHELL        := /bin/bash
 ROOT          := $(CURDIR)
 VKERNEL_DIR   := $(ROOT)/01-vkernel
 VSTRATEGY_DIR := $(ROOT)/02-vstrategy
-VFINACC_DIR   := $(ROOT)/03-vfinacc
-VDESIGN_DIR   := $(ROOT)/04-vdesign-physical
-VMARKETING_DIR:= $(ROOT)/05-vmarketing-org
 DEPLOY_DIR    := $(ROOT)/80-deploy
 PROTO_SRC     := $(VKERNEL_DIR)/src/main/proto
 PROTO_DST     := $(VSTRATEGY_DIR)/protos
@@ -99,7 +95,7 @@ endef
 # ===========================================================
 .PHONY: help proto build dev up down logs ps \
         up-staging down-staging logs-staging \
-        test test-kernel test-strategy test-finacc test-design-physical test-marketing-org test-platform \
+        test test-kernel test-strategy test-platform \
         clean clean-docker \
         security audit scan-secrets lint sast dependency-check sbom sonarqube
 
@@ -181,9 +177,6 @@ up: ## Build + start all services in the background (detached)
 	@echo "  │  vKernel       ->  http://localhost:8080     │"
 	@echo "  │  vKernel API   ->  http://localhost:8080/api/v1/ │"
 	@echo "  │  vStrategy     ->  http://localhost:8080/vstrategy/  │"
-	@echo "  │  vFinacc       ->  http://localhost:8080/vfinacc/    │"
-	@echo "  │  vDesign Phys  ->  http://localhost:8080/vdesign-physical/  │"
-	@echo "  │  vMarketing    ->  http://localhost:8080/vmarketing-org/    │"
 	@echo "  │  PostgreSQL    ->  localhost:5432            │"
 	@echo "  │  Redis         ->  localhost:6379            │"
 	@echo "  └--------------------------------------------─┘"
@@ -230,7 +223,7 @@ ps: ## Show status of all running containers
 # Maven cache: Docker volume vroute-maven-cache
 # Pip cache:   Docker volume vroute-pip-cache
 # ===========================================================
-test: test-kernel test-strategy test-finacc test-design-physical test-marketing-org ## Run ALL tests (vKernel + vStrategy + vFinacc + vDesign + vMarketing)
+test: test-kernel test-strategy ## Run ALL tests (vKernel + vStrategy)
 	@echo ""
 	@echo "  OK All tests passed"
 
@@ -245,24 +238,6 @@ test-strategy: ## Run vStrategy tests only (pytest)
 	@echo "==== Testing vStrategy =============================="
 	$(call pytest,$(VSTRATEGY_DIR))
 	@echo "  OK vStrategy: PASSED"
-
-test-finacc: ## Run vFinacc tests only (pytest)
-	@echo ""
-	@echo "==== Testing vFinacc ================================"
-	$(call pytest,$(VFINACC_DIR))
-	@echo "  OK vFinacc: PASSED"
-
-test-design-physical: ## Run vDesign Physical tests only (pytest)
-	@echo ""
-	@echo "==== Testing vDesign Physical ======================="
-	$(call pytest,$(VDESIGN_DIR))
-	@echo "  OK vDesign Physical: PASSED"
-
-test-marketing-org: ## Run vMarketing Org tests only (pytest)
-	@echo ""
-	@echo "==== Testing vMarketing Org ========================="
-	$(call pytest,$(VMARKETING_DIR))
-	@echo "  OK vMarketing Org: PASSED"
 
 test-platform: ## Test platform core only — vKernel (JUnit 5 / Spring Boot)
 	@echo ""
@@ -315,15 +290,6 @@ clean: ## Remove Maven target/, Python __pycache__ and generated *_pb2.py
 	@find $(VSTRATEGY_DIR) -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	@find $(VSTRATEGY_DIR) -name "*.pyc"        -delete 2>/dev/null || true
 	@find $(VSTRATEGY_DIR) -name "*_pb2*.py"    -delete 2>/dev/null || true
-	@find $(VFINACC_DIR) -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	@find $(VFINACC_DIR) -name "*.pyc"        -delete 2>/dev/null || true
-	@find $(VFINACC_DIR) -name "*_pb2*.py"    -delete 2>/dev/null || true
-	@find $(VDESIGN_DIR) -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	@find $(VDESIGN_DIR) -name "*.pyc"        -delete 2>/dev/null || true
-	@find $(VDESIGN_DIR) -name "*_pb2*.py"    -delete 2>/dev/null || true
-	@find $(VMARKETING_DIR) -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	@find $(VMARKETING_DIR) -name "*.pyc"        -delete 2>/dev/null || true
-	@find $(VMARKETING_DIR) -name "*_pb2*.py"    -delete 2>/dev/null || true
 	@echo "  OK Build artifacts removed"
 
 clean-docker: ## Remove containers, volumes (pgdata, caches) and dangling images
@@ -362,7 +328,7 @@ define find_py
 endef
 
 # -- Python app source directories for linting ─────────────
-PY_APP_DIRS := $(VSTRATEGY_DIR) $(VFINACC_DIR) $(VDESIGN_DIR) $(VMARKETING_DIR)
+PY_APP_DIRS := $(VSTRATEGY_DIR)
 
 # -----------------------------------------------------------
 # scan-secrets  (Gitleaks)
@@ -514,8 +480,8 @@ sonarqube: ## Run SonarQube analysis (set SONAR_HOST_URL & SONAR_TOKEN env vars)
 	    echo "  [sonar-scanner] local binary"; \
 	    sonar-scanner \
 	      -Dsonar.projectKey=$(SONAR_PROJECT_KEY) \
-	      -Dsonar.sources=01-vkernel/src,02-vstrategy/app,03-vfinacc/app,04-vdesign-physical/app,05-vmarketing-org/app \
-	      -Dsonar.tests=01-vkernel/src/test,02-vstrategy/tests,03-vfinacc/tests,04-vdesign-physical/tests,05-vmarketing-org/tests \
+	      -Dsonar.sources=01-vkernel/src,02-vstrategy/app \
+	      -Dsonar.tests=01-vkernel/src/test,02-vstrategy/tests \
 	      -Dsonar.java.binaries=01-vkernel/target/classes \
 	      -Dsonar.host.url=$${SONAR_HOST_URL} \
 	      -Dsonar.token=$${SONAR_TOKEN}; \
@@ -527,8 +493,8 @@ sonarqube: ## Run SonarQube analysis (set SONAR_HOST_URL & SONAR_TOKEN env vars)
 	      -e SONAR_TOKEN=$${SONAR_TOKEN} \
 	      sonarsource/sonar-scanner-cli:latest \
 	      -Dsonar.projectKey=$(SONAR_PROJECT_KEY) \
-	      -Dsonar.sources=01-vkernel/src,02-vstrategy/app,03-vfinacc/app,04-vdesign-physical/app,05-vmarketing-org/app \
-	      -Dsonar.tests=01-vkernel/src/test,02-vstrategy/tests,03-vfinacc/tests,04-vdesign-physical/tests,05-vmarketing-org/tests \
+	      -Dsonar.sources=01-vkernel/src,02-vstrategy/app \
+	      -Dsonar.tests=01-vkernel/src/test,02-vstrategy/tests \
 	      -Dsonar.java.binaries=01-vkernel/target/classes; \
 	  fi; \
 	fi

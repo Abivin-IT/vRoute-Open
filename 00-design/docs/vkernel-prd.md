@@ -512,6 +512,34 @@ Wireframe Explanation:
 | 6   | Pivot     | Row/Column grouping · Measure aggregation (Sum/Avg/Count) · Drill-down              |
 | 7   | Map       | Geolocation pins · Cluster zoom · Route overlay (for logistics)                     |
 
+#### Navigation → Control Bar → Data View Interaction Contract
+
+Clicking a **menu item** in the Top Navigation Bar (FR-PLAT-04.01) triggers a three-layer state update:
+
+1. **Top Nav Bar** — The clicked item is visually highlighted; other items are deselected.
+2. **Control Bar** — The **Entity name** updates to the selected item's label (e.g., "Alignment Tree"). The **View Switcher** updates to show only the view types relevant to that entity.
+3. **Data View Area** — Renders the data view for the selected entity using the default view type.
+
+When **no menu item is selected** (initial page load), the Control Bar shows the app's default entity and the Data View Area shows a placeholder message: _"Select a section from the navigation menu to begin."_
+
+Each vApp declares its nav-to-entity mapping via `window.__VR_NAV__`. The `app-layout.js` dispatches a `vr:nav-change` CustomEvent with `{ id, label, category }` on every nav item click. The vApp listens for this event and updates the Data View Area accordingly.
+
+```
+User clicks "Alignment Tree"           User clicks "BSC Scorecard"
+under Transactions ▾                   under Reporting ▾
+         │                                      │
+         ▼                                      ▼
+┌──────────────────────────┐        ┌──────────────────────────┐
+│ Entity: Alignment Tree   │        │ Entity: BSC Scorecard    │
+│ Views:  [🌳 Tree]        │        │ Views:  [📊 Scorecard]   │
+├──────────────────────────┤        ├──────────────────────────┤
+│ 👑 Vision 2030           │        │ 💰 FINANCE    ██████ 91% │
+│  └ 📊 Financial          │        │ 😊 CUSTOMER   █████░ 78% │
+│     └ 🎯 OKR-F1: ARR $2M│        │ ⚙️ PROCESS    ████░░ 65% │
+│        └ 🚀 Initiative   │        │ 📚 LEARNING   ███░░░ 55% │
+└──────────────────────────┘        └──────────────────────────┘
+```
+
 ---
 
 ## 4. Technical Specifications
@@ -1054,4 +1082,20 @@ Feature: Data View Area
     When the Data View Area loads
     Then records are shown in List View by default with sortable columns
     And user can select multiple records for bulk actions
+
+Feature: Navigation → Control Bar → Data View Interaction
+  Scenario: Nav item click updates Control Bar and Data View
+    Given user is on vStrategy with no section selected
+    And a placeholder is shown in the Data View Area
+    When user clicks "Alignment Tree" under the Transactions menu
+    Then the Control Bar entity label changes to "Alignment Tree"
+    And the Data View Area renders the Alignment Tree view
+    And the selected nav item is visually highlighted
+
+  Scenario: Switching between nav items
+    Given user has selected "BSC Scorecard" under Reporting
+    When user clicks "Strategic Plans" under Master Data
+    Then the Control Bar entity label changes to "Strategic Plans"
+    And the Data View Area renders the Plans List view
+    And the View Switcher shows List / Tree / Scorecard buttons
 ```

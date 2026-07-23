@@ -1,1 +1,0 @@
-# handover_kit views

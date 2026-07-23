@@ -32,74 +32,82 @@
   var bar = document.getElementById("vr-topbar");
   if (!bar) return;
 
-  // When running inside the shell's iframe, suppress the app-level topbar
-  // (the shell already provides the logo/search/notifications/settings bar).
-  if (window.self !== window.top) {
-    bar.style.display = "none";
-    return;
-  }
-
+  var inIframe = window.self !== window.top;
   var appTitle = bar.dataset.appTitle || document.title || "vApp";
 
   bar.className = "vr-topbar";
-  bar.innerHTML =
-    // Logo ─────────────────────────────────────────────────
-    '<a class="vr-logo" href="/shell" target="_top" title="Abivin vRoute OS">' +
-    '  <div class="vr-logo-mark">Ab</div>' +
-    '  <div class="vr-logo-texts">' +
-    '    <span class="vr-logo-name">Abivin</span>' +
-    '    <span class="vr-logo-sub">vRoute OS</span>' +
-    "  </div>" +
-    "</a>" +
-    // Separator + App title ────────────────────────────────
-    '<div class="vr-sep"></div>' +
-    '<span class="vr-app-name">' +
-    _esc(appTitle) +
-    "</span>" +
-    // Spacer ───────────────────────────────────────────────
-    '<div class="vr-spacer"></div>' +
-    // Search ───────────────────────────────────────────────
-    '<label class="vr-search" id="vr-search-wrap">' +
-    '  <span class="vr-search-icon">' +
-    ICON.search +
-    "</span>" +
-    '  <input class="vr-search-input" id="vr-search" type="search"' +
-    '         placeholder="Search\u2026 (Ctrl+K)" aria-label="Search" />' +
-    "</label>" +
-    // Actions ──────────────────────────────────────────────
-    '<div class="vr-actions">' +
-    // Notifications
-    '  <button class="vr-btn" id="vr-notif-btn" title="Notifications" aria-label="Notifications">' +
-    "    " +
-    ICON.bell +
-    '    <span class="vr-notif-dot" id="vr-notif-dot" style="display:none"></span>' +
-    "  </button>" +
-    // Settings → vKernel settings
-    '  <a class="vr-btn" href="/shell/vkernel.settings" target="_top" title="Platform Settings" aria-label="Settings">' +
-    "    " +
-    ICON.gear +
-    "  </a>" +
-    // Home → Shell
-    '  <a class="vr-btn" href="/shell" target="_top" title="Back to Shell" aria-label="Shell">' +
-    "    " +
-    ICON.home +
-    "  </a>" +
-    "</div>";
 
-  // ── Keyboard shortcut: Ctrl+K → focus search ─────────────
-  document.addEventListener("keydown", function (e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-      e.preventDefault();
-      var inp = document.getElementById("vr-search");
-      if (inp) {
-        inp.focus();
-        inp.select();
+  if (inIframe) {
+    // Inside shell iframe: slim topbar — app title + nav menus only
+    // (shell already provides logo, search, notifications, settings)
+    bar.innerHTML =
+      '<span class="vr-app-name">' +
+      _esc(appTitle) +
+      "</span>" +
+      '<div class="vr-spacer"></div>';
+  } else {
+    // Standalone mode: full topbar with logo, search, actions
+    bar.innerHTML =
+      // Logo ─────────────────────────────────────────────────
+      '<a class="vr-logo" href="/shell" target="_top" title="Abivin vRoute OS">' +
+      '  <div class="vr-logo-mark">Ab</div>' +
+      '  <div class="vr-logo-texts">' +
+      '    <span class="vr-logo-name">Abivin</span>' +
+      '    <span class="vr-logo-sub">vRoute OS</span>' +
+      "  </div>" +
+      "</a>" +
+      // Separator + App title ────────────────────────────────
+      '<div class="vr-sep"></div>' +
+      '<span class="vr-app-name">' +
+      _esc(appTitle) +
+      "</span>" +
+      // Spacer ───────────────────────────────────────────────
+      '<div class="vr-spacer"></div>' +
+      // Search ───────────────────────────────────────────────
+      '<label class="vr-search" id="vr-search-wrap">' +
+      '  <span class="vr-search-icon">' +
+      ICON.search +
+      "</span>" +
+      '  <input class="vr-search-input" id="vr-search" type="search"' +
+      '         placeholder="Search\u2026 (Ctrl+K)" aria-label="Search" />' +
+      "</label>" +
+      // Actions ──────────────────────────────────────────────
+      '<div class="vr-actions">' +
+      // Notifications
+      '  <button class="vr-btn" id="vr-notif-btn" title="Notifications" aria-label="Notifications">' +
+      "    " +
+      ICON.bell +
+      '    <span class="vr-notif-dot" id="vr-notif-dot" style="display:none"></span>' +
+      "  </button>" +
+      // Settings → vKernel settings
+      '  <a class="vr-btn" href="/shell/vkernel.settings" target="_top" title="Platform Settings" aria-label="Settings">' +
+      "    " +
+      ICON.gear +
+      "  </a>" +
+      // Home → Shell
+      '  <a class="vr-btn" href="/shell" target="_top" title="Back to Shell" aria-label="Shell">' +
+      "    " +
+      ICON.home +
+      "  </a>" +
+      "</div>";
+  }
+
+  // ── Keyboard shortcut: Ctrl+K → focus search (standalone only) ──
+  if (!inIframe) {
+    document.addEventListener("keydown", function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        var inp = document.getElementById("vr-search");
+        if (inp) {
+          inp.focus();
+          inp.select();
+        }
       }
-    }
-  });
+    });
 
-  // ── Poll vKernel for notification count (best-effort) ─────
-  _pollNotifications();
+    // ── Poll vKernel for notification count (best-effort) ─────
+    _pollNotifications();
+  }
 
   // ── Helpers ──────────────────────────────────────────────
   function _esc(str) {
@@ -129,7 +137,8 @@
   // ── FR-PLAT-04.01 — Menu Navigation ─────────────────────
   var nav = window.__VR_NAV__;
   if (nav && bar) {
-    // Hide app-name + separator — menus provide the context now
+    // When nav menus are present, hide the plain app-name text
+    // (the menus provide navigation context instead)
     var _an = bar.querySelector(".vr-app-name");
     var _sp = bar.querySelector(".vr-sep");
     if (_an) _an.style.display = "none";
@@ -157,6 +166,12 @@
         dropItems +=
           '<a class="vr-nav-link" href="#section-' +
           it.id +
+          '" data-nav-id="' +
+          it.id +
+          '" data-nav-label="' +
+          _esc(it.label) +
+          '" data-nav-cat="' +
+          cat.key +
           '">' +
           _esc(it.label) +
           (it.hint
@@ -209,15 +224,31 @@
       });
     });
 
-    // Smooth scroll on nav link click
+    // Smooth scroll on nav link click + dispatch vr:nav-change event
     navEl.querySelectorAll(".vr-nav-link").forEach(function (link) {
-      link.addEventListener("click", function () {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
         navEl.querySelectorAll(".vr-nav-drop").forEach(function (d) {
           d.classList.remove("open");
         });
         navEl.querySelectorAll(".vr-nav-trigger").forEach(function (b) {
           b.classList.remove("open");
         });
+        // Highlight active nav link
+        navEl.querySelectorAll(".vr-nav-link").forEach(function (l) {
+          l.classList.remove("vr-nav-active");
+        });
+        link.classList.add("vr-nav-active");
+
+        // Dispatch nav change event for the vApp to handle
+        var navId = link.getAttribute("data-nav-id");
+        var navLabel = link.getAttribute("data-nav-label");
+        var navCat = link.getAttribute("data-nav-cat");
+        document.dispatchEvent(
+          new CustomEvent("vr:nav-change", {
+            detail: { id: navId, label: navLabel, category: navCat },
+          }),
+        );
       });
     });
   }
