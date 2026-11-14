@@ -31,10 +31,74 @@
 
   /* --- State ------------------------------------------------- */
   let allPlans = [];
-  let currentView = 0; // 0=List  1=Tree  2=Scorecard
+  let activeSection = null; // nav item id (null = placeholder)
+  let currentView = 0; // 0=List  1=Tree  2=Scorecard (only for 'plans' section)
   let selectedPlanId = null;
   let checkedIds = new Set();
   const appEl = document.getElementById("app");
+
+  /* --- Nav Section → Renderer Map ---------------------------- */
+  const NAV_SECTIONS = {
+    plans: {
+      entity: "Strategic Plans",
+      views: ["☰ List", "🌳 Tree", "📊 Scorecard"],
+      render: function () {
+        renderCurrentPlansView();
+      },
+    },
+    mece: {
+      entity: "MECE Framework",
+      views: ["📋 Detail"],
+      render: renderMeceSection,
+    },
+    alignment: {
+      entity: "Alignment Tree",
+      views: ["🌳 Tree"],
+      render: renderAlignmentSection,
+    },
+    sop: {
+      entity: "S&OP Resource Allocation",
+      views: ["⚖️ Table"],
+      render: renderSopSection,
+    },
+    scorecard: {
+      entity: "BSC Scorecard",
+      views: ["📊 Scorecard"],
+      render: renderBscSection,
+    },
+    signals: {
+      entity: "Pivot Signals",
+      views: ["🚨 List"],
+      render: renderSignalsSection,
+    },
+    variance: {
+      entity: "Variance Analysis",
+      views: [],
+      render: renderPlaceholder.bind(
+        null,
+        "Variance Analysis",
+        "Coming soon — Actual vs Plan comparison (FR-STR-04).",
+      ),
+    },
+    "sop-config": {
+      entity: "S&OP Config",
+      views: [],
+      render: renderPlaceholder.bind(
+        null,
+        "S&OP Config",
+        "Coming soon — Configure 68/27/5 allocation ratios and tolerance %.",
+      ),
+    },
+    "signal-rules": {
+      entity: "Signal Rules",
+      views: [],
+      render: renderPlaceholder.bind(
+        null,
+        "Signal Rules",
+        "Coming soon — Configure pivot signal threshold rules.",
+      ),
+    },
+  };
 
   /* --- Helpers ----------------------------------------------- */
   function esc(s) {
@@ -62,9 +126,114 @@
     return "s-draft";
   }
 
+  /* -----------------------------------------------------------
+     CONTROL BAR UPDATES
+     ----------------------------------------------------------- */
+  function updateControlBar(section) {
+    // Update entity name
+    var entityEl = document.querySelector(".vr-entity-name strong");
+    if (entityEl) entityEl.textContent = section ? section.entity : "vStrategy";
+
+    // Update view switcher buttons
+    var viewSw = document.querySelector(".vr-view-sw");
+    if (viewSw) {
+      var views = section ? section.views : [];
+      if (views.length === 0) {
+        viewSw.innerHTML = "";
+      } else {
+        viewSw.innerHTML = views
+          .map(function (v, i) {
+            return (
+              '<button class="vr-view-btn' +
+              (i === 0 ? " active" : "") +
+              '" data-view="' +
+              i +
+              '">' +
+              v +
+              "</button>"
+            );
+          })
+          .join("");
+
+        // Re-bind view switcher clicks
+        viewSw.querySelectorAll(".vr-view-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            viewSw.querySelectorAll(".vr-view-btn").forEach(function (b) {
+              b.classList.remove("active");
+            });
+            btn.classList.add("active");
+            var idx = parseInt(btn.dataset.view, 10);
+            if (activeSection === "plans") {
+              currentView = idx;
+              renderCurrentPlansView();
+            }
+          });
+        });
+      }
+    }
+
+    // Show/hide plan selector based on section
+    var planSelectEl = document.getElementById("planSelect");
+    if (planSelectEl) {
+      planSelectEl.style.display = section ? "" : "none";
+    }
+  }
+
+  /* -----------------------------------------------------------
+     PLACEHOLDER VIEW (no section selected / coming soon)
+     ----------------------------------------------------------- */
+  function renderWelcomePlaceholder() {
+    appEl.innerHTML =
+      '<div style="text-align:center;padding:80px 20px;color:var(--dim)">' +
+      '<div style="font-size:48px;margin-bottom:16px">📋</div>' +
+      '<h2 style="color:var(--text);font-size:20px;font-weight:600;margin-bottom:8px">vStrategy · S2P2R Dashboard</h2>' +
+      '<p style="font-size:14px;max-width:400px;margin:0 auto">Select a section from the navigation menu above to begin.</p>' +
+      '<div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">' +
+      '<span style="background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:13px">Master Data ▾ Strategic Plans</span>' +
+      '<span style="background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:13px">Transactions ▾ Alignment Tree</span>' +
+      '<span style="background:var(--card);border:1px solid var(--border);padding:6px 14px;border-radius:8px;font-size:13px">Reporting ▾ BSC Scorecard</span>' +
+      "</div></div>";
+  }
+
+  function renderPlaceholder(title, message) {
+    appEl.innerHTML =
+      '<div style="text-align:center;padding:80px 20px;color:var(--dim)">' +
+      '<div style="font-size:48px;margin-bottom:16px">🚧</div>' +
+      '<h2 style="color:var(--text);font-size:20px;font-weight:600;margin-bottom:8px">' +
+      esc(title) +
+      "</h2>" +
+      '<p style="font-size:14px">' +
+      esc(message) +
+      "</p></div>";
+  }
+
+  function renderNeedsPlan(title) {
+    appEl.innerHTML =
+      '<div style="text-align:center;padding:60px 20px;color:var(--dim)">' +
+      '<div style="font-size:36px;margin-bottom:12px">📌</div>' +
+      '<p style="font-size:14px">Select a plan from the dropdown above to view <strong>' +
+      esc(title) +
+      "</strong>.</p></div>";
+  }
+
   /* =============================================================
-     VIEW 0 — LIST VIEW  (PRD FR-PLAT-04 #21 Default List View)
+     PLANS SECTION — LIST / TREE / SCORECARD views (3-way switch)
      ============================================================= */
+  function renderCurrentPlansView() {
+    switch (currentView) {
+      case 0:
+        renderListView();
+        break;
+      case 1:
+        renderTreeView();
+        break;
+      case 2:
+        renderFullScorecardView();
+        break;
+    }
+  }
+
+  /* VIEW 0 — LIST VIEW  (PRD FR-PLAT-04 Default List View) */
   function renderListView() {
     if (!allPlans.length) {
       appEl.innerHTML = '<div class="loading">No plans found.</div>';
@@ -156,7 +325,10 @@
         e.stopPropagation();
         selectedPlanId = btn.dataset.id;
         updatePlanSelector();
-        switchView(1);
+        // Switch to tree view for this plan
+        currentView = 1;
+        updateControlBar(NAV_SECTIONS["plans"]);
+        renderCurrentPlansView();
       });
     });
     appEl.querySelectorAll(".vr-list-table tbody tr").forEach(function (row) {
@@ -168,9 +340,7 @@
     });
   }
 
-  /* =============================================================
-     VIEW 1 — TREE VIEW  (FR-STR-00 Alignment Tree)
-     ============================================================= */
+  /* VIEW 1 — TREE VIEW  (FR-STR-00 Alignment Tree) */
   var ICONS = {
     VISION: "\ud83d\udc51",
     BSC_PERSPECTIVE: "\ud83d\udcca",
@@ -234,8 +404,7 @@
 
   async function renderTreeView() {
     if (!selectedPlanId) {
-      appEl.innerHTML =
-        '<div class="loading">Select a plan to view Alignment Tree.</div>';
+      renderNeedsPlan("Alignment Tree");
       return;
     }
     appEl.innerHTML = '<div class="loading">Loading alignment tree\u2026</div>';
@@ -255,14 +424,10 @@
     }
   }
 
-  /* =============================================================
-     VIEW 2 — SCORECARD VIEW  (FR-STR-04 Performance Review)
-     BSC + S&OP + Pivot Signals + Plan Details
-     ============================================================= */
-  async function renderScorecardView() {
+  /* VIEW 2 — FULL SCORECARD  (BSC + S&OP + Signals + Plan Details) */
+  async function renderFullScorecardView() {
     if (!selectedPlanId) {
-      appEl.innerHTML =
-        '<div class="loading">Select a plan to view Scorecard.</div>';
+      renderNeedsPlan("Scorecard");
       return;
     }
     appEl.innerHTML = '<div class="loading">Loading scorecard\u2026</div>';
@@ -289,6 +454,84 @@
     }
   }
 
+  /* =============================================================
+     DEDICATED SECTION RENDERERS (nav item → single-focus view)
+     ============================================================= */
+
+  /* ALIGNMENT SECTION (standalone tree) */
+  async function renderAlignmentSection() {
+    await renderTreeView();
+  }
+
+  /* BSC SCORECARD SECTION */
+  async function renderBscSection() {
+    if (!selectedPlanId) {
+      renderNeedsPlan("BSC Scorecard");
+      return;
+    }
+    appEl.innerHTML = '<div class="loading">Loading BSC Scorecard\u2026</div>';
+    try {
+      var sc = await api.scorecard(selectedPlanId);
+      appEl.innerHTML = '<div class="card full">' + renderBSC(sc) + "</div>";
+    } catch (e) {
+      appEl.innerHTML =
+        '<div class="loading">Error: ' + esc(e.message) + "</div>";
+    }
+  }
+
+  /* S&OP SECTION */
+  async function renderSopSection() {
+    if (!selectedPlanId) {
+      renderNeedsPlan("S&OP Resource Allocation");
+      return;
+    }
+    appEl.innerHTML = '<div class="loading">Loading S&amp;OP\u2026</div>';
+    try {
+      var sop = await api.sop(selectedPlanId);
+      appEl.innerHTML = '<div class="card full">' + renderSop(sop) + "</div>";
+    } catch (e) {
+      appEl.innerHTML =
+        '<div class="loading">Error: ' + esc(e.message) + "</div>";
+    }
+  }
+
+  /* SIGNALS SECTION */
+  async function renderSignalsSection() {
+    if (!selectedPlanId) {
+      renderNeedsPlan("Pivot Signals");
+      return;
+    }
+    appEl.innerHTML = '<div class="loading">Loading Pivot Signals\u2026</div>';
+    try {
+      var sig = await api.signals(selectedPlanId);
+      appEl.innerHTML =
+        '<div class="card full">' + renderSignals(sig.signals) + "</div>";
+    } catch (e) {
+      appEl.innerHTML =
+        '<div class="loading">Error: ' + esc(e.message) + "</div>";
+    }
+  }
+
+  /* MECE SECTION (Plan details + MECE 4-option cards) */
+  async function renderMeceSection() {
+    if (!selectedPlanId) {
+      renderNeedsPlan("MECE Framework");
+      return;
+    }
+    appEl.innerHTML = '<div class="loading">Loading MECE Framework\u2026</div>';
+    try {
+      var plan = await api.plan(selectedPlanId);
+      appEl.innerHTML =
+        '<div class="card full">' + renderPlanInfo(plan) + "</div>";
+    } catch (e) {
+      appEl.innerHTML =
+        '<div class="loading">Error: ' + esc(e.message) + "</div>";
+    }
+  }
+
+  /* =============================================================
+     SHARED SUB-RENDERERS (return HTML strings)
+     ============================================================= */
   function renderBSC(sc) {
     var h =
       '<h2>\ud83d\udcca Balanced Scorecard \u2014 Overall: <span class="' +
@@ -450,31 +693,32 @@
   }
 
   /* =============================================================
-     VIEW SWITCHING
+     NAV SECTION SWITCHING
      ============================================================= */
-  function renderCurrentView() {
-    switch (currentView) {
-      case 0:
-        renderListView();
-        break;
-      case 1:
-        renderTreeView();
-        break;
-      case 2:
-        renderScorecardView();
-        break;
+  function activateSection(sectionId) {
+    activeSection = sectionId;
+    var section = NAV_SECTIONS[sectionId];
+    if (!section) {
+      updateControlBar(null);
+      renderWelcomePlaceholder();
+      return;
     }
+    updateControlBar(section);
+    section.render();
   }
-  function switchView(idx) {
-    currentView = idx;
-    document.querySelectorAll(".vr-view-btn").forEach(function (b) {
-      b.classList.toggle("active", parseInt(b.dataset.view, 10) === idx);
-    });
-    renderCurrentView();
-  }
+
+  // Listen for nav menu clicks from app-layout.js
+  document.addEventListener("vr:nav-change", function (e) {
+    var id = e.detail.id;
+    activateSection(id);
+  });
+
+  // Listen for view-change from control bar (view switcher clicks)
   document.addEventListener("vr:view-change", function (e) {
-    currentView = e.detail.index;
-    renderCurrentView();
+    if (activeSection === "plans") {
+      currentView = e.detail.index;
+      renderCurrentPlansView();
+    }
   });
 
   /* --- Plan selector ----------------------------------------- */
@@ -495,7 +739,10 @@
     }
     sel.addEventListener("change", function () {
       selectedPlanId = sel.value;
-      if (currentView !== 0) renderCurrentView();
+      // Re-render current section (plan-dependent sections need refresh)
+      if (activeSection && NAV_SECTIONS[activeSection]) {
+        NAV_SECTIONS[activeSection].render();
+      }
     });
   }
 
@@ -509,7 +756,8 @@
       if (allPlans.length) selectedPlanId = allPlans[0].id;
       populatePlanSelector();
       updatePlanSelector();
-      renderListView();
+      // Show welcome placeholder — user picks a nav section
+      renderWelcomePlaceholder();
     } catch (e) {
       appEl.innerHTML =
         '<div class="loading">Error loading plans: ' +
