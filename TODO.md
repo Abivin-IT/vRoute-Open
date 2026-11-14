@@ -15,6 +15,7 @@
 > Odoo reference: `/web/login` → app list → install → use → notify → search.
 
 ### 1. SSO Login Gateway Page (Odoo `/web/login`)
+
 - **Gap**: Backend auth hoàn chỉnh (JWT + OIDC + Magic Link), nhưng **chưa có trang Login HTML**.
   Người dùng hiện phải gọi JSON API trực tiếp — không có onboarding flow.
 - **Scope**:
@@ -26,6 +27,7 @@
 - **Odoo parity**: 60 % → **95 %**
 
 ### 2. RBAC Enforcement + Role CRUD (Odoo `ir.model.access` + `ir.rule`)
+
 - **Gap**: Permission registry tồn tại nhưng **không enforce**.
   Tất cả authenticated users có quyền giống nhau. Không có RoleEntity,
   không có role↔permission binding table, không có `@PreAuthorize`.
@@ -38,6 +40,7 @@
 - **Odoo parity**: 30 % → **80 %**
 
 ### 3. WebSocket Notification + Activity Feed (Odoo `mail.thread` / Discuss)
+
 - **Gap**: EventBus backend tồn tại, UI shell có notification bell,
   nhưng **không có WebSocket**, không có NotificationEntity,
   endpoint `/api/v1/notifications/unread-count` mà UI gọi → **404**.
@@ -50,6 +53,7 @@
 - **Odoo parity**: 10 % → **75 %**
 
 ### 4. Universal Search Cmd+K Overlay (Odoo 17+ Command Palette)
+
 - **Gap**: FTS backend + search box + Ctrl+K shortcut đã có,
   nhưng kết quả chỉ `console.log` — **không có dropdown/overlay UI**.
 - **Scope**:
@@ -61,6 +65,7 @@
 - **Odoo parity**: 70 % → **95 %**
 
 ### 5. App Bundle Installer + Upgrade (Odoo "Apps" one-click install)
+
 - **Gap**: Install/uninstall single app hoạt động, nhưng
   **bundle one-click** và **version upgrade** chưa có API.
 - **Scope**:
